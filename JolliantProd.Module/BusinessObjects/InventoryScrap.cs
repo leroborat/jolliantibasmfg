@@ -110,7 +110,7 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get {
                 availableQuantity = 0;
-                if (InventoryScrap != null)
+                if (InventoryScrap != null && Product != null)
                 {
                     if (Product.Tracking == Product.TrackingEnum.TrackByLot ||
                         Product.Tracking == Product.TrackingEnum.TrackBySerial)
