@@ -71,7 +71,7 @@ namespace JolliantProd.Module.BusinessObjects
             set
             {
                 SetPropertyValue(nameof(Customer), ref customer, value);
-                if (!IsLoading && !IsSaving)
+                if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     CustomerBillingAddress = Customer.BillingAddress;
                     TIN = Customer.TinNumber;
@@ -171,7 +171,7 @@ namespace JolliantProd.Module.BusinessObjects
             set
             {
                 SetPropertyValue(nameof(SalesOrder), ref salesOrder, value);
-                if (!IsSaving && !IsLoading)
+                if (!IsSaving && !IsLoading && !IsDeleted)
                 {
                     Customer = SalesOrder.Customer;
                     Company = SalesOrder.Company;
