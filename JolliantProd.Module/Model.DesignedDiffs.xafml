@@ -73,9 +73,14 @@
         <Member Name="Status" AllowEdit="False" />
       </OwnMembers>
     </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryScrapLine">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.Product'" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Invoice" ImageName="BO_Invoice">
       <AppearanceRules>
-        <AppearanceRule Id="@95640978-7e1e-4b3f-ad6f-9e882233cd88" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" TargetItems="BusinessStyle,Customer,CustomerBillingAddress,DistributionAllowancePercentage,DueDate,InvoiceDate,InvoiceNumber,PaymentTerm,SalesOrder,InvoiceLines,Trips" IsNewNode="True" />
+        <AppearanceRule Id="@95640978-7e1e-4b3f-ad6f-9e882233cd88" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" TargetItems="BusinessStyle,Customer,CustomerBillingAddress,DistributionAllowancePercentage,DueDate,InvoiceDate,InvoiceNumber,PaymentTerm,SalesOrder,InvoiceLines,Trips, Company,TIN" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="Status" AllowEdit="False" />
@@ -351,6 +356,7 @@
         <ColumnInfo Id="ReturnLocation" Width="109" />
       </Columns>
     </ListView>
+    <ListView Id="InventoryScrap_InventoryScrapLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
     <ListView Id="Invoice_InvoiceLines_ListView" AllowEdit="True">
       <Columns>
         <ColumnInfo Id="Product" Width="63" />
