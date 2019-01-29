@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <BOModel Id="BOModel">
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLine">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="LotCode" DataSourceCriteria="[Product] = '@This.Product'" DataSourcePropertyIsNullCriteria="" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+  <Views Id="Views">
+    <ListView Id="Trip_TripLines_ListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="FromLocation" Width="101" />
+        <ColumnInfo Id="AvailableQuantity" Width="122" />
+        <ColumnInfo Id="AvailableLotQuantity" Width="143" />
+      </Columns>
+    </ListView>
+  </Views>
+  <Validation Id="Validation">
+    <Rules Id="Rules">
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.TripLine_LotCode" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot#" />
+    </Rules>
+  </Validation>
+</Application>

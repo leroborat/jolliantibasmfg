@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <DetailView Id="TripLine_DetailView">
+      <Items Id="Items">
+        <PropertyEditor Id="LotCode" View="Lot_LookupListView" />
+      </Items>
+    </DetailView>
+  </Views>
+</Application>

@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <BOModel>
+    <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder">
+      <AppearanceRules>
+        <AppearanceRule Id="SalesOrderConfirmed" TargetItems="PurchaseOrderDate, PurchaseOrderNumber, SalesOrderLines, ScheduledDeliveryDate, SupplierCode, SOConfirmAction, Type" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Company" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Trip">
+      <OwnMembers>
+        <Member Name="Encoder" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLine">
+      <OwnMembers>
+        <Member Name="FromLocation" DataSourceCriteria="" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+  <SchemaModules>
+    <SchemaModule Name="SystemModule" Version="18.2.4.0" IsNewNode="True" />
+    <SchemaModule Name="SystemWindowsFormsModule" Version="18.2.4.0" IsNewNode="True" />
+  </SchemaModules>
+  <Views>
+    <ListView Id="Lot_LookupListView" Criteria="" Filter="[StockOnHand] &gt; 0.0" />
+    <ListView Id="Lot_LookupListView_No_Filter" ClassName="JolliantProd.Module.BusinessObjects.Lot" Criteria="" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="LotCode" PropertyName="LotCode" Width="340" SortIndex="0" SortOrder="Ascending" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Index="1" Width="94" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_Trips_ListView">
+      <Columns>
+        <ColumnInfo Id="TripDateTime" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+      </Columns>
+    </ListView>
+    <DetailView Id="StockTransfer_DetailView" AllowNew="False" AllowEdit="False" />
+    <ListView Id="StockTransfer_ListView" AllowLink="False" AllowNew="False" />
+    <DetailView Id="TripLine_DetailView">
+      <Items>
+        <PropertyEditor Id="FromLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </Items>
+    </DetailView>
+  </Views>
+</Application>

@@ -1,0 +1,603 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application Title="IBAS Manufacturing" AboutInfoString="IBAS Manufacturing Suite&lt;br&gt;{0:Version}&lt;br&gt;{0:Copyright}" Company="Jolliant" Copyright="Copyright IBAS Software Development Services" Description="IBAS Manufacturing" Logo="">
+  <ActionDesign>
+    <Actions>
+      <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
+      <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
+    </Actions>
+  </ActionDesign>
+  <BOModel>
+    <Class Name="JolliantProd.Module.BusinessObjects.Company" ImageName="BO_Organization" />
+    <Class Name="JolliantProd.Module.BusinessObjects.Customer" ImageName="BO_Customer" />
+    <Class Name="JolliantProd.Module.BusinessObjects.CustomerDeliveryAddress" ImageName="BO_Address" />
+    <Class Name="JolliantProd.Module.BusinessObjects.CustomerPayment" ImageName="Currency" />
+    <Class Name="JolliantProd.Module.BusinessObjects.Employee" ImageName="NewEmployee" />
+    <Class Name="JolliantProd.Module.BusinessObjects.FinishedGoodLoader" ImageName="Properties">
+      <OwnMembers>
+        <Member Name="From" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Production#" />
+        <Member Name="To" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InternalTransfer" ImageName="BO_Order">
+      <AppearanceRules>
+        <AppearanceRule Id="@f6f40ea0-b868-4474-806a-32c25304e504" AppearanceItemType="Action" Visibility="Hide" TargetItems="ValidateInternalTransferAction" Criteria="IsNullOrEmpty([ReferenceName]) Or [DestinationLocation] Is Null Or [SourceLocation] Is Null Or [Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.InternalTransfer+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InternalTransferLine">
+      <OwnMembers>
+        <Member Name="LotNumber" DataSourceCriteria="[Product] = '@This.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryAdjustment" ImageName="BO_Product_Group">
+      <AppearanceRules>
+        <AppearanceRule Id="@8683e60d-904f-44ed-ab82-585f7a8f419a" Enabled="False" BackColor="224, 224, 224" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryAdjustment+StatusEnum,Validated#" TargetItems="AdjustmentType, InventoriedLocation, InventoryAdjustmentLines,InventoryDate,InventoryReferenceName" IsNewNode="True" />
+        <AppearanceRule Id="ConfirmAdjustmentRule" TargetItems="ValidateInventoryAdjustmentAction" AppearanceItemType="Action" Visibility="Hide" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.InventoryAdjustment+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="InventoriedLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryAdjustmentLine">
+      <OwnMembers>
+        <Member Name="LotNumber" DataSourceCriteria="[Product] = '@This.Product'" />
+        <Member Name="TheoreticalQuantity" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryReturn" ImageName="BO_Price_Item">
+      <AppearanceRules>
+        <AppearanceRule Id="@129daac3-9ec2-4712-b910-8972e7917ba2" BackColor="224, 224, 224" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryReturn+StatusEnum,Done#" TargetItems="InventoryReturnLines, ReturnLocation, ReturnReferenceName, SalesOrder" IsNewNode="True" />
+        <AppearanceRule Id="@31bbcce3-bce2-4745-8d69-9b39c2e1cbb5" TargetItems="ValidateInventoryReturnAction" AppearanceItemType="Action" Visibility="Hide" Criteria="[ReturnLocation] Is Null Or IsNullOrEmpty([ReturnReferenceName]) Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryReturn+StatusEnum,Done# Or [InventoryReturnLines][].Count() &lt; 1" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ReturnLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryReturnLine">
+      <OwnMembers>
+        <Member Name="LotName" DataSourceCriteria="[Product] = '@This.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryScrap" ImageName="BO_Rules">
+      <AppearanceRules>
+        <AppearanceRule Id="@8476fc66-6aae-49d1-89d3-8b2cf064b6b4" TargetItems="ValidateScrapAction" AppearanceItemType="Action" Visibility="Hide" Criteria="IsNullOrEmpty([ReferenceName]) Or [Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.InventoryScrap+StatusEnum,Draft# Or [InventoryLocation] Is Null" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="InventoryLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Invoice" ImageName="BO_Invoice">
+      <AppearanceRules>
+        <AppearanceRule Id="@95640978-7e1e-4b3f-ad6f-9e882233cd88" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" TargetItems="BusinessStyle,Customer,CustomerBillingAddress,DistributionAllowancePercentage,DueDate,InvoiceDate,InvoiceNumber,PaymentTerm,SalesOrder,InvoiceLines,Trips" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="Trips" DataSourceCriteria="[SalesOrder] = '@This.SalesOrder' And [TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Lot" DefaultLookupEditorMode="AllItemsWithSearch" ImageName="BO_Note" />
+    <Class Name="JolliantProd.Module.BusinessObjects.PaymentAllocationLine">
+      <OwnMembers>
+        <Member Name="Invoice" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# And [Company] = '@This.CustomerPayment.Company'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item" />
+    <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder" ImageName="BO_Task">
+      <AppearanceRules>
+        <AppearanceRule Id="@5ba2415a-1613-4dfc-a175-0f71e95ab259" TargetItems="SOConfirmAction" AppearanceItemType="Action" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" Visibility="Hide" IsNewNode="True" />
+        <AppearanceRule Id="SOConfirmedApperance" Enabled="False" TargetItems="Company,Customer,DeliveryAddress,PurchaseOrderDate,PurchaseOrderNumber,SalesOrderLines,ScheduledDeliveryDate,SupplierCode,Type" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
+        <AppearanceRule Id="TripDisabled" TargetItems="Trips,Invoices,InventoryReturns" Visibility="Hide" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="CurrentUser" AllowEdit="False" />
+        <Member Name="DeliveryAddress" DataSourceCriteria="[Customer] = '@This.Customer'" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="TotalQuantitiesDelivered" Caption="Total Quantities Delivered (Net of Returns)" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.SalesOrderLine" IsVisibleInReports="True" />
+    <Class Name="JolliantProd.Module.BusinessObjects.Trip" ImageName="BO_Vendor">
+      <AppearanceRules>
+        <AppearanceRule Id="@5e74c678-8935-4267-b976-9c2fbd7d6b16" TargetItems="DestinationLocation, SalesOrder, TripNumber, TripDateTime,TripLines,TruckDriver, TruckPlateNumber" Criteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" Enabled="False" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="DestinationLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,CustomerLocation#" />
+        <Member Name="Invoice" AllowEdit="False" />
+        <Member Name="TripStatus" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLineDetail">
+      <OwnMembers>
+        <Member Name="From" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="LotCode" DataSourceCriteria="[Product] = '@This.TripLine.Product'" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+  <NavigationItems>
+    <Items>
+      <Item Id="SalesNavigation" Caption="Sales" Index="1" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="Customer_ListView" ViewId="Customer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="POSummary" Caption="PO Summary" ImageName="FilterQuery" ViewId="SalesOrderLine_ListView_PO_Summary" IsNewNode="True" />
+          <Item Id="SalesCategory_ListView" ViewId="SalesCategory_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SalesOrder_ListView" ViewId="SalesOrder_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Inventory" Index="2" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="InternalTransfer_ListView" ViewId="InternalTransfer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryAdjustment_ListView" ViewId="InventoryAdjustment_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryReturn_ListView" ViewId="InventoryReturn_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryScrap_ListView" ViewId="InventoryScrap_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Lot_ListView" ViewId="Lot_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Product_ListView" ViewId="Product_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="StockTransfer_ListView" ViewId="StockTransfer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Trip_ListView" ViewId="Trip_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Warehouse_ListView" ViewId="Warehouse_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WarehouseLocation_ListView" ViewId="WarehouseLocation_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="AccountingNavigation" Caption="Accounting" Index="10" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="CustomerPayment_ListView" ViewId="CustomerPayment_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Invoice_ListView" ViewId="Invoice_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="PaymentTerm_ListView" ViewId="PaymentTerm_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Default" Visible="False">
+        <Items>
+          <Item Id="Company_ListView" Removed="True" />
+          <Item Id="Customer_ListView" Removed="True" />
+          <Item Id="CustomerPayment_ListView" Removed="True" />
+          <Item Id="Employee_ListView" Removed="True" />
+          <Item Id="FinishedGoodLoader_ListView" Removed="True" />
+          <Item Id="InternalTransfer_ListView" Removed="True" />
+          <Item Id="InventoryAdjustment_ListView" Removed="True" />
+          <Item Id="InventoryReturn_ListView" Removed="True" />
+          <Item Id="InventoryScrap_ListView" Removed="True" />
+          <Item Id="Invoice_ListView" Removed="True" />
+          <Item Id="Lot_ListView" Removed="True" />
+          <Item Id="PaymentTerm_ListView" Removed="True" />
+          <Item Id="Product_ListView" Removed="True" />
+          <Item Id="SalesCategory_ListView" Removed="True" />
+          <Item Id="SalesOrder_ListView" Removed="True" />
+          <Item Id="StockTransfer_ListView" Removed="True" />
+          <Item Id="SupplierCode_ListView" Removed="True" />
+          <Item Id="Trip_ListView" Removed="True" />
+          <Item Id="UnitOfMeasure_ListView" Removed="True" />
+          <Item Id="Variant_ListView" Removed="True" />
+          <Item Id="Warehouse_ListView" Removed="True" />
+          <Item Id="WarehouseLocation_ListView" Removed="True" />
+        </Items>
+      </Item>
+      <Item Id="Utilities" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="Company_ListView" ViewId="Company_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Employee_ListView" ViewId="Employee_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="FinishedGoodLoader_ListView" ViewId="FinishedGoodLoader_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SupplierCode_ListView" ViewId="SupplierCode_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="UnitOfMeasure_ListView" ViewId="UnitOfMeasure_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Variant_ListView" ViewId="Variant_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Options>
+    <LayoutManagerOptions RequiredFieldMark="*" />
+  </Options>
+  <SchemaModules>
+    <SchemaModule Name="SystemModule" Version="18.2.4.0" IsNewNode="True" />
+  </SchemaModules>
+  <Validation>
+    <Rules>
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InternalTransferLine_LotNumber" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InventoryAdjustmentLine_LotNumber" ResultType="Error" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InventoryReturnLine_LotName" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InventoryScrapLine_Lot" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.TripLineDetail_LotCode" TargetCriteria="[TripLine.Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [TripLine.Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleValueComparison Id="DevExpress.Persistent.Validation.RuleValueComparison_JolliantProd.Module.BusinessObjects.InternalTransferLine_QuantityDone" TargetCriteria="[InternalTransfer.SourceLocation.LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+    </Rules>
+  </Validation>
+  <Views>
+    <ListView Id="Company_ListView">
+      <Columns>
+        <ColumnInfo Id="CompanyName" Width="121" />
+        <ColumnInfo Id="Address" Width="66" />
+        <ColumnInfo Id="ContactNumber" Width="112" />
+        <ColumnInfo Id="EmailAddress" Width="101" />
+      </Columns>
+    </ListView>
+    <ListView Id="Customer_Invoices_ListView">
+      <Columns>
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="-1" />
+        <ColumnInfo Id="Company" Width="73" Index="-1" />
+        <ColumnInfo Id="CustomerBillingAddress" Width="162" Index="-1" />
+        <ColumnInfo Id="DistributionAllowance" Width="146" Index="-1" />
+        <ColumnInfo Id="DistributionAllowancePercentage" Width="214" Index="-1" />
+        <ColumnInfo Id="DueLessVat" Width="94" Index="-1" />
+        <ColumnInfo Id="InvoiceDate" Width="90" Index="-1" />
+        <ColumnInfo Id="PaymentTerm" Width="104" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="158" Index="-1" />
+        <ColumnInfo Id="SalesOrder" Width="88" Index="-1" />
+        <ColumnInfo Id="TIN" Width="40" Index="-1" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="InvoiceNumber" Width="120" />
+        <ColumnInfo Id="DueDate" Width="73" Index="1" />
+        <ColumnInfo Id="Status" Width="56" Index="2" />
+        <ColumnInfo Id="OpenAmount" Width="98" Index="3" />
+        <ColumnInfo Id="TotalAmountDue" Width="123" Index="4" />
+      </Columns>
+    </ListView>
+    <ListView Id="Customer_ListView">
+      <Columns>
+        <ColumnInfo Id="EmailAddress" Width="101" Index="-1" />
+        <ColumnInfo Id="TinNumber" Width="87" Index="-1" />
+        <ColumnInfo Id="CustomerName" Width="123" />
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="1" />
+        <ColumnInfo Id="BillingAddress" Width="103" Index="2" />
+        <ColumnInfo Id="ContactNumber" Width="112" Index="3" />
+      </Columns>
+    </ListView>
+    <ListView Id="CustomerPayment_ListView">
+      <Columns>
+        <ColumnInfo Id="CheckBank" Width="86" Index="-1" />
+        <ColumnInfo Id="CheckDate" Width="84" Index="-1" />
+        <ColumnInfo Id="CheckNumber" Width="103" Index="-1" />
+        <ColumnInfo Id="ORNumber" Width="82" Index="-1" />
+        <ColumnInfo Id="ReferenceName" Width="126" />
+        <ColumnInfo Id="Company" Width="73" />
+        <ColumnInfo Id="PaymentAmount" Width="117" />
+        <ColumnInfo Id="PaymentDate" Width="99" Index="3" />
+        <ColumnInfo Id="TotalAllocated" Width="105" Index="4" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+      </Columns>
+    </ListView>
+    <ListView Id="Employee_ListView">
+      <Columns>
+        <ColumnInfo Id="UserName" Width="94" />
+        <ColumnInfo Id="EmployeeName" Width="112" />
+      </Columns>
+    </ListView>
+    <ListView Id="FinishedGoodLoader_ListView">
+      <Columns>
+        <ColumnInfo Id="ReferenceName" Index="-1" />
+        <ColumnInfo Id="LotExpirationDate" Index="0" />
+        <ColumnInfo Id="Product" Index="1" />
+        <ColumnInfo Id="From" Index="2" />
+        <ColumnInfo Id="To" Index="3" />
+      </Columns>
+    </ListView>
+    <ListView Id="InternalTransfer_InternalTransferLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="AvailableQuantity" Width="122" />
+        <ColumnInfo Id="QuantityDone" Width="100" />
+      </Columns>
+    </ListView>
+    <ListView Id="InternalTransfer_ListView">
+      <Columns>
+        <ColumnInfo Id="ReferenceName" Width="126" />
+        <ColumnInfo Id="SourceLocation" Width="111" />
+        <ColumnInfo Id="DestinationLocation" Width="134" />
+        <ColumnInfo Id="TransferDate" Width="99" />
+        <ColumnInfo Id="Status" Width="56" />
+      </Columns>
+    </ListView>
+    <ListView Id="InternalTransferLine_ListView">
+      <Columns>
+        <ColumnInfo Id="InternalTransfer" Width="117" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="AvailableQuantity" Width="122" />
+        <ColumnInfo Id="QuantityDone" Width="100" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustment_InventoryAdjustmentLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="TheoreticalQuantity" Width="135" />
+        <ColumnInfo Id="RealQuantity" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustment_ListView">
+      <Columns>
+        <ColumnInfo Id="InventoryReferenceName" Width="183" />
+        <ColumnInfo Id="Status" Width="56" />
+        <ColumnInfo Id="AdjustmentType" Width="117" />
+        <ColumnInfo Id="InventoryDate" Width="103" />
+        <ColumnInfo Id="InventoriedLocation" Width="135" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustmentLine_ListView">
+      <Columns>
+        <ColumnInfo Id="InventoryAdjustment" Width="142" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="TheoreticalQuantity" Width="135" />
+        <ColumnInfo Id="RealQuantity" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustmentLine_LookupListView">
+      <Columns>
+        <ColumnInfo Id="InventoryAdjustment" Width="142" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="TheoreticalQuantity" Width="135" />
+        <ColumnInfo Id="RealQuantity" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryReturn_InventoryReturnLines_ListView">
+      <Columns>
+        <ColumnInfo Id="LotName" Width="85" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Quantity" Width="67" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryReturn_ListView">
+      <Columns>
+        <ColumnInfo Id="ReturnReferenceName" Width="168" />
+        <ColumnInfo Id="Status" Width="56" />
+        <ColumnInfo Id="SalesOrder" Width="88" />
+        <ColumnInfo Id="ReturnLocation" Width="109" />
+      </Columns>
+    </ListView>
+    <ListView Id="Invoice_InvoiceLines_ListView" AllowEdit="True">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Description" Index="1" />
+        <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
+        <ColumnInfo Id="Quantity" Width="67" Index="3" />
+        <ColumnInfo Id="SubTotal" Width="0" Index="4" />
+      </Columns>
+    </ListView>
+    <ListView Id="Invoice_ListView">
+      <Columns>
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="-1" />
+        <ColumnInfo Id="CustomerBillingAddress" Width="162" Index="-1" />
+        <ColumnInfo Id="DistributionAllowance" Width="146" Index="-1" />
+        <ColumnInfo Id="DistributionAllowancePercentage" Width="214" Index="-1" />
+        <ColumnInfo Id="DueLessVat" Width="94" Index="-1" />
+        <ColumnInfo Id="PaymentTerm" Width="104" Index="-1" />
+        <ColumnInfo Id="SalesOrder" Width="88" Index="-1" />
+        <ColumnInfo Id="TIN" Width="40" Index="-1" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="InvoiceNumber" Width="120" />
+        <ColumnInfo Id="Customer" Width="0" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="158" Index="2" />
+        <ColumnInfo Id="InvoiceDate" Width="90" Index="3" />
+        <ColumnInfo Id="DueDate" Width="73" Index="4" />
+        <ColumnInfo Id="TotalAmountDue" Width="123" Index="5" />
+        <ColumnInfo Id="OpenAmount" Width="98" Index="6" />
+        <ColumnInfo Id="Status" Width="56" Index="7" />
+        <ColumnInfo Id="Company" Width="73" Index="8" />
+      </Columns>
+    </ListView>
+    <ListView Id="Invoice_Trips_ListView" AllowNew="False" AllowLink="True" AllowDelete="False" AllowUnlink="True">
+      <Columns>
+        <ColumnInfo Id="DisplayName" Width="108" />
+        <ColumnInfo Id="SalesOrder" Width="88" />
+        <ColumnInfo Id="PONumber" Width="81" />
+        <ColumnInfo Id="TripNumber" Width="92" />
+        <ColumnInfo Id="TripDateTime" Width="106" />
+        <ColumnInfo Id="TruckDriver" Width="90" />
+        <ColumnInfo Id="TruckPlateNumber" Width="133" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" />
+        <ColumnInfo Id="DestinationLocation" Width="134" />
+        <ColumnInfo Id="TripStatus" Width="83" />
+        <ColumnInfo Id="Encoder" Width="66" />
+      </Columns>
+    </ListView>
+    <ListView Id="InvoiceLine_ListView">
+      <Columns>
+        <ColumnInfo Id="Invoice" Width="60" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="UnitPrice" Width="74" />
+        <ColumnInfo Id="Quantity" Width="67" />
+        <ColumnInfo Id="SubTotal" Width="0" />
+      </Columns>
+    </ListView>
+    <ListView Id="Lot_ListView" DataAccessMode="Server" IsFooterVisible="True" />
+    <ListView Id="Lot_LookupListView" Criteria="">
+      <Columns>
+        <ColumnInfo Id="LotCode" Width="81" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Index="1" Width="104" IsNewNode="True" />
+        <ColumnInfo Id="ExpirationDate" PropertyName="ExpirationDate" Index="2" Width="106" IsNewNode="True" />
+      </Columns>
+      <Filters>
+        <Filter Id="@4a1230d0-a43f-42ec-b3c8-b46441156606" Criteria="[StockOnHand] &lt;&gt; 0.0" IsNewNode="True" />
+      </Filters>
+      <Sorting>
+        <SortProperty Id="@37b590b9-ef8b-464a-9783-b8ea940a0712" PropertyName="ExpirationDate" Index="1" IsNewNode="True" />
+        <SortProperty Id="@33c0b085-b2ee-4b79-8662-511a50b79597" PropertyName="LotCode" Index="2" IsNewNode="True" />
+      </Sorting>
+    </ListView>
+    <ListView Id="Product_ListView">
+      <Columns>
+        <ColumnInfo Id="Barcode" Width="66" Index="-1" />
+        <ColumnInfo Id="CanBePurchased" Width="123" Index="-1" />
+        <ColumnInfo Id="CanBeSold" Width="89" Index="-1" />
+        <ColumnInfo Id="Cost" Width="45" Index="-1" />
+        <ColumnInfo Id="InternalReference" Width="126" Index="-1" />
+        <ColumnInfo Id="ProductType" Width="95" Index="-1" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="-1" />
+        <ColumnInfo Id="SalesPrice" Width="83" Index="-1" />
+        <ColumnInfo Id="Tracking" Width="69" Index="-1" />
+        <ColumnInfo Id="UOM" Width="47" Index="-1" />
+        <ColumnInfo Id="ProductName" Width="111" />
+        <ColumnInfo Id="SalesCategory" Width="106" Index="1" />
+        <ColumnInfo Id="StockOnHand" Width="104" Index="2" />
+      </Columns>
+    </ListView>
+    <DetailView Id="SalesOrder_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="74.245115452930733">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="65.78947368421052">
+            <LayoutGroup Id="SalesOrder" RelativeSize="100">
+              <LayoutGroup Id="SalesOrder_col1" RelativeSize="50">
+                <LayoutItem Id="Customer" RelativeSize="15.789473684210526" />
+                <LayoutItem Id="DeliveryAddress" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="PurchaseOrderNumber" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="PurchaseOrderDate" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="ScheduledDeliveryDate" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="SupplierCode" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="Company" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="CurrentUser" RelativeSize="15.789473684210526" />
+              </LayoutGroup>
+              <LayoutGroup Id="SalesOrder_col2" RelativeSize="50">
+                <LayoutItem Id="Status" RelativeSize="15.789473684210526" />
+                <LayoutItem Id="Type" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalSales" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantity" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantitiesDelivered" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantitiesReturned" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantitiesInvoiced" RelativeSize="27.192982456140349" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <TabbedGroup Id="Tabs" RelativeSize="34.210526315789473">
+            <LayoutGroup Id="SalesOrderLines" RelativeSize="100">
+              <LayoutItem Id="SalesOrderLines" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="Invoices" Index="1" RelativeSize="100">
+              <LayoutItem Id="Invoices" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="InventoryReturns" Removed="True" />
+            <LayoutGroup Id="Trips" Removed="True" />
+          </TabbedGroup>
+          <TabbedGroup Id="Trips" Index="1" RelativeSize="25.75488454706927" IsNewNode="True">
+            <LayoutGroup Id="Trips" Index="0" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="Trips" ViewItem="Trips" ShowCaption="False" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="InventoryReturns" Index="1" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="InventoryReturns" ViewItem="InventoryReturns" ShowCaption="False" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="SalesOrder_InventoryReturns_ListView" AllowDelete="False" AllowUnlink="False" />
+    <ListView Id="SalesOrder_Invoices_ListView" AllowDelete="False" AllowNew="True">
+      <Columns>
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="-1" />
+        <ColumnInfo Id="Company" Width="73" Index="-1" />
+        <ColumnInfo Id="Customer" Width="0" Index="-1" />
+        <ColumnInfo Id="CustomerBillingAddress" Width="162" Index="-1" />
+        <ColumnInfo Id="DistributionAllowance" Width="146" Index="-1" />
+        <ColumnInfo Id="DistributionAllowancePercentage" Width="214" Index="-1" />
+        <ColumnInfo Id="DueDate" Width="73" Index="-1" />
+        <ColumnInfo Id="DueLessVat" Width="94" Index="-1" />
+        <ColumnInfo Id="InvoiceDate" Width="90" Index="-1" />
+        <ColumnInfo Id="PaymentTerm" Width="104" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="158" Index="-1" />
+        <ColumnInfo Id="TIN" Width="40" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="InvoiceNumber" Width="120" />
+        <ColumnInfo Id="Status" Width="56" Index="1" />
+        <ColumnInfo Id="OpenAmount" Width="98" Index="2" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="3" />
+        <ColumnInfo Id="TotalAmountDue" Width="123" Index="4" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_ListView">
+      <Columns>
+        <ColumnInfo Id="CurrentUser" Width="93" Index="-1" />
+        <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderDate" Width="139" Index="-1" />
+        <ColumnInfo Id="TotalQuantitiesDelivered" Width="263" Index="-1" />
+        <ColumnInfo Id="TotalQuantitiesInvoiced" Width="161" Index="-1" />
+        <ColumnInfo Id="TotalQuantitiesReturned" Width="166" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
+        <ColumnInfo Id="Customer" Width="0" />
+        <ColumnInfo Id="ScheduledDeliveryDate" Width="158" Index="2" />
+        <ColumnInfo Id="SupplierCode" Width="100" Index="3" />
+        <ColumnInfo Id="Company" Width="73" Index="4" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+        <ColumnInfo Id="Type" Width="48" Index="6" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="7" />
+        <ColumnInfo Id="TotalQuantity" Width="100" Index="8" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_SalesOrderLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Quantity" Width="67" />
+        <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
+        <ColumnInfo Id="Amount" Width="64" Index="3" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" Index="4" />
+        <ColumnInfo Id="QuantityReturned" Width="123" Index="5" />
+        <ColumnInfo Id="QuantityInvoiced" Width="118" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_Trips_ListView" AllowDelete="False" AllowUnlink="True">
+      <Columns>
+        <ColumnInfo Id="DestinationLocation" Width="134" Index="-1" />
+        <ColumnInfo Id="DisplayName" Width="108" Index="-1" />
+        <ColumnInfo Id="PONumber" Width="81" Index="-1" />
+        <ColumnInfo Id="TruckPlateNumber" Width="133" Index="-1" />
+        <ColumnInfo Id="TripNumber" Width="92" Index="0" />
+        <ColumnInfo Id="TripDateTime" Width="106" Index="1" />
+        <ColumnInfo Id="TruckDriver" Width="90" Index="2" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" Index="3" />
+        <ColumnInfo Id="TripStatus" Width="83" Index="4" />
+        <ColumnInfo Id="Encoder" Width="66" Index="5" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrderLine_ListView" AllowNew="True" />
+    <ListView Id="SalesOrderLine_ListView_PO_Summary" ClassName="JolliantProd.Module.BusinessObjects.SalesOrderLine" Filter="IsOutlookIntervalToday([SalesOrder.ScheduledDeliveryDate])" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesOrder" PropertyName="SalesOrder" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="QuantityDelivered" PropertyName="QuantityDelivered" Width="50" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="UnitPrice" PropertyName="UnitPrice" Width="50" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="Amount" PropertyName="Amount" Width="50" Index="5" IsNewNode="True" />
+      </Columns>
+      <PivotSettings Settings="" IsNewNode="True" />
+    </ListView>
+    <DetailView Id="StockTransfer_DetailView" AllowEdit="True" AllowNew="True" />
+    <ListView Id="StockTransfer_ListView" AllowNew="True" DataAccessMode="Server">
+      <Columns>
+        <ColumnInfo Id="Date" EditMask="f" DisplayFormat="{0:f}" />
+      </Columns>
+    </ListView>
+    <DetailView Id="Trip_DetailView">
+      <Items>
+        <PropertyEditor Id="TripDateTime" EditMaskType="DateTime" EditMask="g" DisplayFormat="{0:g}" />
+      </Items>
+    </DetailView>
+    <ListView Id="Trip_ListView" AllowNew="False">
+      <Columns>
+        <ColumnInfo Id="DestinationLocation" Width="134" Index="-1" />
+        <ColumnInfo Id="PONumber" Width="81" Index="-1" />
+        <ColumnInfo Id="SalesOrder" Width="88" Index="-1" />
+        <ColumnInfo Id="TruckPlateNumber" Width="133" Index="-1" />
+        <ColumnInfo Id="DisplayName" Width="108" />
+        <ColumnInfo Id="TripNumber" Width="92" Index="1" />
+        <ColumnInfo Id="TripDateTime" DisplayFormat="{0:g}" EditMask="g" Width="131" Index="2" />
+        <ColumnInfo Id="TruckDriver" Width="90" Index="3" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" Index="4" />
+        <ColumnInfo Id="TripStatus" Width="83" Index="5" />
+        <ColumnInfo Id="Encoder" Width="66" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="Trip_TripLines_ListView" AllowEdit="False" AllowNew="True" NewItemRowPosition="None" IsGroupPanelVisible="True">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="PendingDemand" Width="116" />
+        <ColumnInfo Id="QuantityDone" Width="100" />
+      </Columns>
+    </ListView>
+  </Views>
+</Application>

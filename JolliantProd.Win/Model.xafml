@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application Logo="">
+  <BOModel>
+    <Class Name="JolliantProd.Module.BusinessObjects.FinishedGoodLoader">
+      <AppearanceRules>
+        <AppearanceRule Id="@14d51414-2684-4d38-b4aa-117a8358a627" TargetItems="LoadFgAction" AppearanceItemType="Action" Enabled="False" Criteria="[From] Is Null Or [LotExpirationDate] Is Null Or [Product] Is Null Or IsNullOrEmpty([ReferenceName]) Or [To] Is Null" IsNewNode="True" />
+      </AppearanceRules>
+    </Class>
+  </BOModel>
+  <NavigationItems NavigationStyle="Accordion" ShowImages="False" DefaultChildItemsDisplayStyle="List">
+    <Items>
+      <Item Id="Default">
+        <Items>
+          <Item Id="POSummaryNavigationItem" ViewId="SalesOrderLine_ListView_PO_Summary" Caption="PO Summary" IsNewNode="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Options UIType="TabbedMDI" FormStyle="Ribbon" ShowTabImage="False">
+    <LayoutManagerOptions EnableLayoutGroupImages="False" />
+  </Options>
+  <SchemaModules>
+    <SchemaModule Name="SystemModule" Version="18.2.4.0" IsNewNode="True" />
+    <SchemaModule Name="SystemWindowsFormsModule" Version="18.2.4.0" IsNewNode="True" />
+  </SchemaModules>
+  <Views>
+    <ListView Id="Lot_LookupListView" Criteria="" />
+    <ListView Id="SalesOrderLine_ListView_PO_Summary" EditorTypeName="DevExpress.ExpressApp.PivotGrid.Win.PivotGridListEditor" />
+    <DetailView Id="StockTransfer_DetailView">
+      <Items>
+        <PropertyEditor Id="Lot" View="Lot_LookupListView_No_Filter" />
+      </Items>
+    </DetailView>
+  </Views>
+</Application>
