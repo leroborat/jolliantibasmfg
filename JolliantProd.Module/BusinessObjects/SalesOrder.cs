@@ -61,7 +61,7 @@ namespace JolliantProd.Module.BusinessObjects
                 SetPropertyValue(nameof(Customer), ref customer, value);
                 if (!IsLoading && !IsSaving)
                 {
-                    DeliveryAddress = Customer.CustomerAddresses.First();
+                    //DeliveryAddress = Customer.CustomerAddresses.First();
                 }
             }
         }
@@ -112,7 +112,7 @@ namespace JolliantProd.Module.BusinessObjects
                         sl.Quantity = 1;
                         SalesOrderLines.Add(sl);
                     }
-
+                    DeliveryAddress = SupplierCode.DeliveryAddress;
                     Company = SupplierCode.Company;
                 }
             }

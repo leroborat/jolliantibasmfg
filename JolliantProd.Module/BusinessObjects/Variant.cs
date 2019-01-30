@@ -28,6 +28,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        CustomerDeliveryAddress deliveryAddress;
         Company company;
         [Persistent(nameof(DisplayName))]
         string displayName;
@@ -58,6 +59,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => suppCode;
             set => SetPropertyValue(nameof(SuppCode), ref suppCode, value);
+        }
+
+        
+        public CustomerDeliveryAddress DeliveryAddress
+        {
+            get => deliveryAddress;
+            set => SetPropertyValue(nameof(DeliveryAddress), ref deliveryAddress, value);
         }
 
         [RuleRequiredField()]

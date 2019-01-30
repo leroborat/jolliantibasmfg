@@ -489,12 +489,12 @@
           <LayoutGroup Id="SimpleEditors" RelativeSize="65.78947368421052">
             <LayoutGroup Id="SalesOrder" RelativeSize="100">
               <LayoutGroup Id="SalesOrder_col1" RelativeSize="50">
-                <LayoutItem Id="Customer" RelativeSize="15.789473684210526" />
-                <LayoutItem Id="DeliveryAddress" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="Customer" RelativeSize="15.789473684210526" Index="1" />
                 <LayoutItem Id="PurchaseOrderNumber" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="SupplierCode" RelativeSize="11.403508771929825" Index="2" />
+                <LayoutItem Id="DeliveryAddress" RelativeSize="11.403508771929825" Index="3" />
                 <LayoutItem Id="PurchaseOrderDate" RelativeSize="11.403508771929825" />
                 <LayoutItem Id="ScheduledDeliveryDate" RelativeSize="11.403508771929825" />
-                <LayoutItem Id="SupplierCode" RelativeSize="11.403508771929825" />
                 <LayoutItem Id="Company" RelativeSize="11.403508771929825" />
                 <LayoutItem Id="CurrentUser" RelativeSize="15.789473684210526" />
               </LayoutGroup>
