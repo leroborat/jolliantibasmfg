@@ -27,6 +27,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        TripLine tripLine;
         [Persistent(nameof(StockOnHand))]
         double stockOnHand;
         DateTime expirationDate;
@@ -64,11 +65,12 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        
+
         [PersistentAlias(nameof(stockOnHand))]
         public double StockOnHand
         {
-            get {
+            get
+            {
                 XPCollection<StockTransfer> collection = new XPCollection<StockTransfer>(Session);
                 //Get In
                 var a = from st in collection
@@ -99,7 +101,16 @@ namespace JolliantProd.Module.BusinessObjects
 
                 //Get Actual
                 stockOnHand = StockIn - StockOut;
-                return stockOnHand; }
+                return stockOnHand;
+            }
+        }
+
+        
+        [Association("TripLine-Lots")]
+        public TripLine TripLine
+        {
+            get => tripLine;
+            set => SetPropertyValue(nameof(TripLine), ref tripLine, value);
         }
     }
 }

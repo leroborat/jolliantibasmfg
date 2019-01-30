@@ -287,5 +287,20 @@ namespace JolliantProd.Module.Controllers
 
             ObjectSpace.CommitChanges();
         }
+
+        private void GenerateTripLinesAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var thisView = (TripLine)View.CurrentObject;
+            ObjectSpace.Delete(thisView.TripLineDetails);
+            ObjectSpace.CommitChanges();
+            foreach (Lot item in thisView.Lots)
+            {
+                TripLineDetail lineDetail = ObjectSpace.CreateObject<TripLineDetail>();
+                lineDetail.From = thisView.Location;
+                lineDetail.LotCode = item;
+                thisView.TripLineDetails.Add(lineDetail);
+                ObjectSpace.CommitChanges();
+            }
+        }
     }
 }

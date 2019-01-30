@@ -38,6 +38,7 @@
             this.GenerateInvoiceLinesAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ValidateInvoiceAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ValidateCustomerPaymentAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.GenerateTripLinesAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // simpleAction1
             // 
@@ -136,6 +137,17 @@
             this.ValidateCustomerPaymentAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.ValidateCustomerPaymentAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.ValidateCustomerPaymentAction_Execute);
             // 
+            // GenerateTripLinesAction
+            // 
+            this.GenerateTripLinesAction.Caption = "Generate Trip Lines From Linked Lots";
+            this.GenerateTripLinesAction.ConfirmationMessage = null;
+            this.GenerateTripLinesAction.Id = "GenerateTripLinesAction";
+            this.GenerateTripLinesAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.TripLine);
+            this.GenerateTripLinesAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.GenerateTripLinesAction.ToolTip = null;
+            this.GenerateTripLinesAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.GenerateTripLinesAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.GenerateTripLinesAction_Execute);
+            // 
             // SalesOrderController
             // 
             this.Actions.Add(this.simpleAction1);
@@ -147,6 +159,7 @@
             this.Actions.Add(this.GenerateInvoiceLinesAction);
             this.Actions.Add(this.ValidateInvoiceAction);
             this.Actions.Add(this.ValidateCustomerPaymentAction);
+            this.Actions.Add(this.GenerateTripLinesAction);
             this.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
             this.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.Activated += new System.EventHandler(this.SalesOrderController_Activated);
@@ -164,5 +177,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction GenerateInvoiceLinesAction;
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateInvoiceAction;
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateCustomerPaymentAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction GenerateTripLinesAction;
     }
 }

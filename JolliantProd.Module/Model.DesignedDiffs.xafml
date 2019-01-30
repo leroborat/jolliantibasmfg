@@ -3,6 +3,7 @@
   <ActionDesign>
     <Actions>
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
@@ -116,6 +117,11 @@
         <Member Name="DestinationLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,CustomerLocation#" />
         <Member Name="Invoice" AllowEdit="False" />
         <Member Name="TripStatus" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLine">
+      <OwnMembers>
+        <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.TripLineDetail">
@@ -413,6 +419,26 @@
         <ColumnInfo Id="SubTotal" Width="0" />
       </Columns>
     </ListView>
+    <DetailView Id="Lot_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="100">
+            <LayoutGroup Id="Lot" RelativeSize="100">
+              <LayoutGroup Id="Lot_col1" RelativeSize="49.909909909909906">
+                <LayoutItem Id="LotCode" RelativeSize="7.531380753138075" />
+                <LayoutItem Id="Product" RelativeSize="5.4393305439330542" />
+                <LayoutItem Id="InternalReference" RelativeSize="87.029288702928866" />
+              </LayoutGroup>
+              <LayoutGroup Id="Lot_col2" RelativeSize="50.090090090090094">
+                <LayoutItem Id="ExpirationDate" RelativeSize="7.531380753138075" />
+                <LayoutItem Id="StockOnHand" RelativeSize="92.46861924686192" />
+                <LayoutItem Id="TripLine" Removed="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
     <ListView Id="Lot_ListView" DataAccessMode="Server" IsFooterVisible="True" />
     <ListView Id="Lot_LookupListView" Criteria="">
       <Columns>
@@ -424,6 +450,18 @@
         <Filter Id="@4a1230d0-a43f-42ec-b3c8-b46441156606" Criteria="[StockOnHand] &lt;&gt; 0.0" IsNewNode="True" />
       </Filters>
       <Sorting>
+        <SortProperty Id="@37b590b9-ef8b-464a-9783-b8ea940a0712" PropertyName="ExpirationDate" Index="1" IsNewNode="True" />
+        <SortProperty Id="@33c0b085-b2ee-4b79-8662-511a50b79597" PropertyName="LotCode" Index="2" IsNewNode="True" />
+      </Sorting>
+    </ListView>
+    <ListView Id="Lot_LookupListView_TripLine" ClassName="JolliantProd.Module.BusinessObjects.Lot" Criteria="" AllowNew="False" AllowLink="True" DataAccessMode="Client" ShowAutoFilterRow="False" Filter="" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Product.ProductName" PropertyName="Product.ProductName" Index="0" Width="141" IsNewNode="True" />
+        <ColumnInfo Id="LotCode" PropertyName="LotCode" Width="81" SortIndex="0" SortOrder="Ascending" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Index="2" Width="104" IsNewNode="True" />
+        <ColumnInfo Id="ExpirationDate" PropertyName="ExpirationDate" Index="3" Width="106" IsNewNode="True" />
+      </Columns>
+      <Sorting IsNewNode="True">
         <SortProperty Id="@37b590b9-ef8b-464a-9783-b8ea940a0712" PropertyName="ExpirationDate" Index="1" IsNewNode="True" />
         <SortProperty Id="@33c0b085-b2ee-4b79-8662-511a50b79597" PropertyName="LotCode" Index="2" IsNewNode="True" />
       </Sorting>
@@ -605,5 +643,12 @@
         <ColumnInfo Id="QuantityDone" Width="100" />
       </Columns>
     </ListView>
+    <DetailView Id="TripLine_DetailView">
+      <Items>
+        <PropertyEditor Id="Lots" DataSourceCriteria="[Product] = '@This.Product'" View="TripLine_Lots_ListView" LinkView="Lot_LookupListView_TripLine" />
+      </Items>
+    </DetailView>
+    <ListView Id="TripLine_Lots_ListView" AllowDelete="False" AllowNew="False" AllowLink="True" AllowUnlink="True" />
+    <ListView Id="TripLine_TripLineDetails_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
   </Views>
 </Application>

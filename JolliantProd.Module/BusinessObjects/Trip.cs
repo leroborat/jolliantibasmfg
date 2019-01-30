@@ -217,11 +217,12 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Trip), ref trip, value);
         }
 
+        WarehouseLocation location;
         [Persistent(nameof(QuantityDone))]
         double quantityDone;
         [Persistent(nameof(PendingDemand))]
         double pendingDemand;
-       
+
         Trip trip;
         Product product;
         [RuleRequiredField()]
@@ -231,6 +232,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => product;
             set => SetPropertyValue(nameof(Product), ref product, value);
+        }
+
+        
+        public WarehouseLocation Location
+        {
+            get => location;
+            set => SetPropertyValue(nameof(Location), ref location, value);
         }
 
 
@@ -303,6 +311,15 @@ namespace JolliantProd.Module.BusinessObjects
             get
             {
                 return GetCollection<TripLineDetail>(nameof(TripLineDetails));
+            }
+        }
+
+        [Association("TripLine-Lots")]
+        public XPCollection<Lot> Lots
+        {
+            get
+            {
+                return GetCollection<Lot>(nameof(Lots));
             }
         }
     }
