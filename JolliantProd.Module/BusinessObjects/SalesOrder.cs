@@ -267,7 +267,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        [Association("SalesOrder-Invoices"),Aggregated()]
+        [Association("SalesOrder-Invoices"), Aggregated()]
         public XPCollection<Invoice> Invoices
         {
             get

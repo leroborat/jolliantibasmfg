@@ -175,6 +175,17 @@ namespace JolliantProd.Module.BusinessObjects
                 {
                     Customer = SalesOrder.Customer;
                     Company = SalesOrder.Company;
+                    if (InvoiceLines.Count <= 0)
+                    {
+                        foreach (SalesOrderLine item in SalesOrder.SalesOrderLines)
+                        {
+                            InvoiceLine il = new InvoiceLine(Session);
+                            il.Product = item.Product;
+                            il.UnitPrice = item.UnitPrice;
+                            InvoiceLines.Add(il);
+                        }
+                    }
+                    
                 }
             }
         }
@@ -248,6 +259,7 @@ namespace JolliantProd.Module.BusinessObjects
             get
             {
                 dueLessVat = TotalAmountDue / Convert.ToDecimal(1.12);
+                dueLessVat = Math.Round(dueLessVat, 2, MidpointRounding.AwayFromZero);
                 return dueLessVat;
             }
         }
@@ -257,7 +269,7 @@ namespace JolliantProd.Module.BusinessObjects
         public decimal VAT
         {
             get {
-                vAT = DueLessVat * Convert.ToDecimal(0.12);
+                vAT = TotalAmountDue - DueLessVat;
                 return vAT; }
         }
 

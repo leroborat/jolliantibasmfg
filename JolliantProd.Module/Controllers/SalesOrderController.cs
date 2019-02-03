@@ -8,10 +8,12 @@ using DevExpress.ExpressApp.Actions;
 using DevExpress.ExpressApp.Editors;
 using DevExpress.ExpressApp.Layout;
 using DevExpress.ExpressApp.Model.NodeGenerators;
+using DevExpress.ExpressApp.ReportsV2;
 using DevExpress.ExpressApp.SystemModule;
 using DevExpress.ExpressApp.Templates;
 using DevExpress.ExpressApp.Utils;
 using DevExpress.Persistent.Base;
+using DevExpress.Persistent.BaseImpl;
 using DevExpress.Persistent.Validation;
 using JolliantProd.Module.BusinessObjects;
 
@@ -300,6 +302,21 @@ namespace JolliantProd.Module.Controllers
                 lineDetail.LotCode = item;
                 thisView.TripLineDetails.Add(lineDetail);
                 ObjectSpace.CommitChanges();
+            }
+        }
+
+        private void POSummaryAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            IObjectSpace objectSpace =
+    ReportDataProvider.ReportObjectSpaceProvider.CreateObjectSpace(typeof(ReportDataV2));
+            IReportDataV2 reportData =
+                objectSpace.FindObject<ReportDataV2>(
+                CriteriaOperator.Parse("[DisplayName] = 'PO Summary Report'"));
+            string handle = ReportDataProvider.ReportsStorage.GetReportContainerHandle(reportData);
+            ReportServiceController controller = Frame.GetController<ReportServiceController>();
+            if (controller != null)
+            {
+                controller.ShowPreview(handle);
             }
         }
     }

@@ -39,6 +39,7 @@
             this.ValidateInvoiceAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ValidateCustomerPaymentAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.GenerateTripLinesAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.POSummaryAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // simpleAction1
             // 
@@ -148,6 +149,17 @@
             this.GenerateTripLinesAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.GenerateTripLinesAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.GenerateTripLinesAction_Execute);
             // 
+            // POSummaryAction
+            // 
+            this.POSummaryAction.Caption = "Generate PO Summary";
+            this.POSummaryAction.Category = "Reports";
+            this.POSummaryAction.ConfirmationMessage = null;
+            this.POSummaryAction.Id = "POSummaryAction";
+            this.POSummaryAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.SalesOrder);
+            this.POSummaryAction.ToolTip = null;
+            this.POSummaryAction.TypeOfView = typeof(DevExpress.ExpressApp.View);
+            this.POSummaryAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.POSummaryAction_Execute);
+            // 
             // SalesOrderController
             // 
             this.Actions.Add(this.simpleAction1);
@@ -160,6 +172,7 @@
             this.Actions.Add(this.ValidateInvoiceAction);
             this.Actions.Add(this.ValidateCustomerPaymentAction);
             this.Actions.Add(this.GenerateTripLinesAction);
+            this.Actions.Add(this.POSummaryAction);
             this.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
             this.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.Activated += new System.EventHandler(this.SalesOrderController_Activated);
@@ -178,5 +191,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateInvoiceAction;
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateCustomerPaymentAction;
         private DevExpress.ExpressApp.Actions.SimpleAction GenerateTripLinesAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction POSummaryAction;
     }
 }
