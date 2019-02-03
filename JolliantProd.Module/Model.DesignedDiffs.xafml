@@ -136,7 +136,6 @@
       <Item Id="SalesNavigation" Caption="Sales" Index="1" IsNewNode="True">
         <Items IsNewNode="True">
           <Item Id="Customer_ListView" ViewId="Customer_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="POSummary" Caption="PO Summary" ImageName="FilterQuery" ViewId="SalesOrderLine_ListView_PO_Summary" IsNewNode="True" />
           <Item Id="SalesCategory_ListView" ViewId="SalesCategory_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="SalesOrder_ListView" ViewId="SalesOrder_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
