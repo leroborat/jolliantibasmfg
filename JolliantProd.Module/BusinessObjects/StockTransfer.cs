@@ -28,6 +28,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        UnitOfMeasure uOM;
         DateTime date;
         Lot lot;
         double quantity;
@@ -62,14 +63,28 @@ namespace JolliantProd.Module.BusinessObjects
         public Product Product
         {
             get => product;
-            set => SetPropertyValue(nameof(Product), ref product, value);
+            set {
+                SetPropertyValue(nameof(Product), ref product, value);
+                if (!IsSaving && !IsDeleted && !IsLoading)
+                {
+                    UOM = Product.UOM;
+                }
+            }
         }
+
 
         [RuleRequiredField()]
         public double Quantity
         {
             get => quantity;
             set => SetPropertyValue(nameof(Quantity), ref quantity, value);
+        }
+
+        
+        public UnitOfMeasure UOM
+        {
+            get => uOM;
+            set => SetPropertyValue(nameof(UOM), ref uOM, value);
         }
 
         [RuleRequiredField()]
