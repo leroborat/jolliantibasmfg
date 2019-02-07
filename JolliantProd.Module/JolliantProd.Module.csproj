@@ -152,6 +152,7 @@
     <Compile Include="BusinessObjects\Trip.cs" />
     <Compile Include="BusinessObjects\UnitOfMeasure.cs" />
     <Compile Include="BusinessObjects\Variant.cs" />
+    <Compile Include="BusinessObjects\Vendor.cs" />
     <Compile Include="BusinessObjects\Warehouse.cs" />
     <Compile Include="Controllers\SalesOrderController.cs">
       <SubType>Component</SubType>
@@ -183,7 +184,6 @@
       <SubType>Designer</SubType>
       <DependentUpon>Module.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Reports\XtraReport2.resx">
       <DependentUpon>XtraReport2.cs</DependentUpon>
     </EmbeddedResource>

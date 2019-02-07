@@ -31,6 +31,7 @@ namespace JolliantProd.Module {
             ModuleUpdater updater = new DatabaseUpdate.Updater(objectSpace, versionFromDB);
             PredefinedReportsUpdater predefinedReportsUpdater = new PredefinedReportsUpdater(Application, objectSpace, versionFromDB);
             predefinedReportsUpdater.AddPredefinedReport<XtraReport2>("PO Summary Report", typeof(SalesOrderLine));
+            predefinedReportsUpdater.AddPredefinedReport<XtraReport1>("PO Summary Multi", typeof(SalesOrder));
             return new ModuleUpdater[] { updater, predefinedReportsUpdater };
         }
         public override void Setup(XafApplication application) {

@@ -438,7 +438,16 @@
         </LayoutGroup>
       </Layout>
     </DetailView>
-    <ListView Id="Lot_ListView" DataAccessMode="Server" IsFooterVisible="True" />
+    <ListView Id="Lot_ListView" DataAccessMode="Server" IsFooterVisible="True">
+      <Columns>
+        <ColumnInfo Id="TripLine" Index="-1" />
+        <ColumnInfo Id="LotCode" Width="81" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="InternalReference" Width="126" />
+        <ColumnInfo Id="ExpirationDate" Width="106" />
+        <ColumnInfo Id="StockOnHand" Width="104" />
+      </Columns>
+    </ListView>
     <ListView Id="Lot_LookupListView" Criteria="">
       <Columns>
         <ColumnInfo Id="LotCode" Width="81" />
