@@ -98,14 +98,17 @@
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder" ImageName="BO_Task">
       <AppearanceRules>
         <AppearanceRule Id="@5ba2415a-1613-4dfc-a175-0f71e95ab259" TargetItems="SOConfirmAction" AppearanceItemType="Action" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" Visibility="Hide" IsNewNode="True" />
+        <AppearanceRule Id="HighlightIfNotEqual" TargetItems="TotalSalesNetOfUnserved, TotalInvoicedAmount" BackColor="255, 255, 128" Criteria="[TotalSalesNetOfUnserved] &lt;&gt; [TotalInvoicedAmount]" Context="DetailView" IsNewNode="True" />
         <AppearanceRule Id="SOConfirmedApperance" Enabled="False" TargetItems="Company,Customer,DeliveryAddress,PurchaseOrderDate,PurchaseOrderNumber,SalesOrderLines,ScheduledDeliveryDate,SupplierCode,Type" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
         <AppearanceRule Id="TripDisabled" TargetItems="Trips,Invoices,InventoryReturns" Visibility="Hide" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
+        <AppearanceRule Id="unfulfilledOrder" TargetItems="*" BackColor="192, 255, 192" Criteria="[TotalInvoicedAmount] &lt;&gt; [TotalSalesNetOfUnserved]" Context="ListView" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="CurrentUser" AllowEdit="False" />
         <Member Name="DeliveryAddress" DataSourceCriteria="[Customer] = '@This.Customer'" />
         <Member Name="Status" AllowEdit="False" />
         <Member Name="TotalQuantitiesDelivered" Caption="Total Quantities Delivered (Net of Returns)" />
+        <Member Name="TotalSales" Caption="Total Order Amount" />
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrderLine" IsVisibleInReports="True" />
@@ -138,6 +141,7 @@
           <Item Id="Customer_ListView" ViewId="Customer_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="SalesCategory_ListView" ViewId="SalesCategory_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="SalesOrder_ListView" ViewId="SalesOrder_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SalesOrderLine_ListView_Sales_Report_Menu" ObjectKey="" Caption="Sales Reports" ViewId="SalesOrderLine_ListView_Sales_Report" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="Inventory" Index="2" IsNewNode="True">
@@ -507,8 +511,6 @@
                 <LayoutItem Id="CurrentUser" RelativeSize="15.789473684210526" />
               </LayoutGroup>
               <LayoutGroup Id="SalesOrder_col2" RelativeSize="50">
-                <LayoutItem Id="Status" RelativeSize="15.789473684210526" />
-                <LayoutItem Id="Type" RelativeSize="11.403508771929825" />
                 <LayoutItem Id="TotalSales" RelativeSize="11.403508771929825" />
                 <LayoutItem Id="TotalQuantity" RelativeSize="11.403508771929825" />
                 <LayoutItem Id="TotalQuantitiesDelivered" RelativeSize="11.403508771929825" />
@@ -564,30 +566,37 @@
     <ListView Id="SalesOrder_ListView">
       <Columns>
         <ColumnInfo Id="CurrentUser" Width="93" Index="-1" />
+        <ColumnInfo Id="Customer" Width="0" Index="-1" />
         <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
         <ColumnInfo Id="PurchaseOrderDate" Width="139" Index="-1" />
+        <ColumnInfo Id="TotalInvoicedAmount" Width="148" Index="-1" />
         <ColumnInfo Id="TotalQuantitiesDelivered" Width="263" Index="-1" />
         <ColumnInfo Id="TotalQuantitiesInvoiced" Width="161" Index="-1" />
         <ColumnInfo Id="TotalQuantitiesReturned" Width="166" Index="-1" />
+        <ColumnInfo Id="TotalUnservedAmount" Width="154" Index="-1" />
+        <ColumnInfo Id="TotalUnservedQuantity" Width="157" Index="-1" />
         <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
-        <ColumnInfo Id="Customer" Width="0" />
-        <ColumnInfo Id="ScheduledDeliveryDate" Width="158" Index="2" />
-        <ColumnInfo Id="SupplierCode" Width="100" Index="3" />
-        <ColumnInfo Id="Company" Width="73" Index="4" />
-        <ColumnInfo Id="Status" Width="56" Index="5" />
-        <ColumnInfo Id="Type" Width="48" Index="6" />
-        <ColumnInfo Id="TotalSales" Width="84" Index="7" />
-        <ColumnInfo Id="TotalQuantity" Width="100" Index="8" />
+        <ColumnInfo Id="ScheduledDeliveryDate" Width="158" Index="1" />
+        <ColumnInfo Id="SupplierCode" Width="100" Index="2" />
+        <ColumnInfo Id="Company" Width="73" Index="3" />
+        <ColumnInfo Id="Status" Width="56" Index="4" />
+        <ColumnInfo Id="Type" Width="48" Index="5" />
+        <ColumnInfo Id="TotalSales" Width="134" Index="6" />
+        <ColumnInfo Id="TotalQuantity" Width="100" Index="7" />
+        <ColumnInfo Id="TotalSalesNetOfUnserved" Width="181" Index="8" />
       </Columns>
     </ListView>
     <ListView Id="SalesOrder_SalesOrderLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom">
       <Columns>
+        <ColumnInfo Id="OutboundAmount" Width="123" Index="-1" />
+        <ColumnInfo Id="UnservedAmount" Width="121" Index="-1" />
         <ColumnInfo Id="Product" Width="63" />
         <ColumnInfo Id="Quantity" Width="67" />
         <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
         <ColumnInfo Id="Amount" Width="64" Index="3" />
         <ColumnInfo Id="QuantityDelivered" Width="124" Index="4" />
         <ColumnInfo Id="QuantityReturned" Width="123" Index="5" />
+        <ColumnInfo Id="QuantityUnserved" Width="124" />
         <ColumnInfo Id="QuantityInvoiced" Width="118" Index="6" />
       </Columns>
     </ListView>
@@ -605,8 +614,9 @@
         <ColumnInfo Id="Encoder" Width="66" Index="5" />
       </Columns>
     </ListView>
+    <ListView Id="SalesOrder_UnservedLines_ListView" AllowEdit="True" AllowLink="False" AllowUnlink="False" NewItemRowPosition="Bottom" />
     <ListView Id="SalesOrderLine_ListView" AllowNew="True" />
-    <ListView Id="SalesOrderLine_ListView_PO_Summary" ClassName="JolliantProd.Module.BusinessObjects.SalesOrderLine" Filter="IsOutlookIntervalToday([SalesOrder.ScheduledDeliveryDate])" IsNewNode="True">
+    <ListView Id="SalesOrderLine_ListView_Sales_Report" ClassName="JolliantProd.Module.BusinessObjects.SalesOrderLine" Filter="" DataAccessMode="Client" IsNewNode="True">
       <Columns IsNewNode="True">
         <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
         <ColumnInfo Id="SalesOrder" PropertyName="SalesOrder" Width="70" Index="0" IsNewNode="True" />

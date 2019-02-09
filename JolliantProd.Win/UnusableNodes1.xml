@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <ListView Id="SalesOrderLine_ListView_PO_Summary" EditorTypeName="DevExpress.ExpressApp.PivotGrid.Win.PivotGridListEditor" />
+  </Views>
+  <NavigationItems Id="NavigationItems">
+    <Items Id="Items">
+      <Item Id="Default">
+        <Items Id="Items">
+          <Item Id="POSummaryNavigationItem" ViewId="SalesOrderLine_ListView_PO_Summary" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+</Application>

@@ -151,6 +151,7 @@
     <Compile Include="BusinessObjects\SupplierCode.cs" />
     <Compile Include="BusinessObjects\Trip.cs" />
     <Compile Include="BusinessObjects\UnitOfMeasure.cs" />
+    <Compile Include="BusinessObjects\UnservedLine.cs" />
     <Compile Include="BusinessObjects\Variant.cs" />
     <Compile Include="BusinessObjects\Vendor.cs" />
     <Compile Include="BusinessObjects\Warehouse.cs" />
@@ -212,6 +213,14 @@
       <SubType>Designer</SubType>
     </None>
     <Content Include="Images\iBAS blue.png" />
+    <None Include="UnusableNodes1.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes2.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Welcome.html" />
   </ItemGroup>
   <ItemGroup />

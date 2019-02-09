@@ -31,6 +31,14 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Persistent(nameof(TotalInvoicedAmount))]
+        decimal totalInvoicedAmount;
+        [Persistent(nameof(TotalSalesNetOfUnserved))]
+        decimal totalSalesNetOfUnserved;
+        [Persistent(nameof(TotalUnservedQuantity))]
+        double totalUnservedQuantity;
+        [Persistent(nameof(TotalUnservedAmount))]
+        decimal totalUnservedAmount;
         [Persistent(nameof(TotalQuantitiesInvoiced))]
         double totalQuantitiesInvoiced;
         CustomerDeliveryAddress deliveryAddress;
@@ -185,6 +193,18 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [PersistentAlias(nameof(totalSalesNetOfUnserved))]
+        public decimal TotalSalesNetOfUnserved
+        {
+            get
+            {
+                totalSalesNetOfUnserved = TotalSales - TotalUnservedAmount;
+                return totalSalesNetOfUnserved;
+            }
+        }
+
+
+
         [PersistentAlias(nameof(totalQuantity))]
         public double TotalQuantity
         {
@@ -226,25 +246,60 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
+        [PersistentAlias(nameof(totalUnservedQuantity))]
+        public double TotalUnservedQuantity
+        {
+            get
+            {
+                totalUnservedQuantity = SalesOrderLines.Select(x => x.QuantityUnserved).Sum();
+                return totalUnservedQuantity;
+            }
+        }
+
+
+        [PersistentAlias(nameof(totalUnservedAmount))]
+        public decimal TotalUnservedAmount
+        {
+            get
+            {
+                totalUnservedAmount = SalesOrderLines.Select(x => x.UnservedAmount).Sum();
+                return totalUnservedAmount;
+            }
+        }
+
+
+
         [PersistentAlias(nameof(totalQuantitiesInvoiced))]
         public double TotalQuantitiesInvoiced
         {
-            get {
+            get
+            {
 
                 totalQuantitiesInvoiced = 0;
                 foreach (Invoice item in Invoices)
                 {
-                   
-                        foreach (InvoiceLine invoiceLine in item.InvoiceLines)
-                        {
+
+                    foreach (InvoiceLine invoiceLine in item.InvoiceLines)
+                    {
                         totalQuantitiesInvoiced += invoiceLine.Quantity;
-                        }
-                   
+                    }
+
                 }
-                return totalQuantitiesInvoiced; }
+                return totalQuantitiesInvoiced;
+            }
+        }
+
+        
+        [PersistentAlias(nameof(totalInvoicedAmount))]
+        public decimal TotalInvoicedAmount
+        {
+            get {
+                totalInvoicedAmount = Invoices.Select(x => x.TotalSales).Sum();
+                return totalInvoicedAmount; }
         }
         
+
 
 
 
@@ -276,6 +331,15 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Association("SalesOrder-UnservedLines"), Aggregated()]
+        public XPCollection<UnservedLine> UnservedLines
+        {
+            get
+            {
+                return GetCollection<UnservedLine>(nameof(UnservedLines));
+            }
+        }
+
 
 
     }
@@ -286,6 +350,12 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(OutboundAmount))]
+        decimal outboundAmount;
+        [Persistent(nameof(UnservedAmount))]
+        decimal unservedAmount;
+        [Persistent(nameof(QuantityUnserved))]
+        double quantityUnserved;
         [Persistent(nameof(QuantityInvoiced))]
         double quantityInvoiced;
         [Persistent(nameof(QuantityReturned))]
@@ -362,22 +432,38 @@ namespace JolliantProd.Module.BusinessObjects
                     }
                 }
 
-                
+
                 return quantityReturned;
             }
         }
 
-        
+
         [PersistentAlias(nameof(quantityInvoiced))]
         public double QuantityInvoiced
         {
-            get {
+            get
+            {
                 quantityInvoiced = (from c in SalesOrder.Invoices
                                     from x in c.InvoiceLines
                                     where x.Product == Product
                                     select x.Quantity).Sum();
-                return quantityInvoiced; }
+                return quantityInvoiced;
+            }
         }
+
+
+        [PersistentAlias(nameof(quantityUnserved))]
+        public double QuantityUnserved
+        {
+            get
+            {
+                quantityUnserved = (from c in SalesOrder.UnservedLines
+                                    where c.Product == Product
+                                    select c.Quantity).Sum();
+                return quantityUnserved;
+            }
+        }
+
 
 
 
@@ -388,16 +474,38 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(UnitPrice), ref unitPrice, value);
         }
 
-        
+
         [PersistentAlias(nameof(amount))]
         public decimal Amount
         {
-            get {
+            get
+            {
                 amount = UnitPrice * Convert.ToDecimal(Quantity);
                 return amount;
             }
         }
+
+
+        [PersistentAlias(nameof(unservedAmount))]
+        public decimal UnservedAmount
+        {
+            get
+            {
+                unservedAmount = UnitPrice * Convert.ToDecimal(QuantityUnserved);
+                return unservedAmount;
+            }
+        }
+
         
+        [PersistentAlias(nameof(outboundAmount))]
+        public decimal OutboundAmount
+        {
+            get {
+                outboundAmount = Amount - UnservedAmount;
+                return outboundAmount; }
+        }
+        
+
 
     }
 }
