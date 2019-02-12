@@ -190,7 +190,24 @@ namespace JolliantProd.Module.Win.Controllers
                                     lot = ObjectSpace.CreateObject<Lot>();
                                     lot.LotCode = Convert.ToString(reader.GetValue(0));
                                     lot.Product = ((FinishedGoodLoader)View.CurrentObject).Product;
-                                    lot.ExpirationDate = ((FinishedGoodLoader)View.CurrentObject).LotExpirationDate;
+
+                                    if (lot.Product.SalesCategory.CategoryName == "Hotta Rice") 
+                                    {
+                                        try
+                                        {
+                                            DateTime newED = DateTime.ParseExact(lot.LotCode.Substring(lot.LotCode.Length - 6), "MMddyy",
+                                                System.Globalization.CultureInfo.InvariantCulture);
+                                            lot.ExpirationDate = newED;
+                                        }
+                                        catch (Exception)
+                                        {
+                                            
+                                        }
+                                    } else
+                                    {
+                                        lot.ExpirationDate = ((FinishedGoodLoader)View.CurrentObject).LotExpirationDate;
+                                    }
+                
                                     ObjectSpace.CommitChanges();
 
                                     StockTransfer stockTransfer = ObjectSpace.CreateObject<StockTransfer>();

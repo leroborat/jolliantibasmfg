@@ -40,6 +40,7 @@
             this.ValidateCustomerPaymentAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.GenerateTripLinesAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.POSummaryAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.UpdateLotExpiry = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // simpleAction1
             // 
@@ -160,6 +161,18 @@
             this.POSummaryAction.TypeOfView = typeof(DevExpress.ExpressApp.View);
             this.POSummaryAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.POSummaryAction_Execute);
             // 
+            // UpdateLotExpiry
+            // 
+            this.UpdateLotExpiry.Caption = "Update Hotta Rice Lot Expiry";
+            this.UpdateLotExpiry.ConfirmationMessage = "This is a long running process. Do not close iBAS until it finishes cleaning up t" +
+    "he data. Do you want to proceed?";
+            this.UpdateLotExpiry.Id = "UpdateLotExpiry";
+            this.UpdateLotExpiry.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Lot);
+            this.UpdateLotExpiry.TargetViewType = DevExpress.ExpressApp.ViewType.ListView;
+            this.UpdateLotExpiry.ToolTip = null;
+            this.UpdateLotExpiry.TypeOfView = typeof(DevExpress.ExpressApp.ListView);
+            this.UpdateLotExpiry.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.UpdateLotExpiry_Execute);
+            // 
             // SalesOrderController
             // 
             this.Actions.Add(this.simpleAction1);
@@ -173,8 +186,8 @@
             this.Actions.Add(this.ValidateCustomerPaymentAction);
             this.Actions.Add(this.GenerateTripLinesAction);
             this.Actions.Add(this.POSummaryAction);
-            this.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
-            this.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.Actions.Add(this.UpdateLotExpiry);
+            this.TypeOfView = typeof(DevExpress.ExpressApp.View);
             this.Activated += new System.EventHandler(this.SalesOrderController_Activated);
 
         }
@@ -192,5 +205,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateCustomerPaymentAction;
         private DevExpress.ExpressApp.Actions.SimpleAction GenerateTripLinesAction;
         private DevExpress.ExpressApp.Actions.SimpleAction POSummaryAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotExpiry;
     }
 }

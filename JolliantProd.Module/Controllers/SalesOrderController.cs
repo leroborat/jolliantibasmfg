@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using DevExpress.Data.Filtering;
@@ -317,6 +318,32 @@ namespace JolliantProd.Module.Controllers
             if (controller != null)
             {
                 controller.ShowPreview(handle);
+            }
+        }
+
+        private void UpdateLotExpiry_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var lotList = ObjectSpace.GetObjectsQuery<Lot>();
+            lotList = lotList.Where(x => x.Product.SalesCategory.CategoryName == "Hotta Rice");
+            foreach (Lot item in lotList)
+            {
+
+                Debug.WriteLine(item.LotCode.Substring(item.LotCode.Length - 6));
+                try
+                {
+                    DateTime newED = DateTime.ParseExact(item.LotCode.Substring(item.LotCode.Length - 6), "MMddyy",
+                     System.Globalization.CultureInfo.InvariantCulture);
+
+                    if (newED != item.ExpirationDate)
+                    {
+                        item.ExpirationDate = newED;
+                        ObjectSpace.CommitChanges();
+                    }
+                }
+                catch (Exception)
+                {
+                    
+                }
             }
         }
     }

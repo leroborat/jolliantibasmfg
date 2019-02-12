@@ -24,6 +24,7 @@ namespace JolliantProd.Module.BusinessObjects
         public override void AfterConstruction()
         {
             base.AfterConstruction();
+            LotExpirationDate = DateTime.Now.AddDays(4);
         }
 
         string referenceName;
