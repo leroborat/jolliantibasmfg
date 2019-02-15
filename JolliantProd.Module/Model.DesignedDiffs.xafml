@@ -476,6 +476,7 @@
         <ColumnInfo Id="LotCode" PropertyName="LotCode" Width="81" SortIndex="0" SortOrder="Ascending" Index="1" IsNewNode="True" />
         <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Index="2" Width="104" IsNewNode="True" />
         <ColumnInfo Id="ExpirationDate" PropertyName="ExpirationDate" Index="3" Width="106" IsNewNode="True" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Index="4" Width="126" IsNewNode="True" />
       </Columns>
       <Sorting IsNewNode="True">
         <SortProperty Id="@37b590b9-ef8b-464a-9783-b8ea940a0712" PropertyName="ExpirationDate" Index="1" IsNewNode="True" />

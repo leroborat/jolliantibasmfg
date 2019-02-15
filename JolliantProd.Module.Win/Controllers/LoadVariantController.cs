@@ -190,6 +190,7 @@ namespace JolliantProd.Module.Win.Controllers
                                     lot = ObjectSpace.CreateObject<Lot>();
                                     lot.LotCode = Convert.ToString(reader.GetValue(0));
                                     lot.Product = ((FinishedGoodLoader)View.CurrentObject).Product;
+                                    lot.InternalReference = finishedGoodLoader.ReferenceName;
 
                                     if (lot.Product.SalesCategory.CategoryName == "Hotta Rice") 
                                     {
