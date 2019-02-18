@@ -19,6 +19,8 @@ using DevExpress.Persistent.Validation;
 using ExcelDataReader;
 using System.Diagnostics;
 using JolliantProd.Module.BusinessObjects;
+using DevExpress.Xpo;
+using DevExpress.ExpressApp.Xpo;
 
 namespace JolliantProd.Module.Win.Controllers
 {
@@ -175,6 +177,15 @@ namespace JolliantProd.Module.Win.Controllers
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
+                Session currentSession= ((XPObjectSpace)ObjectSpace).Session;
+                UnitOfWork session = new UnitOfWork(currentSession.DataLayer);
+                var thisProduct = ((FinishedGoodLoader)View.CurrentObject).Product;
+                var sessProduct = session.FindObject<Product>(new BinaryOperator("Oid", thisProduct.Oid));
+                var sessFrom = session.FindObject<WarehouseLocation>(new BinaryOperator("Oid", finishedGoodLoader.From.Oid));
+                var sessTo = session.FindObject<WarehouseLocation>(new BinaryOperator("Oid", finishedGoodLoader.To.Oid));
+
+                var thisReference = finishedGoodLoader.ReferenceName;
+
                 using (var stream = File.Open(openFileDialog1.FileName, FileMode.Open, FileAccess.Read))
                 {
                     using (var reader = ExcelReaderFactory.CreateReader(stream))
@@ -184,13 +195,14 @@ namespace JolliantProd.Module.Win.Controllers
                         {
                             while (reader.Read())
                             {
-                                Lot lot = ObjectSpace.FindObject<Lot>(new BinaryOperator("LotCode", reader.GetValue(0)));
+                                
+                                Lot lot = session.FindObject<Lot>(new BinaryOperator("LotCode", reader.GetValue(0)));
                                 if (lot == null)
                                 {
-                                    lot = ObjectSpace.CreateObject<Lot>();
+                                    lot = new Lot(session);
                                     lot.LotCode = Convert.ToString(reader.GetValue(0));
-                                    lot.Product = ((FinishedGoodLoader)View.CurrentObject).Product;
-                                    lot.InternalReference = finishedGoodLoader.ReferenceName;
+                                    lot.Product = sessProduct;
+                                    lot.InternalReference = thisReference;
 
                                     if (lot.Product.SalesCategory.CategoryName == "Hotta Rice") 
                                     {
@@ -208,24 +220,24 @@ namespace JolliantProd.Module.Win.Controllers
                                     {
                                         lot.ExpirationDate = ((FinishedGoodLoader)View.CurrentObject).LotExpirationDate;
                                     }
-                
-                                    ObjectSpace.CommitChanges();
 
-                                    StockTransfer stockTransfer = ObjectSpace.CreateObject<StockTransfer>();
+                                    lot.Save();
+
+                                    StockTransfer stockTransfer = new StockTransfer(session);
                                     stockTransfer.Reference = finishedGoodLoader.ReferenceName;
-                                    stockTransfer.SourceLocation = finishedGoodLoader.From;
-                                    stockTransfer.DestinationLocation = finishedGoodLoader.To;
-                                    stockTransfer.Product = finishedGoodLoader.Product;
+                                    stockTransfer.SourceLocation = sessFrom;
+                                    stockTransfer.DestinationLocation = sessTo;
+                                    stockTransfer.Product = sessProduct;
                                     stockTransfer.Quantity = (Double)reader.GetValue(1);
                                     stockTransfer.Lot = lot;
-                                    ObjectSpace.CommitChanges();
+                                    stockTransfer.Save();
                                 }
                                 Debug.WriteLine(reader.GetValue(0));
                                 Debug.WriteLine(reader.GetValue(1));
                             }
                         } while (reader.NextResult());
                     }
-
+                    session.CommitChanges();
                     ShowSuccess("Finished Loading. Check Stock Moves");
                 }
                 
