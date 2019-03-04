@@ -21,6 +21,7 @@ using System.Diagnostics;
 using JolliantProd.Module.BusinessObjects;
 using DevExpress.Xpo;
 using DevExpress.ExpressApp.Xpo;
+using OfficeOpenXml;
 
 namespace JolliantProd.Module.Win.Controllers
 {
@@ -183,6 +184,7 @@ namespace JolliantProd.Module.Win.Controllers
                 var sessProduct = session.FindObject<Product>(new BinaryOperator("Oid", thisProduct.Oid));
                 var sessFrom = session.FindObject<WarehouseLocation>(new BinaryOperator("Oid", finishedGoodLoader.From.Oid));
                 var sessTo = session.FindObject<WarehouseLocation>(new BinaryOperator("Oid", finishedGoodLoader.To.Oid));
+                var lotList = new List<Lot>();
 
                 var thisReference = finishedGoodLoader.ReferenceName;
 
@@ -222,6 +224,7 @@ namespace JolliantProd.Module.Win.Controllers
                                     }
 
                                     lot.Save();
+                                    lotList.Add(lot);
 
                                     StockTransfer stockTransfer = new StockTransfer(session);
                                     stockTransfer.Reference = finishedGoodLoader.ReferenceName;
@@ -231,18 +234,47 @@ namespace JolliantProd.Module.Win.Controllers
                                     stockTransfer.Quantity = (Double)reader.GetValue(1);
                                     stockTransfer.Lot = lot;
                                     stockTransfer.Save();
+                                    stockTransfer.Lot.UpdateStockOnHand(true);
+                                    stockTransfer.Lot.Save();
+                                    Debug.WriteLine(stockTransfer.Lot.StockOnHand);
+                                    
+                                    
                                 }
-                                Debug.WriteLine(reader.GetValue(0));
-                                Debug.WriteLine(reader.GetValue(1));
                             }
                         } while (reader.NextResult());
                     }
-                    session.CommitChanges();
+                    //session.CommitChanges();
+                    //foreach (Lot item in lotList)
+                    //{
+                    //    item.UpdateStockOnHand(true);
+                    //    item.Save();
+                    //    Debug.WriteLine(item.StockOnHand);
+                    //}
+                    //session.CommitChanges();
+
                     ShowSuccess("Finished Loading. Check Stock Moves");
                 }
                 
                 View.ObjectSpace.Refresh();
             }
+        }
+
+        private void UpdateLotCountDB_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var LotCollection = ObjectSpace.GetObjects<Lot>();
+            foreach (Lot item in LotCollection)
+            {
+                item.UpdateStockOnHand(true);
+                item.Save();
+                Debug.WriteLine(item.LotCode);
+            }
+            ObjectSpace.CommitChanges();
+
+        }
+
+        private void CustomPOSummary_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+           
         }
     }
 }

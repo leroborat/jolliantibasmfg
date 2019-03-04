@@ -105,7 +105,15 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+        public void UpdateStockOnHand(bool forceChangeEvents)
+        {
+            if (forceChangeEvents)
+            {
+                OnChanged("StockOnHand");
+            }
+        }
+
+
         [Association("TripLine-Lots")]
         public TripLine TripLine
         {

@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <BOModel Id="BOModel">
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLine">
+      <OwnMembers Id="OwnMembers">
+        <Member Name="FromLocation" DataSourceCriteria="" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder">
+      <AppearanceRules Id="AppearanceRules">
+        <AppearanceRule Id="SalesOrderConfirmed" TargetItems="PurchaseOrderDate, PurchaseOrderNumber, SalesOrderLines, ScheduledDeliveryDate, SupplierCode, SOConfirmAction, Type" />
+      </AppearanceRules>
+    </Class>
+  </BOModel>
+  <Views Id="Views">
+    <DetailView Id="TripLine_DetailView">
+      <Items Id="Items">
+        <PropertyEditor Id="FromLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </Items>
+    </DetailView>
+  </Views>
+</Application>

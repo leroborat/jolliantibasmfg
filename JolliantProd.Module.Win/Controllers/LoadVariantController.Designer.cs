@@ -32,6 +32,7 @@
             this.LoadVariantAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.LoadProductAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.LoadFgAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.UpdateLotCountDB = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // LoadVariantAction
             // 
@@ -66,11 +67,23 @@
             this.LoadFgAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.LoadFgAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.LoadFgAction_Execute);
             // 
+            // UpdateLotCountDB
+            // 
+            this.UpdateLotCountDB.Caption = "Update Lot Count in Database";
+            this.UpdateLotCountDB.ConfirmationMessage = null;
+            this.UpdateLotCountDB.Id = "UpdateLotCountDB";
+            this.UpdateLotCountDB.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.FinishedGoodLoader);
+            this.UpdateLotCountDB.TargetViewType = DevExpress.ExpressApp.ViewType.ListView;
+            this.UpdateLotCountDB.ToolTip = null;
+            this.UpdateLotCountDB.TypeOfView = typeof(DevExpress.ExpressApp.ListView);
+            this.UpdateLotCountDB.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.UpdateLotCountDB_Execute);
+            // 
             // LoadVariantController
             // 
             this.Actions.Add(this.LoadVariantAction);
             this.Actions.Add(this.LoadProductAction);
             this.Actions.Add(this.LoadFgAction);
+            this.Actions.Add(this.UpdateLotCountDB);
 
         }
 
@@ -79,5 +92,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction LoadVariantAction;
         private DevExpress.ExpressApp.Actions.SimpleAction LoadProductAction;
         private DevExpress.ExpressApp.Actions.SimpleAction LoadFgAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotCountDB;
     }
 }

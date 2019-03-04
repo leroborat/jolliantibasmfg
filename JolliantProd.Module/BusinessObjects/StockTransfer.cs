@@ -98,7 +98,10 @@ namespace JolliantProd.Module.BusinessObjects
         public Lot Lot
         {
             get => lot;
-            set => SetPropertyValue(nameof(Lot), ref lot, value);
+            set {
+
+                SetPropertyValue(nameof(Lot), ref lot, value);
+            }
         }
 
 

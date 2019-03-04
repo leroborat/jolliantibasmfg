@@ -1,10 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application>
+  <ActionDesign>
+    <Actions>
+      <Action Id="UpdateLotCountDB" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
+    </Actions>
+  </ActionDesign>
   <BOModel>
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder">
-      <AppearanceRules>
-        <AppearanceRule Id="SalesOrderConfirmed" TargetItems="PurchaseOrderDate, PurchaseOrderNumber, SalesOrderLines, ScheduledDeliveryDate, SupplierCode, SOConfirmAction, Type" />
-      </AppearanceRules>
       <OwnMembers>
         <Member Name="Company" AllowEdit="False" />
       </OwnMembers>
@@ -12,11 +14,6 @@
     <Class Name="JolliantProd.Module.BusinessObjects.Trip">
       <OwnMembers>
         <Member Name="Encoder" AllowEdit="False" />
-      </OwnMembers>
-    </Class>
-    <Class Name="JolliantProd.Module.BusinessObjects.TripLine">
-      <OwnMembers>
-        <Member Name="FromLocation" DataSourceCriteria="" />
       </OwnMembers>
     </Class>
   </BOModel>
@@ -39,10 +36,5 @@
     </ListView>
     <DetailView Id="StockTransfer_DetailView" AllowNew="False" AllowEdit="False" />
     <ListView Id="StockTransfer_ListView" AllowLink="False" AllowNew="False" />
-    <DetailView Id="TripLine_DetailView">
-      <Items>
-        <PropertyEditor Id="FromLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
-      </Items>
-    </DetailView>
   </Views>
 </Application>
