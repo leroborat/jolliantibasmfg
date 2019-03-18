@@ -15,7 +15,8 @@ using AggregatedAttribute = DevExpress.Xpo.AggregatedAttribute;
 
 namespace JolliantProd.Module.BusinessObjects
 {
-    [DefaultClassOptions, RuleCombinationOfPropertiesIsUnique("RuleUniqueTripSO", DefaultContexts.Save, "SalesOrder, TripNumber")]
+    //RuleCombinationOfPropertiesIsUnique("RuleUniqueTripSO", DefaultContexts.Save, "SalesOrder, TripNumber")
+    [DefaultClassOptions]
     public class Trip : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
         public Trip(Session session)
@@ -324,7 +325,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
     }
 
-    [RuleCombinationOfPropertiesIsUnique("UniqueLot", DefaultContexts.Save, "LotCode, TripLine")]
+    //[RuleCombinationOfPropertiesIsUnique("UniqueLot", DefaultContexts.Save, "LotCode, TripLine")]
     public class TripLineDetail : BaseObject
     {
         public TripLineDetail(Session session) : base(session)

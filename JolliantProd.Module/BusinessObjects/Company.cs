@@ -28,6 +28,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        int nextPONumber;
         string emailAddress;
         string contactNumber;
         string address;
@@ -56,12 +57,19 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ContactNumber), ref contactNumber, value);
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string EmailAddress
         {
             get => emailAddress;
             set => SetPropertyValue(nameof(EmailAddress), ref emailAddress, value);
+        }
+
+        
+        public int NextPONumber
+        {
+            get => nextPONumber;
+            set => SetPropertyValue(nameof(NextPONumber), ref nextPONumber, value);
         }
 
 

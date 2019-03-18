@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Persistent.Validation;
+using AggregatedAttribute = DevExpress.Xpo.AggregatedAttribute;
 
 namespace JolliantProd.Module.BusinessObjects
 {
@@ -28,6 +29,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string contactPerson;
         string internalNotes;
         string website;
         string email;
@@ -59,6 +61,13 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(PhoneNumber), ref phoneNumber, value);
         }
 
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string ContactPerson
+        {
+            get => contactPerson;
+            set => SetPropertyValue(nameof(ContactPerson), ref contactPerson, value);
+        }
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string MobileNumber
@@ -90,5 +99,88 @@ namespace JolliantProd.Module.BusinessObjects
             get => internalNotes;
             set => SetPropertyValue(nameof(InternalNotes), ref internalNotes, value);
         }
+
+        [Association("Vendor-VendorPriceLists"), Aggregated()]
+        public XPCollection<VendorPriceList> VendorPriceList
+        {
+            get
+            {
+                return GetCollection<VendorPriceList>(nameof(VendorPriceList));
+            }
+        }
+    }
+
+    public class VendorPriceList : BaseObject
+    {
+        public VendorPriceList(Session session) : base(session)
+        { }
+
+
+        DateTime toDate;
+        DateTime fromDate;
+        Vendor vendor;
+
+        [Association("Vendor-VendorPriceLists")]
+        public Vendor Vendor
+        {
+            get => vendor;
+            set => SetPropertyValue(nameof(Vendor), ref vendor, value);
+        }
+
+        [RuleRequiredField()]
+        public DateTime FromDate
+        {
+            get => fromDate;
+            set => SetPropertyValue(nameof(FromDate), ref fromDate, value);
+        }
+
+        [RuleRequiredField()]
+        public DateTime ToDate
+        {
+            get => toDate;
+            set => SetPropertyValue(nameof(ToDate), ref toDate, value);
+        }
+
+        [Association("VendorPriceList-VendorPricelistLines"), Aggregated()]
+        public XPCollection<VendorPricelistLine> VendorPricelistLines
+        {
+            get
+            {
+                return GetCollection<VendorPricelistLine>(nameof(VendorPricelistLines));
+            }
+        }
+    }
+
+    public class VendorPricelistLine : XPObject
+    {
+        public VendorPricelistLine(Session session) : base(session)
+        { }
+
+
+        decimal price;
+        Product product;
+        VendorPriceList vendorPriceList;
+
+        [Association("VendorPriceList-VendorPricelistLines")]
+        public VendorPriceList VendorPriceList
+        {
+            get => vendorPriceList;
+            set => SetPropertyValue(nameof(VendorPriceList), ref vendorPriceList, value);
+        }
+
+        [RuleRequiredField()]
+        public Product Product
+        {
+            get => product;
+            set => SetPropertyValue(nameof(Product), ref product, value);
+        }
+
+        
+        public decimal Price
+        {
+            get => price;
+            set => SetPropertyValue(nameof(Price), ref price, value);
+        }
+
     }
 }

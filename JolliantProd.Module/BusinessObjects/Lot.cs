@@ -35,7 +35,7 @@ namespace JolliantProd.Module.BusinessObjects
         Product product;
         string lotCode;
 
-        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField(), RuleUniqueValue()]
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
         public string LotCode
         {
             get => lotCode;

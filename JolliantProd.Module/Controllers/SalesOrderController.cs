@@ -84,6 +84,7 @@ namespace JolliantProd.Module.Controllers
                     }
 
                     stockTransfer.Reference = "Delivery: " + trip.DisplayName + " " + trip.PONumber;
+                    stockTransfer.Lot.UpdateStockOnHand(true);
                     ObjectSpace.CommitChanges();
                 }          
             }
@@ -117,8 +118,10 @@ namespace JolliantProd.Module.Controllers
                     if (item.LotNumber != null)
                     {
                         stockTransfer.Lot = item.LotNumber;
+                        stockTransfer.Lot.UpdateStockOnHand(true);
                     }
                     stockTransfer.Quantity = difference;
+
                     ObjectSpace.CommitChanges();
                 } else if (item.TheoreticalQuantity > item.RealQuantity)
                 {

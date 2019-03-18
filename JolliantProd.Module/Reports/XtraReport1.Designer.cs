@@ -37,36 +37,36 @@
             this.GroupHeader2 = new DevExpress.XtraReports.UI.GroupHeaderBand();
             this.xrLabel2 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrPivotGrid2 = new DevExpress.XtraReports.UI.XRPivotGrid();
+            this.collectionDataSource2 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
             this.xrPivotGridField1 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.xrPivotGridField2 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.xrPivotGridField3 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
+            this.xrPivotGridField4 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.xrPivotGridField5 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.pivotGridField5 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
+            this.SubBand1 = new DevExpress.XtraReports.UI.SubBand();
+            this.xrLabel7 = new DevExpress.XtraReports.UI.XRLabel();
+            this.xrLabel6 = new DevExpress.XtraReports.UI.XRLabel();
             this.GroupHeader3 = new DevExpress.XtraReports.UI.GroupHeaderBand();
             this.xrLabel1 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrPivotGrid3 = new DevExpress.XtraReports.UI.XRPivotGrid();
+            this.collectionDataSource3 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
             this.xrPivotGridField6 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.xrPivotGridField7 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.xrPivotGridField8 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
+            this.xrPivotGridField9 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.xrPivotGridField10 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.pivotGridField4 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.GroupHeader4 = new DevExpress.XtraReports.UI.GroupHeaderBand();
             this.xrLabel3 = new DevExpress.XtraReports.UI.XRLabel();
             this.xrPivotGrid1 = new DevExpress.XtraReports.UI.XRPivotGrid();
+            this.collectionDataSource1 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
             this.fieldProductProductName = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.fieldQuantity1 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.pivotGridField1 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.pivotGridField2 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.pivotGridField3 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
             this.pivotGridField6 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
-            this.xrLabel6 = new DevExpress.XtraReports.UI.XRLabel();
-            this.xrLabel7 = new DevExpress.XtraReports.UI.XRLabel();
-            this.SubBand1 = new DevExpress.XtraReports.UI.SubBand();
-            this.xrPivotGridField4 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
-            this.xrPivotGridField9 = new DevExpress.XtraReports.UI.PivotGrid.XRPivotGridField();
-            this.collectionDataSource2 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
-            this.collectionDataSource3 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
-            this.collectionDataSource1 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
             this.collectionDataSource4 = new DevExpress.Persistent.Base.ReportsV2.CollectionDataSource();
             ((System.ComponentModel.ISupportInitialize)(this.collectionDataSource2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.collectionDataSource3)).BeginInit();
@@ -172,6 +172,14 @@
             this.xrPivotGrid2.OptionsView.ShowDataHeaders = false;
             this.xrPivotGrid2.SizeF = new System.Drawing.SizeF(640F, 107F);
             // 
+            // collectionDataSource2
+            // 
+            this.collectionDataSource2.CriteriaString = "[SalesOrder.SupplierCode.SuppCode.SuppCode] = \'PJJ\' And [SalesOrder.PurchaseOrder" +
+    "Date] = ?PODate";
+            this.collectionDataSource2.Name = "collectionDataSource2";
+            this.collectionDataSource2.ObjectTypeName = "JolliantProd.Module.BusinessObjects.SalesOrderLine";
+            this.collectionDataSource2.TopReturnedRecords = 0;
+            // 
             // xrPivotGridField1
             // 
             this.xrPivotGridField1.Area = DevExpress.XtraPivotGrid.PivotArea.RowArea;
@@ -196,6 +204,13 @@
             this.xrPivotGridField3.FieldName = "SalesOrder.DeliveryAddress.DeliveryAddress";
             this.xrPivotGridField3.Name = "xrPivotGridField3";
             // 
+            // xrPivotGridField4
+            // 
+            this.xrPivotGridField4.Area = DevExpress.XtraPivotGrid.PivotArea.ColumnArea;
+            this.xrPivotGridField4.AreaIndex = 1;
+            this.xrPivotGridField4.FieldName = "SalesOrder.Type";
+            this.xrPivotGridField4.Name = "xrPivotGridField4";
+            // 
             // xrPivotGridField5
             // 
             this.xrPivotGridField5.Area = DevExpress.XtraPivotGrid.PivotArea.ColumnArea;
@@ -211,6 +226,42 @@
             this.pivotGridField5.Name = "pivotGridField5";
             this.pivotGridField5.ValueFormat.FormatString = "MM/dd/yyyy";
             this.pivotGridField5.ValueFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
+            // 
+            // SubBand1
+            // 
+            this.SubBand1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
+            this.xrLabel7,
+            this.xrLabel6});
+            this.SubBand1.HeightF = 27.50015F;
+            this.SubBand1.Name = "SubBand1";
+            // 
+            // xrLabel7
+            // 
+            this.xrLabel7.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(427.5001F, 3.666814F);
+            this.xrLabel7.Multiline = true;
+            this.xrLabel7.Name = "xrLabel7";
+            this.xrLabel7.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.xrLabel7.SizeF = new System.Drawing.SizeF(100F, 23F);
+            this.xrLabel7.StylePriority.UseFont = false;
+            this.xrLabel7.StylePriority.UseTextAlignment = false;
+            this.xrLabel7.Text = "Total Chilled:";
+            this.xrLabel7.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
+            // 
+            // xrLabel6
+            // 
+            this.xrLabel6.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
+            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "Sum([Quantity])")});
+            this.xrLabel6.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
+            this.xrLabel6.LocationFloat = new DevExpress.Utils.PointFloat(540F, 3.666814F);
+            this.xrLabel6.Multiline = true;
+            this.xrLabel6.Name = "xrLabel6";
+            this.xrLabel6.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
+            this.xrLabel6.SizeF = new System.Drawing.SizeF(100F, 23F);
+            this.xrLabel6.StylePriority.UseFont = false;
+            this.xrLabel6.StylePriority.UseTextAlignment = false;
+            this.xrLabel6.Text = "Total Chilled";
+            this.xrLabel6.TextAlignment = DevExpress.XtraPrinting.TextAlignment.TopCenter;
             // 
             // GroupHeader3
             // 
@@ -258,6 +309,14 @@
             this.xrPivotGrid3.OptionsView.ShowDataHeaders = false;
             this.xrPivotGrid3.SizeF = new System.Drawing.SizeF(640F, 90F);
             // 
+            // collectionDataSource3
+            // 
+            this.collectionDataSource3.CriteriaString = "[SalesOrder.SupplierCode.SuppCode.SuppCode] = \'PJT\' And [SalesOrder.PurchaseOrder" +
+    "Date] = ?PODate";
+            this.collectionDataSource3.Name = "collectionDataSource3";
+            this.collectionDataSource3.ObjectTypeName = "JolliantProd.Module.BusinessObjects.SalesOrderLine";
+            this.collectionDataSource3.TopReturnedRecords = 0;
+            // 
             // xrPivotGridField6
             // 
             this.xrPivotGridField6.Area = DevExpress.XtraPivotGrid.PivotArea.RowArea;
@@ -281,6 +340,13 @@
             this.xrPivotGridField8.AreaIndex = 0;
             this.xrPivotGridField8.FieldName = "SalesOrder.DeliveryAddress.DeliveryAddress";
             this.xrPivotGridField8.Name = "xrPivotGridField8";
+            // 
+            // xrPivotGridField9
+            // 
+            this.xrPivotGridField9.Area = DevExpress.XtraPivotGrid.PivotArea.ColumnArea;
+            this.xrPivotGridField9.AreaIndex = 1;
+            this.xrPivotGridField9.FieldName = "SalesOrder.Type";
+            this.xrPivotGridField9.Name = "xrPivotGridField9";
             // 
             // xrPivotGridField10
             // 
@@ -345,6 +411,14 @@
             this.xrPivotGrid1.OptionsView.ShowDataHeaders = false;
             this.xrPivotGrid1.SizeF = new System.Drawing.SizeF(640F, 107F);
             // 
+            // collectionDataSource1
+            // 
+            this.collectionDataSource1.CriteriaString = "[SalesOrder.SupplierCode.SuppCode.SuppCode] = \'JRC\' And [SalesOrder.PurchaseOrder" +
+    "Date] = ?PODate";
+            this.collectionDataSource1.Name = "collectionDataSource1";
+            this.collectionDataSource1.ObjectTypeName = "JolliantProd.Module.BusinessObjects.SalesOrderLine";
+            this.collectionDataSource1.TopReturnedRecords = 0;
+            // 
             // fieldProductProductName
             // 
             this.fieldProductProductName.Area = DevExpress.XtraPivotGrid.PivotArea.RowArea;
@@ -391,76 +465,6 @@
             this.pivotGridField6.Name = "pivotGridField6";
             this.pivotGridField6.ValueFormat.FormatString = "MM/dd/yyyy";
             this.pivotGridField6.ValueFormat.FormatType = DevExpress.Utils.FormatType.DateTime;
-            // 
-            // xrLabel6
-            // 
-            this.xrLabel6.ExpressionBindings.AddRange(new DevExpress.XtraReports.UI.ExpressionBinding[] {
-            new DevExpress.XtraReports.UI.ExpressionBinding("BeforePrint", "Text", "Sum([Quantity])")});
-            this.xrLabel6.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.xrLabel6.LocationFloat = new DevExpress.Utils.PointFloat(241.6667F, 10F);
-            this.xrLabel6.Multiline = true;
-            this.xrLabel6.Name = "xrLabel6";
-            this.xrLabel6.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel6.SizeF = new System.Drawing.SizeF(100F, 23F);
-            this.xrLabel6.StylePriority.UseFont = false;
-            this.xrLabel6.Text = "Total Chilled";
-            // 
-            // xrLabel7
-            // 
-            this.xrLabel7.Font = new System.Drawing.Font("Arial", 9.75F, System.Drawing.FontStyle.Bold);
-            this.xrLabel7.LocationFloat = new DevExpress.Utils.PointFloat(129.1667F, 10F);
-            this.xrLabel7.Multiline = true;
-            this.xrLabel7.Name = "xrLabel7";
-            this.xrLabel7.Padding = new DevExpress.XtraPrinting.PaddingInfo(2, 2, 0, 0, 100F);
-            this.xrLabel7.SizeF = new System.Drawing.SizeF(100F, 23F);
-            this.xrLabel7.StylePriority.UseFont = false;
-            this.xrLabel7.Text = "Total Chilled:";
-            // 
-            // SubBand1
-            // 
-            this.SubBand1.Controls.AddRange(new DevExpress.XtraReports.UI.XRControl[] {
-            this.xrLabel7,
-            this.xrLabel6});
-            this.SubBand1.HeightF = 36.66682F;
-            this.SubBand1.Name = "SubBand1";
-            // 
-            // xrPivotGridField4
-            // 
-            this.xrPivotGridField4.Area = DevExpress.XtraPivotGrid.PivotArea.ColumnArea;
-            this.xrPivotGridField4.AreaIndex = 1;
-            this.xrPivotGridField4.FieldName = "SalesOrder.Type";
-            this.xrPivotGridField4.Name = "xrPivotGridField4";
-            // 
-            // xrPivotGridField9
-            // 
-            this.xrPivotGridField9.Area = DevExpress.XtraPivotGrid.PivotArea.ColumnArea;
-            this.xrPivotGridField9.AreaIndex = 1;
-            this.xrPivotGridField9.FieldName = "SalesOrder.Type";
-            this.xrPivotGridField9.Name = "xrPivotGridField9";
-            // 
-            // collectionDataSource2
-            // 
-            this.collectionDataSource2.CriteriaString = "[SalesOrder.SupplierCode.SuppCode.SuppCode] = \'PJJ\' And [SalesOrder.PurchaseOrder" +
-    "Date] = ?PODate";
-            this.collectionDataSource2.Name = "collectionDataSource2";
-            this.collectionDataSource2.ObjectTypeName = "JolliantProd.Module.BusinessObjects.SalesOrderLine";
-            this.collectionDataSource2.TopReturnedRecords = 0;
-            // 
-            // collectionDataSource3
-            // 
-            this.collectionDataSource3.CriteriaString = "[SalesOrder.SupplierCode.SuppCode.SuppCode] = \'PJT\' And [SalesOrder.PurchaseOrder" +
-    "Date] = ?PODate";
-            this.collectionDataSource3.Name = "collectionDataSource3";
-            this.collectionDataSource3.ObjectTypeName = "JolliantProd.Module.BusinessObjects.SalesOrderLine";
-            this.collectionDataSource3.TopReturnedRecords = 0;
-            // 
-            // collectionDataSource1
-            // 
-            this.collectionDataSource1.CriteriaString = "[SalesOrder.SupplierCode.SuppCode.SuppCode] = \'JRC\' And [SalesOrder.PurchaseOrder" +
-    "Date] = ?PODate";
-            this.collectionDataSource1.Name = "collectionDataSource1";
-            this.collectionDataSource1.ObjectTypeName = "JolliantProd.Module.BusinessObjects.SalesOrderLine";
-            this.collectionDataSource1.TopReturnedRecords = 0;
             // 
             // collectionDataSource4
             // 

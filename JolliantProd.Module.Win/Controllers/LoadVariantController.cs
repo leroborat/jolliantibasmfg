@@ -198,60 +198,57 @@ namespace JolliantProd.Module.Win.Controllers
                             while (reader.Read())
                             {
                                 
-                                Lot lot = session.FindObject<Lot>(new BinaryOperator("LotCode", reader.GetValue(0)));
-                                if (lot == null)
+                                Lot lot = new Lot(session);
+                                //if (lot == null)
+                                //{
+                                //    lot = new Lot(session);
+                                //}
+                                lot.LotCode = Convert.ToString(reader.GetValue(0));
+                                lot.Product = sessProduct;
+                                lot.InternalReference = thisReference;
+
+                                if (lot.Product.SalesCategory.CategoryName == "Hotta Rice")
                                 {
-                                    lot = new Lot(session);
-                                    lot.LotCode = Convert.ToString(reader.GetValue(0));
-                                    lot.Product = sessProduct;
-                                    lot.InternalReference = thisReference;
-
-                                    if (lot.Product.SalesCategory.CategoryName == "Hotta Rice") 
+                                    try
                                     {
-                                        try
-                                        {
-                                            DateTime newED = DateTime.ParseExact(lot.LotCode.Substring(lot.LotCode.Length - 6), "MMddyy",
-                                                System.Globalization.CultureInfo.InvariantCulture);
-                                            lot.ExpirationDate = newED;
-                                        }
-                                        catch (Exception)
-                                        {
-                                            
-                                        }
-                                    } else
-                                    {
-                                        lot.ExpirationDate = ((FinishedGoodLoader)View.CurrentObject).LotExpirationDate;
+                                        DateTime newED = DateTime.ParseExact(lot.LotCode.Substring(lot.LotCode.Length - 6), "MMddyy",
+                                            System.Globalization.CultureInfo.InvariantCulture);
+                                        lot.ExpirationDate = newED;
                                     }
+                                    catch (Exception)
+                                    {
 
-                                    lot.Save();
-                                    lotList.Add(lot);
-
-                                    StockTransfer stockTransfer = new StockTransfer(session);
-                                    stockTransfer.Reference = finishedGoodLoader.ReferenceName;
-                                    stockTransfer.SourceLocation = sessFrom;
-                                    stockTransfer.DestinationLocation = sessTo;
-                                    stockTransfer.Product = sessProduct;
-                                    stockTransfer.Quantity = (Double)reader.GetValue(1);
-                                    stockTransfer.Lot = lot;
-                                    stockTransfer.Save();
-                                    stockTransfer.Lot.UpdateStockOnHand(true);
-                                    stockTransfer.Lot.Save();
-                                    Debug.WriteLine(stockTransfer.Lot.StockOnHand);
-                                    
-                                    
+                                    }
                                 }
+                                else
+                                {
+                                    lot.ExpirationDate = ((FinishedGoodLoader)View.CurrentObject).LotExpirationDate;
+                                }
+
+                                lot.Save();
+                                lotList.Add(lot);
+
+                                StockTransfer stockTransfer = new StockTransfer(session);
+                                stockTransfer.Reference = finishedGoodLoader.ReferenceName;
+                                stockTransfer.SourceLocation = sessFrom;
+                                stockTransfer.DestinationLocation = sessTo;
+                                stockTransfer.Product = sessProduct;
+                                stockTransfer.Quantity = (Double)reader.GetValue(1);
+                                stockTransfer.Lot = lot;
+                                stockTransfer.Save();
+                                stockTransfer.Lot.UpdateStockOnHand(true);
+                                stockTransfer.Lot.Save();
+                                Debug.WriteLine(stockTransfer.Lot.StockOnHand);
+
                             }
                         } while (reader.NextResult());
                     }
-                    //session.CommitChanges();
+                    session.CommitChanges();
                     //foreach (Lot item in lotList)
                     //{
                     //    item.UpdateStockOnHand(true);
-                    //    item.Save();
-                    //    Debug.WriteLine(item.StockOnHand);
                     //}
                     //session.CommitChanges();
-
                     ShowSuccess("Finished Loading. Check Stock Moves");
                 }
                 

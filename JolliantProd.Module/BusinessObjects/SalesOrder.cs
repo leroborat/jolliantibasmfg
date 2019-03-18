@@ -132,8 +132,8 @@ namespace JolliantProd.Module.BusinessObjects
             get => company;
             set => SetPropertyValue(nameof(Company), ref company, value);
         }
-
-        [Association("SalesOrder-SalesOrderLines"), DevExpress.Xpo.Aggregated()]
+        //Removed Aggregated
+        [Association("SalesOrder-SalesOrderLines"), Aggregated()]
         public XPCollection<SalesOrderLine> SalesOrderLines
         {
             get
@@ -167,7 +167,8 @@ namespace JolliantProd.Module.BusinessObjects
         public enum OrderTypeEnum
         {
             Daily,
-            Additional
+            Additional,
+            Allocation
         }
 
         [RuleRequiredField()]
@@ -303,7 +304,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
-
+        //Removed Aggregated
         [Association("SalesOrder-Trips"), Aggregated()]
         public XPCollection<Trip> Trips
         {
@@ -322,6 +323,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        //Removed Aggregated
         [Association("SalesOrder-Invoices"), Aggregated()]
         public XPCollection<Invoice> Invoices
         {
@@ -331,6 +333,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        //Removed Aggregated
         [Association("SalesOrder-UnservedLines"), Aggregated()]
         public XPCollection<UnservedLine> UnservedLines
         {
@@ -343,7 +346,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
     }
-    [RuleCombinationOfPropertiesIsUnique("UniqueSOL", DefaultContexts.Save, "SalesOrder, Product")]
+    //[RuleCombinationOfPropertiesIsUnique("UniqueSOL", DefaultContexts.Save, "SalesOrder, Product")]
     public class SalesOrderLine : BaseObject
     {
         public SalesOrderLine(Session session) : base(session)

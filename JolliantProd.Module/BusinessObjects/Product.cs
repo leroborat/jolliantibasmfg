@@ -169,6 +169,17 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        
+        
+        public double ReorderingLevel
+        {
+            get => reorderingLevel;
+            set => SetPropertyValue(nameof(ReorderingLevel), ref reorderingLevel, value);
+        }
+        double reorderingLevel;
+        
+        
+
         public enum TrackingEnum
         {
             NoTracking,

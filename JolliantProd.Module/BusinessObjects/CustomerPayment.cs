@@ -136,7 +136,7 @@ namespace JolliantProd.Module.BusinessObjects
 
     }
 
-    [RuleCombinationOfPropertiesIsUnique("UniqueInvoiceinPA", DefaultContexts.Save, "Invoice, CustomerPayment")]
+    //[RuleCombinationOfPropertiesIsUnique("UniqueInvoiceinPA", DefaultContexts.Save, "Invoice, CustomerPayment")]
     public class PaymentAllocationLine : BaseObject
     {
         public PaymentAllocationLine(Session session) : base(session)

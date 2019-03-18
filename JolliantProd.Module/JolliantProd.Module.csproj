@@ -149,8 +149,11 @@
     <Compile Include="BusinessObjects\InventoryScrap.cs" />
     <Compile Include="BusinessObjects\Invoice.cs" />
     <Compile Include="BusinessObjects\Lot.cs" />
+    <Compile Include="BusinessObjects\MeterialRequest.cs" />
     <Compile Include="BusinessObjects\PaymentTerm.cs" />
     <Compile Include="BusinessObjects\Product.cs" />
+    <Compile Include="BusinessObjects\PurchaseOrder.cs" />
+    <Compile Include="BusinessObjects\Receiving.cs" />
     <Compile Include="BusinessObjects\SalesCategory.cs" />
     <Compile Include="BusinessObjects\SalesOrder.cs" />
     <Compile Include="BusinessObjects\StockTransfer.cs" />
@@ -161,6 +164,12 @@
     <Compile Include="BusinessObjects\Variant.cs" />
     <Compile Include="BusinessObjects\Vendor.cs" />
     <Compile Include="BusinessObjects\Warehouse.cs" />
+    <Compile Include="Controllers\PurchasesController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\PurchasesController.Designer.cs">
+      <DependentUpon>PurchasesController.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\SalesOrderController.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -189,6 +198,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controllers\PurchasesController.resx">
+      <DependentUpon>PurchasesController.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\SalesOrderController.resx">
       <DependentUpon>SalesOrderController.cs</DependentUpon>
     </EmbeddedResource>
@@ -234,6 +246,14 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="UnusableNodes2.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes3.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes4.xml">
       <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
       <SubType>Designer</SubType>
     </None>
