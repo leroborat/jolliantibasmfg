@@ -33,6 +33,7 @@
             this.DeclineRequest = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ApprovePOAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.CancelPOAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.ValidateReceiptAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // CreatePOAction
             // 
@@ -78,12 +79,24 @@
             this.CancelPOAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.CancelPOAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.CancelPOAction_Execute);
             // 
+            // ValidateReceiptAction
+            // 
+            this.ValidateReceiptAction.Caption = "Validate";
+            this.ValidateReceiptAction.ConfirmationMessage = null;
+            this.ValidateReceiptAction.Id = "ValidateReceiptAction";
+            this.ValidateReceiptAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Receiving);
+            this.ValidateReceiptAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.ValidateReceiptAction.ToolTip = null;
+            this.ValidateReceiptAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.ValidateReceiptAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.ValidateReceiptAction_Execute);
+            // 
             // PurchasesController
             // 
             this.Actions.Add(this.CreatePOAction);
             this.Actions.Add(this.DeclineRequest);
             this.Actions.Add(this.ApprovePOAction);
             this.Actions.Add(this.CancelPOAction);
+            this.Actions.Add(this.ValidateReceiptAction);
 
         }
 
@@ -93,5 +106,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction DeclineRequest;
         private DevExpress.ExpressApp.Actions.SimpleAction ApprovePOAction;
         private DevExpress.ExpressApp.Actions.SimpleAction CancelPOAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction ValidateReceiptAction;
     }
 }

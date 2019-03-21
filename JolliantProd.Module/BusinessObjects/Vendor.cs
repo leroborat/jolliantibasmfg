@@ -29,6 +29,9 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string tINNumber;
+        bool vATVendor;
+        int nextIn;
         string contactPerson;
         string internalNotes;
         string website;
@@ -43,6 +46,21 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => vendorName;
             set => SetPropertyValue(nameof(VendorName), ref vendorName, value);
+        }
+
+
+        public bool VATVendor
+        {
+            get => vATVendor;
+            set => SetPropertyValue(nameof(VATVendor), ref vATVendor, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string TINNumber
+        {
+            get => tINNumber;
+            set => SetPropertyValue(nameof(TINNumber), ref tINNumber, value);
         }
 
 
@@ -61,7 +79,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(PhoneNumber), ref phoneNumber, value);
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string ContactPerson
         {
@@ -92,13 +110,22 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Website), ref website, value);
         }
 
-        
+
         [Size(SizeAttribute.Unlimited)]
         public string InternalNotes
         {
             get => internalNotes;
             set => SetPropertyValue(nameof(InternalNotes), ref internalNotes, value);
         }
+
+        
+        public int NextIn
+        {
+            get => nextIn;
+            set => SetPropertyValue(nameof(NextIn), ref nextIn, value);
+        }
+
+        
 
         [Association("Vendor-VendorPriceLists"), Aggregated()]
         public XPCollection<VendorPriceList> VendorPriceList
@@ -108,6 +135,8 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<VendorPriceList>(nameof(VendorPriceList));
             }
         }
+
+
     }
 
     public class VendorPriceList : BaseObject

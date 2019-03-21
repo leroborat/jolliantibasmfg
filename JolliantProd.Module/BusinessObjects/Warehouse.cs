@@ -58,6 +58,7 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        int nextIn;
         LocationTypeEnum locationType;
         Warehouse warehouse;
         [Persistent(nameof(DisplayName))]
@@ -89,7 +90,8 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         displayName = Warehouse.WarehouseName + "/" + LocationName;
                     }
-                } else if (LocationType == LocationTypeEnum.CustomerLocation || LocationType == LocationTypeEnum.VendorLocation)
+                }
+                else if (LocationType == LocationTypeEnum.CustomerLocation || LocationType == LocationTypeEnum.VendorLocation)
                 {
                     if (Parent != null)
                     {
@@ -99,7 +101,8 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         displayName = "Partner Locations" + "/" + LocationName;
                     }
-                } else
+                }
+                else
                 {
                     if (Parent != null)
                     {
@@ -110,11 +113,17 @@ namespace JolliantProd.Module.BusinessObjects
                         displayName = "Virtual" + "/" + LocationName;
                     }
                 }
-                
+
                 return displayName;
             }
         }
 
+        
+        public int NextIn
+        {
+            get => nextIn;
+            set => SetPropertyValue(nameof(NextIn), ref nextIn, value);
+        }
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
         public string LocationName

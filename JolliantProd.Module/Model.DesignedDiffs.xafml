@@ -10,6 +10,7 @@
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0]" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
     </Actions>
   </ActionDesign>
@@ -120,14 +121,21 @@
         <Member Name="Invoice" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# And [Company] = '@This.CustomerPayment.Company'" />
       </OwnMembers>
     </Class>
-    <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item" />
+    <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item">
+      <AppearanceRules>
+        <AppearanceRule Id="@018e71fb-e2cb-4f36-9bb1-100848bd6d61" TargetItems="*" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &lt;&gt; 0.0 And [StockOnHand] &lt;= [ReorderingLevel]" BackColor="Red" FontColor="White" IsNewNode="True" />
+      </AppearanceRules>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.PurchaseOrder">
       <AppearanceRules>
-        <AppearanceRule Id="@29956797-0df5-4b32-a9f1-769291d76488" TargetItems="*" Context="DetailView" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" IsNewNode="True" />
+        <AppearanceRule Id="@133c811d-a9d7-4a30-9516-669f82ffa7ad" TargetItems="Receivings" Priority="5" Enabled="True" Context="DetailView" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" Visibility="Show" IsNewNode="True" />
+        <AppearanceRule Id="@29956797-0df5-4b32-a9f1-769291d76488" TargetItems="*" Context="DetailView" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="1" IsNewNode="True" />
+        <AppearanceRule Id="@5849c999-ce55-474d-97a2-95cd6fabd0f4" Visibility="Hide" TargetItems="Receivings" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="999" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="ApprovedBy" AllowEdit="False" Caption="Approved or Cancelled By" />
         <Member Name="CreatedBy" AllowEdit="False" />
+        <Member Name="DeliveryLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
         <Member Name="PurchaseOrderNumber" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
       </OwnMembers>
@@ -138,6 +146,27 @@
         <Member Name="PurchaseUOM" AllowEdit="False" />
         <Member Name="StockingQuantity" AllowEdit="False" />
         <Member Name="StockingUOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ReceivedLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="Demand" AllowEdit="False" />
+        <Member Name="Lot" LookupEditorMode="Search" DataSourceCriteria="[Product] = '@This.Product'" />
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
+        <Member Name="PurchaseUOM" AllowEdit="False" />
+        <Member Name="StorageUOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Receiving">
+      <AppearanceRules>
+        <AppearanceRule Id="@28145d09-fd0f-4efa-95b4-d1a17a546212" TargetItems="Vendor" Enabled="False" Criteria="[PurchaseOrder] Is Not Null" IsNewNode="True" />
+        <AppearanceRule Id="@38c88b02-f8d7-4ed9-a044-03c2a75e4c07" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="Series" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="StorageLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder" ImageName="BO_Task">
@@ -178,9 +207,14 @@
         <Member Name="LotCode" DataSourceCriteria="[Product] = '@This.TripLine.Product'" />
       </OwnMembers>
     </Class>
-    <Class Name="JolliantProd.Module.BusinessObjects.VendorPricelistLine">
+    <Class Name="JolliantProd.Module.BusinessObjects.VendorPricelistLine" IsVisibleInReports="True">
       <OwnMembers>
         <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WarehouseLocation">
+      <OwnMembers>
+        <Member Name="NextIn" AllowEdit="False" />
       </OwnMembers>
     </Class>
   </BOModel>
@@ -189,6 +223,7 @@
       <Item Id="SalesNavigation" Caption="Sales" Index="1" IsNewNode="True">
         <Items IsNewNode="True">
           <Item Id="Customer_ListView" ViewId="Customer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryReturn_ListView" ViewId="InventoryReturn_ListView" ObjectKey="" Caption="Sales Returns" IsNewNode="True" />
           <Item Id="SalesCategory_ListView" ViewId="SalesCategory_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="SalesOrder_ListView" ViewId="SalesOrder_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="SalesOrderLine_ListView_Sales_Report_Menu" ObjectKey="" Caption="Sales Reports" ViewId="SalesOrderLine_ListView_Sales_Report" IsNewNode="True" />
@@ -198,7 +233,6 @@
         <Items IsNewNode="True">
           <Item Id="InternalTransfer_ListView" ViewId="InternalTransfer_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="InventoryAdjustment_ListView" ViewId="InventoryAdjustment_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="InventoryReturn_ListView" ViewId="InventoryReturn_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="InventoryScrap_ListView" ViewId="InventoryScrap_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Lot_ListView" ViewId="Lot_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Product_ListView" ViewId="Product_ListView" ObjectKey="" IsNewNode="True" />
@@ -232,6 +266,7 @@
           <Item Id="PaymentTerm_ListView" Removed="True" />
           <Item Id="Product_ListView" Removed="True" />
           <Item Id="PurchaseOrder_ListView" Removed="True" />
+          <Item Id="Receiving_ListView" Removed="True" />
           <Item Id="SalesCategory_ListView" Removed="True" />
           <Item Id="SalesOrder_ListView" Removed="True" />
           <Item Id="StockTransfer_ListView" Removed="True" />
@@ -249,6 +284,7 @@
           <Item Id="MaterialRequest_ListView" ViewId="MaterialRequest_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Products_Purchasing" ObjectKey="" Caption="Purchaesable Products" ViewId="Product_ListView_Copy" IsNewNode="True" />
           <Item Id="PurchaseOrder_ListView" ViewId="PurchaseOrder_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Receiving_ListView" ViewId="Receiving_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Vendor_ListView" ViewId="Vendor_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
@@ -591,6 +627,42 @@
         <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="1" IsNewNode="True" />
         <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="2" IsNewNode="True" />
         <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="50" Index="13" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <DetailView Id="Receiving_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="34.406438631790742">
+            <LayoutGroup Id="Receiving" RelativeSize="100">
+              <LayoutGroup Id="Receiving_col1" RelativeSize="50">
+                <LayoutItem Id="Vendor" Index="0" RelativeSize="29.032258064516128" />
+                <LayoutItem Id="PurchaseOrder" Index="1" RelativeSize="20.967741935483872" />
+                <LayoutItem Id="Series" Index="2" RelativeSize="20.967741935483872" />
+                <LayoutItem Id="ExpectedDeliveryDate" RelativeSize="29.032258064516128" />
+              </LayoutGroup>
+              <LayoutGroup Id="Receiving_col2" RelativeSize="50">
+                <LayoutItem Id="ActualDeliveryDate" RelativeSize="29.032258064516128" />
+                <LayoutItem Id="StorageLocation" RelativeSize="20.967741935483872" />
+                <LayoutItem Id="ProcessedBy" RelativeSize="20.967741935483872" />
+                <LayoutItem Id="Status" RelativeSize="29.032258064516128" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="ReceivedLines_Group" Direction="Vertical" RelativeSize="65.593561368209251">
+            <LayoutItem Id="ReceivedLines" RelativeSize="100" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="Receiving_ReceivedLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Demand" Width="67" />
+        <ColumnInfo Id="PurchaseQuantityReceived" Width="178" Index="2" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="3" />
+        <ColumnInfo Id="Lot" Width="37" Index="4" />
+        <ColumnInfo Id="StockingQuantityReceived" Width="174" />
+        <ColumnInfo Id="StorageUOM" Width="96" />
       </Columns>
     </ListView>
     <DetailView Id="SalesOrder_DetailView">

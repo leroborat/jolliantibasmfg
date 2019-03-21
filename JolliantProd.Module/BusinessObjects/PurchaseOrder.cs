@@ -46,6 +46,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        bool vATApplies;
+        WarehouseLocation deliveryLocation;
         [Persistent(nameof(VAT))]
         decimal vAT;
         [Persistent(nameof(SubTotal))]
@@ -77,8 +79,11 @@ namespace JolliantProd.Module.BusinessObjects
             set
             {
                 SetPropertyValue(nameof(Vendor), ref vendor, value);
+                
+
                 if (!IsSaving && !IsLoading)
                 {
+                    VATApplies = Vendor.VATVendor;
                     var thisPL = new XPCollection<VendorPriceList>(Session).Where(
                             x => x.Vendor == Vendor && x.FromDate < DateTime.Now
                             && x.ToDate > DateTime.Now
@@ -110,7 +115,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(PurchaseOrderDate), ref purchaseOrderDate, value);
         }
 
-
+        [RuleRequiredField()]
         public DateTime DeliveryDate
         {
             get => deliveryDate;
@@ -122,6 +127,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => deliveryAddress;
             set => SetPropertyValue(nameof(DeliveryAddress), ref deliveryAddress, value);
+        }
+
+        [RuleRequiredField()]
+        public WarehouseLocation DeliveryLocation
+        {
+            get => deliveryLocation;
+            set => SetPropertyValue(nameof(DeliveryLocation), ref deliveryLocation, value);
         }
 
 
@@ -188,13 +200,27 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get
             {
-                subTotal = Total / Convert.ToDecimal(1.12);
-                subTotal = Math.Round(subTotal, 2, MidpointRounding.AwayFromZero);
+                if (VATApplies == false)
+                {
+                    subTotal = 0;
+                } else
+                {
+                    subTotal = Total / Convert.ToDecimal(1.12);
+                    subTotal = Math.Round(subTotal, 2, MidpointRounding.AwayFromZero);
+                }
+                
                 return subTotal;
             }
         }
 
         
+        public bool VATApplies
+        {
+            get => vATApplies;
+            set => SetPropertyValue(nameof(VATApplies), ref vATApplies, value);
+        }
+
+
         [PersistentAlias(nameof(vAT))]
         public decimal VAT
         {
@@ -223,6 +249,9 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        double discount;
+        [Persistent(nameof(ReceivedQuantity))]
+        double receivedQuantity;
         [Persistent(nameof(LineTotal))]
         decimal lineTotal;
         decimal price;
@@ -297,20 +326,43 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+        public double Discount
+        {
+            get => discount;
+            set => SetPropertyValue(nameof(Discount), ref discount, value);
+        }
+
+
         [PersistentAlias(nameof(lineTotal))]
         public decimal LineTotal
         {
-            get {
-                lineTotal = Convert.ToDecimal(Quantity) * Price;
-                return lineTotal; }
+            get
+            {
+                lineTotal = Convert.ToDecimal(Quantity) * (Price - (Price *  Convert.ToDecimal(Discount / 100)));
+                return lineTotal;
+            }
         }
-        
+
 
         public UnitOfMeasure PurchaseUOM
         {
             get => purchaseUOM;
             set => SetPropertyValue(nameof(PurchaseUOM), ref purchaseUOM, value);
         }
+
+        
+        [PersistentAlias(nameof(receivedQuantity))]
+        public double ReceivedQuantity
+        {
+            get {
+                receivedQuantity = (from c in PurchaseOrder.Receivings
+                                    where c.Status == Receiving.StatusEnum.Validated
+                                    from a in c.ReceivedLines
+                                    where a.Product == Product
+                                    select a.PurchaseQuantityReceived).Sum();
+                return receivedQuantity; }
+        }
+        
 
 
         public double StockingQuantity
