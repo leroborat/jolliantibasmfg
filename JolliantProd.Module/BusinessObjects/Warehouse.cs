@@ -58,6 +58,7 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        int nextWithdrawal;
         int nextIn;
         LocationTypeEnum locationType;
         Warehouse warehouse;
@@ -118,11 +119,18 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         public int NextIn
         {
             get => nextIn;
             set => SetPropertyValue(nameof(NextIn), ref nextIn, value);
+        }
+
+        
+        public int NextWithdrawal
+        {
+            get => nextWithdrawal;
+            set => SetPropertyValue(nameof(NextWithdrawal), ref nextWithdrawal, value);
         }
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]

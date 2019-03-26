@@ -2,11 +2,13 @@
 <Application Title="IBAS Manufacturing" AboutInfoString="IBAS Manufacturing Suite&lt;br&gt;{0:Version}&lt;br&gt;{0:Copyright}" Company="Jolliant" Copyright="Copyright IBAS Software Development Services" Description="IBAS Manufacturing" Logo="">
   <ActionDesign>
     <Actions>
-      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
+      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New# And IsCurrentUserInRole('Purchase Manager')" />
+      <Action Id="AssignLotsAction" TargetObjectsCriteria="[WithdrawalLines][[WithdrawalLineLots][].Count() = 0]" />
       <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
-      <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New#" />
+      <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
+      <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
@@ -151,7 +153,7 @@
     <Class Name="JolliantProd.Module.BusinessObjects.ReceivedLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
       <OwnMembers>
         <Member Name="Demand" AllowEdit="False" />
-        <Member Name="Lot" LookupEditorMode="Search" DataSourceCriteria="[Product] = '@This.Product'" />
+        <Member Name="Lot" LookupEditorMode="Search" DataSourceCriteria="[Product] = '@This.Product'" AllowEdit="False" />
         <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
         <Member Name="PurchaseUOM" AllowEdit="False" />
         <Member Name="StorageUOM" AllowEdit="False" />
@@ -164,9 +166,29 @@
       </AppearanceRules>
       <OwnMembers>
         <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
         <Member Name="Series" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
         <Member Name="StorageLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ReceivingReturn">
+      <AppearanceRules>
+        <AppearanceRule Id="@efd8ef52-6f7b-4b17-9868-2df1866bb6d8" TargetItems="*" Enabled="False" Context="DetailView" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ReceivingReturn+StatusEnum,New#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="FromLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ReceivingReturnLine" DefaultListViewAllowEdit="True">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.Product'" LookupEditorMode="Search" />
+        <Member Name="PurchaseUOM" AllowEdit="False" />
+        <Member Name="StockingQuantity" AllowEdit="False" />
+        <Member Name="StorageUOM" ImmediatePostData="False" AllowEdit="False" />
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder" ImageName="BO_Task">
@@ -215,6 +237,26 @@
     <Class Name="JolliantProd.Module.BusinessObjects.WarehouseLocation">
       <OwnMembers>
         <Member Name="NextIn" AllowEdit="False" />
+        <Member Name="NextWithdrawal" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Withdrawal">
+      <OwnMembers>
+        <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="RequestedBy" AllowEdit="False" />
+        <Member Name="SeriesName" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="TransferredBy" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLineLot" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.WithdrawalLine.Product'" LookupEditorMode="Search" />
       </OwnMembers>
     </Class>
   </BOModel>
@@ -240,6 +282,7 @@
           <Item Id="Trip_ListView" ViewId="Trip_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Warehouse_ListView" ViewId="Warehouse_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="WarehouseLocation_ListView" ViewId="WarehouseLocation_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Withdrawal_ListView" ViewId="Withdrawal_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="AccountingNavigation" Caption="Accounting" Index="10" IsNewNode="True">
@@ -267,6 +310,7 @@
           <Item Id="Product_ListView" Removed="True" />
           <Item Id="PurchaseOrder_ListView" Removed="True" />
           <Item Id="Receiving_ListView" Removed="True" />
+          <Item Id="ReceivingReturn_ListView" Removed="True" />
           <Item Id="SalesCategory_ListView" Removed="True" />
           <Item Id="SalesOrder_ListView" Removed="True" />
           <Item Id="StockTransfer_ListView" Removed="True" />
@@ -277,6 +321,7 @@
           <Item Id="Vendor_ListView" Removed="True" />
           <Item Id="Warehouse_ListView" Removed="True" />
           <Item Id="WarehouseLocation_ListView" Removed="True" />
+          <Item Id="Withdrawal_ListView" Removed="True" />
         </Items>
       </Item>
       <Item Id="Purchases" IsNewNode="True">
@@ -285,6 +330,7 @@
           <Item Id="Products_Purchasing" ObjectKey="" Caption="Purchaesable Products" ViewId="Product_ListView_Copy" IsNewNode="True" />
           <Item Id="PurchaseOrder_ListView" ViewId="PurchaseOrder_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Receiving_ListView" ViewId="Receiving_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="ReceivingReturn_ListView" ViewId="ReceivingReturn_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Vendor_ListView" ViewId="Vendor_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
@@ -629,6 +675,44 @@
         <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="50" Index="13" IsNewNode="True" />
       </Columns>
     </ListView>
+    <ListView Id="PurchaseOrder_ListView">
+      <Columns>
+        <ColumnInfo Id="ApprovedBy" Width="166" Index="-1" />
+        <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
+        <ColumnInfo Id="DeliveryDate" Width="95" Index="-1" />
+        <ColumnInfo Id="DeliveryLocation" Width="116" Index="-1" />
+        <ColumnInfo Id="SubTotal" Width="0" Index="-1" />
+        <ColumnInfo Id="Terms" Width="57" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="VATApplies" Width="85" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
+        <ColumnInfo Id="Company" Width="73" />
+        <ColumnInfo Id="Vendor" Width="61" />
+        <ColumnInfo Id="PurchaseOrderDate" Width="139" />
+        <ColumnInfo Id="Status" Width="56" Index="4" />
+        <ColumnInfo Id="CreatedBy" Width="82" Index="5" />
+        <ColumnInfo Id="Total" Width="49" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="PurchaseOrder_LookupListView">
+      <Columns>
+        <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
+        <ColumnInfo Id="Company" PropertyName="Company" Index="1" Width="94" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="PurchaseOrder_PurchaseOrderLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Quantity" Width="67" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="2" />
+        <ColumnInfo Id="Price" Width="48" Index="3" />
+        <ColumnInfo Id="Discount" Width="68" Index="4" />
+        <ColumnInfo Id="LineTotal" Width="76" Index="5" />
+        <ColumnInfo Id="ReceivedQuantity" Width="122" />
+        <ColumnInfo Id="StockingQuantity" Width="119" />
+        <ColumnInfo Id="StockingUOM" Width="99" />
+      </Columns>
+    </ListView>
     <DetailView Id="Receiving_DetailView">
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
@@ -654,6 +738,18 @@
         </LayoutGroup>
       </Layout>
     </DetailView>
+    <ListView Id="Receiving_ListView">
+      <Columns>
+        <ColumnInfo Id="ActualDeliveryDate" Width="134" Index="-1" />
+        <ColumnInfo Id="StorageLocation" Width="116" Index="-1" />
+        <ColumnInfo Id="Series" Width="56" Index="0" />
+        <ColumnInfo Id="PurchaseOrder" Width="109" Index="1" />
+        <ColumnInfo Id="Vendor" Width="61" />
+        <ColumnInfo Id="ExpectedDeliveryDate" Width="150" />
+        <ColumnInfo Id="ProcessedBy" Width="95" Index="4" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+      </Columns>
+    </ListView>
     <ListView Id="Receiving_ReceivedLines_ListView">
       <Columns>
         <ColumnInfo Id="Product" Width="63" />
@@ -663,6 +759,15 @@
         <ColumnInfo Id="Lot" Width="37" Index="4" />
         <ColumnInfo Id="StockingQuantityReceived" Width="174" />
         <ColumnInfo Id="StorageUOM" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="ReceivingReturn_ListView">
+      <Columns>
+        <ColumnInfo Id="ReturnDate" Width="88" Index="0" />
+        <ColumnInfo Id="PurchaseOrder" Width="109" Index="1" />
+        <ColumnInfo Id="FromLocation" Width="101" />
+        <ColumnInfo Id="Status" Width="56" />
+        <ColumnInfo Id="ProcessedBy" Width="95" />
       </Columns>
     </ListView>
     <DetailView Id="SalesOrder_DetailView">
@@ -847,6 +952,27 @@
         <PropertyEditor Id="LotCode" LookupEditorMode="Search" />
       </Items>
     </DetailView>
+    <ListView Id="Vendor_ListView">
+      <Columns>
+        <ColumnInfo Id="Address" Width="66" Index="-1" />
+        <ColumnInfo Id="Email" Width="51" Index="-1" />
+        <ColumnInfo Id="NextIn" Width="60" Index="-1" />
+        <ColumnInfo Id="TINNumber" Width="85" Index="-1" />
+        <ColumnInfo Id="VATVendor" Width="85" Index="-1" />
+        <ColumnInfo Id="Website" Width="66" Index="-1" />
+        <ColumnInfo Id="VendorName" Width="109" />
+        <ColumnInfo Id="PhoneNumber" Width="104" Index="1" />
+        <ColumnInfo Id="ContactPerson" Width="106" Index="2" />
+        <ColumnInfo Id="MobileNumber" Width="106" Index="3" />
+      </Columns>
+    </ListView>
+    <ListView Id="VendorPriceList_ListView">
+      <Columns>
+        <ColumnInfo Id="Vendor" Width="61" />
+        <ColumnInfo Id="FromDate" Width="80" />
+        <ColumnInfo Id="ToDate" Width="73" />
+      </Columns>
+    </ListView>
     <ListView Id="VendorPriceList_VendorPricelistLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
   </Views>
 </Application>

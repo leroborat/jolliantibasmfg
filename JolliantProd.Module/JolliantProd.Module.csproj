@@ -154,6 +154,7 @@
     <Compile Include="BusinessObjects\Product.cs" />
     <Compile Include="BusinessObjects\PurchaseOrder.cs" />
     <Compile Include="BusinessObjects\Receiving.cs" />
+    <Compile Include="BusinessObjects\ReceivingReturn.cs" />
     <Compile Include="BusinessObjects\SalesCategory.cs" />
     <Compile Include="BusinessObjects\SalesOrder.cs" />
     <Compile Include="BusinessObjects\StockTransfer.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="BusinessObjects\Variant.cs" />
     <Compile Include="BusinessObjects\Vendor.cs" />
     <Compile Include="BusinessObjects\Warehouse.cs" />
+    <Compile Include="BusinessObjects\Withdrawal.cs" />
     <Compile Include="Controllers\PurchasesController.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -209,6 +211,7 @@
       <SubType>Designer</SubType>
       <DependentUpon>Module.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Reports\XtraReport1.resx">
       <DependentUpon>XtraReport1.cs</DependentUpon>
     </EmbeddedResource>

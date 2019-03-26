@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ using DevExpress.ExpressApp.Templates;
 using DevExpress.ExpressApp.Utils;
 using DevExpress.Persistent.Base;
 using DevExpress.Persistent.Validation;
+using DevExpress.Xpo;
 using JolliantProd.Module.BusinessObjects;
 
 namespace JolliantProd.Module.Controllers
@@ -139,6 +141,93 @@ namespace JolliantProd.Module.Controllers
             thisView.ProcessedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
             //Save
             thisView.Save();
+            ObjectSpace.CommitChanges();
+        }
+
+        private void ProcessReceivingReturnAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ObjectSpace.CommitChanges();
+            var thisView = ((ReceivingReturn)View.CurrentObject);
+            thisView.Save();
+            WarehouseLocation warehouseLocation;
+            warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Vendor"));
+            if (warehouseLocation == null)
+            {
+                warehouseLocation = ObjectSpace.CreateObject<WarehouseLocation>();
+                warehouseLocation.LocationName = "Vendor";
+                warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.VendorLocation;
+                ObjectSpace.CommitChanges();
+            }
+
+            foreach (ReceivingReturnLine item in thisView.ReceivingReturnLines)
+            {
+                if (item.Quantity <= 0)
+                {
+                    continue;
+                }
+                StockTransfer st = ObjectSpace.CreateObject<StockTransfer>();
+                st.DestinationLocation = warehouseLocation;
+                st.SourceLocation = thisView.FromLocation;
+
+                if (item.Lot != null)
+                {
+                    st.Lot = item.Lot;
+                }
+                st.Quantity = item.StockingQuantity;
+                st.UOM = item.StorageUOM;
+                st.Product = item.Product;
+                st.Reference = "Return: " +  thisView.PurchaseOrder.PurchaseOrderNumber;
+                ObjectSpace.CommitChanges();
+                st.Lot.UpdateStockOnHand(true);
+                ObjectSpace.CommitChanges();
+            }
+            //Set status to Validated
+            thisView.Status = ReceivingReturn.StatusEnum.Validated;
+            //Set Employee who handled
+            thisView.ProcessedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            //Save
+            thisView.Save();
+            ObjectSpace.CommitChanges();
+        }
+
+        private void AssignLotsAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var thisView = ((Withdrawal)View.CurrentObject);
+
+            foreach (WithdrawalLine item in thisView.WithdrawalLines)
+            {
+                if (item.ProcessedQuantity >= item.DemandQuantity)
+                {
+                    continue;
+                }
+
+                var lots = ObjectSpace.GetObjects<Lot>().Where(x => x.Product == item.Product &&
+                x.StockOnHand > 0
+                ).OrderBy(x => x.ExpirationDate);
+
+                foreach (var thisLot in lots)
+                {
+                    var thisObj = ObjectSpace.CreateObject<WithdrawalLineLot>();
+                    thisObj.WithdrawalLine = item;
+                    thisObj.Lot = thisLot;
+                    if (item.DemandQuantity < thisLot.StockOnHand)
+                    {
+                        Debug.WriteLine("More than");
+                        thisObj.DoneQuantity = item.DemandQuantity - item.ProcessedQuantity;
+                        break;
+                    } else
+                    {
+                        Debug.WriteLine("Here");
+                        thisObj.DoneQuantity = thisLot.StockOnHand;
+                    }
+
+                    ObjectSpace.CommitChanges();
+                    if (item.ProcessedQuantity >= item.DemandQuantity)
+                    {
+                        break;
+                    }
+                }
+            }
             ObjectSpace.CommitChanges();
         }
     }

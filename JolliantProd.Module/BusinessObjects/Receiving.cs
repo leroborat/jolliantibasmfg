@@ -203,7 +203,7 @@ namespace JolliantProd.Module.BusinessObjects
                         }
                         catch (Exception)
                         { }
-                        lot.LotCode = lot.LotCode.Replace(" ", string.Empty);
+                        lot.LotCode = (lot.LotCode.Replace(" ", string.Empty)).ToUpper();
                         lot.Product = Product;
                         Lot = lot;
                     }

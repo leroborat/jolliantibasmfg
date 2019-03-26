@@ -34,6 +34,8 @@
             this.ApprovePOAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.CancelPOAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ValidateReceiptAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.ProcessReceivingReturnAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.AssignLotsAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // CreatePOAction
             // 
@@ -90,6 +92,28 @@
             this.ValidateReceiptAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.ValidateReceiptAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.ValidateReceiptAction_Execute);
             // 
+            // ProcessReceivingReturnAction
+            // 
+            this.ProcessReceivingReturnAction.Caption = "Validate";
+            this.ProcessReceivingReturnAction.ConfirmationMessage = null;
+            this.ProcessReceivingReturnAction.Id = "ProcessReceivingReturnAction";
+            this.ProcessReceivingReturnAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.ReceivingReturn);
+            this.ProcessReceivingReturnAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.ProcessReceivingReturnAction.ToolTip = null;
+            this.ProcessReceivingReturnAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.ProcessReceivingReturnAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.ProcessReceivingReturnAction_Execute);
+            // 
+            // AssignLotsAction
+            // 
+            this.AssignLotsAction.Caption = "Assign Lots";
+            this.AssignLotsAction.ConfirmationMessage = null;
+            this.AssignLotsAction.Id = "AssignLotsAction";
+            this.AssignLotsAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Withdrawal);
+            this.AssignLotsAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.AssignLotsAction.ToolTip = null;
+            this.AssignLotsAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.AssignLotsAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.AssignLotsAction_Execute);
+            // 
             // PurchasesController
             // 
             this.Actions.Add(this.CreatePOAction);
@@ -97,6 +121,8 @@
             this.Actions.Add(this.ApprovePOAction);
             this.Actions.Add(this.CancelPOAction);
             this.Actions.Add(this.ValidateReceiptAction);
+            this.Actions.Add(this.ProcessReceivingReturnAction);
+            this.Actions.Add(this.AssignLotsAction);
 
         }
 
@@ -107,5 +133,7 @@
         private DevExpress.ExpressApp.Actions.SimpleAction ApprovePOAction;
         private DevExpress.ExpressApp.Actions.SimpleAction CancelPOAction;
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateReceiptAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction ProcessReceivingReturnAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction AssignLotsAction;
     }
 }

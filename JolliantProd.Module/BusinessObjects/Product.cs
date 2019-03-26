@@ -86,7 +86,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
         public string InternalReference
         {
             get => internalReference;

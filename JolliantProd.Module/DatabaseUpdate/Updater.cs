@@ -117,6 +117,20 @@ namespace JolliantProd.Module.DatabaseUpdate {
                 unitMeasure.UnitOfMeasureCategory = unitOfMeasureCategory;
             }
 
+            PermissionPolicyRole purchaseManageRole = ObjectSpace.FindObject<PermissionPolicyRole>(new BinaryOperator("Name", "Purchase Manager"));
+            if (purchaseManageRole == null)
+            {
+                purchaseManageRole = ObjectSpace.CreateObject<PermissionPolicyRole>();
+                purchaseManageRole.Name = "Purchase Manager";
+            }
+
+            PermissionPolicyRole purchaseUser = ObjectSpace.FindObject<PermissionPolicyRole>(new BinaryOperator("Name", "Purchase User"));
+            if (purchaseUser == null)
+            {
+                purchaseUser = ObjectSpace.CreateObject<PermissionPolicyRole>();
+                purchaseUser.Name = "Purchase User";
+            }
+
             ObjectSpace.CommitChanges();
 
 

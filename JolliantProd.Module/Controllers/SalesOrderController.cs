@@ -305,8 +305,9 @@ namespace JolliantProd.Module.Controllers
                 lineDetail.From = thisView.Location;
                 lineDetail.LotCode = item;
                 thisView.TripLineDetails.Add(lineDetail);
-                ObjectSpace.CommitChanges();
+               
             }
+            ObjectSpace.CommitChanges();
         }
 
         private void POSummaryAction_Execute(object sender, SimpleActionExecuteEventArgs e)

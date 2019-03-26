@@ -238,6 +238,14 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Association("PurchaseOrder-ReceivingReturns")]
+        public XPCollection<ReceivingReturn> ReceivingReturns
+        {
+            get
+            {
+                return GetCollection<ReceivingReturn>(nameof(ReceivingReturns));
+            }
+        }
 
 
 
@@ -360,7 +368,14 @@ namespace JolliantProd.Module.BusinessObjects
                                     from a in c.ReceivedLines
                                     where a.Product == Product
                                     select a.PurchaseQuantityReceived).Sum();
-                return receivedQuantity; }
+
+                var retQ = (from c in PurchaseOrder.ReceivingReturns
+                            where c.Status == ReceivingReturn.StatusEnum.Validated
+                            from a in c.ReceivingReturnLines
+                            where a.Product == Product
+                            select a.Quantity).Sum();
+
+                return receivedQuantity - retQ; }
         }
         
 
