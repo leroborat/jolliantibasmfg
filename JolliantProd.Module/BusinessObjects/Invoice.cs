@@ -156,7 +156,7 @@ namespace JolliantProd.Module.BusinessObjects
         public decimal OpenAmount
         {
             get {
-                openAmount = TotalAmountDue - (new XPCollection<PaymentAllocationLine>(Session).
+                openAmount = TotalAmountDue - (new XPQuery<PaymentAllocationLine>(Session).
                             Where(rbd => rbd.Invoice == this).Select(rbd => rbd.AllocatedAmount).Sum());
                 
                 return openAmount; }

@@ -84,7 +84,7 @@ namespace JolliantProd.Module.BusinessObjects
                 if (!IsSaving && !IsLoading)
                 {
                     VATApplies = Vendor.VATVendor;
-                    var thisPL = new XPCollection<VendorPriceList>(Session).Where(
+                    var thisPL = new XPQuery<VendorPriceList>(Session).Where(
                             x => x.Vendor == Vendor && x.FromDate < DateTime.Now
                             && x.ToDate > DateTime.Now
                             );
@@ -287,7 +287,7 @@ namespace JolliantProd.Module.BusinessObjects
                 {
                     if (PurchaseOrder?.Vendor != null)
                     {
-                        var thisPL = new XPCollection<VendorPriceList>(Session).Where(
+                        var thisPL = new XPQuery<VendorPriceList>(Session).Where(
                             x => x.Vendor == PurchaseOrder.Vendor && x.FromDate < DateTime.Now
                             && x.ToDate > DateTime.Now
                             );

@@ -117,7 +117,7 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         if (Lot != null && InventoryScrap.InventoryLocation != null)
                         {
-                            var smoves = new XPCollection<StockTransfer>(Session);
+                            var smoves = new XPQuery<StockTransfer>(Session);
                             var TotalIn = (from a in smoves
                                            where a.DestinationLocation == InventoryScrap.InventoryLocation &&
                                            a.Lot == Lot
@@ -132,7 +132,7 @@ namespace JolliantProd.Module.BusinessObjects
                     }
                     else
                     {
-                        var smoves = new XPCollection<StockTransfer>(Session);
+                        var smoves = new XPQuery<StockTransfer>(Session);
                         var TotalIn = (from a in smoves
                                        where a.DestinationLocation == InventoryScrap.InventoryLocation
                                        select a.Quantity).Sum();

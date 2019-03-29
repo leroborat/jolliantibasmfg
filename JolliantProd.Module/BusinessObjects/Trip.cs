@@ -27,7 +27,7 @@ namespace JolliantProd.Module.BusinessObjects
         {
             base.AfterConstruction();
             TripDateTime = DateTime.Now;
-            XPCollection<WarehouseLocation> partnerLocations = new XPCollection<WarehouseLocation>(Session);
+            XPQuery<WarehouseLocation> partnerLocations = new XPQuery<WarehouseLocation>(Session);
             var list = from c in partnerLocations
                         where c.LocationType == WarehouseLocation.LocationTypeEnum.CustomerLocation
                         select c;
@@ -372,7 +372,7 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         if (LotCode != null && From != null)
                         {
-                            var smoves = new XPCollection<StockTransfer>(Session);
+                            var smoves = new XPQuery<StockTransfer>(Session);
                             var TotalIn = (from a in smoves
                                            where a.DestinationLocation == From &&
                                            a.Lot == LotCode
@@ -386,7 +386,7 @@ namespace JolliantProd.Module.BusinessObjects
                         }
                     } else
                     {
-                        var smoves = new XPCollection<StockTransfer>(Session);
+                        var smoves = new XPQuery<StockTransfer>(Session);
                         var TotalIn = (from a in smoves
                                        where a.DestinationLocation == From
                                        select a.Quantity).Sum();

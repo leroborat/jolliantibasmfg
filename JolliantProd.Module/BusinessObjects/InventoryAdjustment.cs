@@ -91,7 +91,7 @@ namespace JolliantProd.Module.BusinessObjects
                     Session.Delete(InventoryAdjustmentLines);
                     // Clear Lines
                     // Get Distinct Products
-                    var stList = new XPCollection<StockTransfer>(Session);
+                    var stList = new XPQuery<StockTransfer>(Session);
                     var prods = from p in stList
                                 where p.DestinationLocation == InventoriedLocation
                                 select p.Product;
@@ -217,7 +217,7 @@ namespace JolliantProd.Module.BusinessObjects
                         Debug.WriteLine("I Shouldn't be here");
                         if (Product.Tracking == Product.TrackingEnum.NoTracking)
                         {
-                            var stList = new XPCollection<StockTransfer>(Session);
+                            var stList = new XPQuery<StockTransfer>(Session);
                             var stockTransfersDest = from p in stList
                                                      where p.Product == Product &&
                                                      p.DestinationLocation == InventoryAdjustment.InventoriedLocation
@@ -249,7 +249,7 @@ namespace JolliantProd.Module.BusinessObjects
                 {
                     if (InventoryAdjustment.AdjustmentType == InventoryAdjustment.AdjustmentTypeEnum.SingleProduct)
                     {
-                        var stList = new XPCollection<StockTransfer>(Session);
+                        var stList = new XPQuery<StockTransfer>(Session);
                         var stockTransfersDest = from p in stList
                                                  where p.Product == Product &&
                                                  p.DestinationLocation == InventoryAdjustment.InventoriedLocation

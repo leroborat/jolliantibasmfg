@@ -135,22 +135,20 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         if (LotNumber != null && InternalTransfer.SourceLocation != null)
                         {
-                            var smoves = new XPCollection<StockTransfer>(Session);
-                            var TotalIn = (from a in smoves
-                                           where a.DestinationLocation == InternalTransfer.SourceLocation &&
-                                           a.Lot == LotNumber
-                                           select a.Quantity).Sum();
+                            var TotalIn = new XPQuery<StockTransfer>(Session)
+                                .Where(x => x.DestinationLocation == InternalTransfer.SourceLocation &&
+                                           x.Lot == LotNumber).Select(x => x.Quantity).Sum();
 
-                            var TotalOut = (from a in smoves
-                                            where a.SourceLocation == InternalTransfer.SourceLocation &&
-                                            a.Lot == LotNumber
-                                            select a.Quantity).Sum();
+                            var TotalOut = new XPQuery<StockTransfer>(Session)
+                                .Where(x => x.SourceLocation == InternalTransfer.SourceLocation &&
+                                           x.Lot == LotNumber).Select(x => x.Quantity).Sum();
+
                             availableQuantity = TotalIn - TotalOut;
                         }
                     }
                     else
                     {
-                        var smoves = new XPCollection<StockTransfer>(Session);
+                        var smoves = new XPQuery<StockTransfer>(Session);
                         var TotalIn = (from a in smoves
                                        where a.DestinationLocation == InternalTransfer.SourceLocation
                                        select a.Quantity).Sum();

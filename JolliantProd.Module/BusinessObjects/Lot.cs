@@ -71,33 +71,16 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get
             {
-                XPCollection<StockTransfer> collection = new XPCollection<StockTransfer>(Session);
-                //Get In
-                var a = from st in collection
-                        where (st.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
-                        st.Product == Product && st.Lot == this)
-                        select st;
+                var StockIn = new XPQuery<StockTransfer>(Session)
+               .Where(x => x.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
+                        x.Product == Product && x.Lot == this).Select(x => x.Quantity).Sum();
 
-                double StockIn = 0;
-
-                foreach (StockTransfer item in a)
-                {
-                    StockIn += item.Quantity;
-                }
-
+                var StockOut = new XPQuery<StockTransfer>(Session)
+               .Where(x => x.SourceLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
+                        x.Product == Product && x.Lot == this).Select(x => x.Quantity).Sum();
                 //Get Out
 
-                var b = from st in collection
-                        where (st.SourceLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
-                        st.Product == Product && st.Lot == this)
-                        select st;
-
-                double StockOut = 0;
-
-                foreach (StockTransfer item in b)
-                {
-                    StockOut += item.Quantity;
-                }
+                
 
                 //Get Actual
                 stockOnHand = StockIn - StockOut;

@@ -135,33 +135,47 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get
             {
-                XPCollection<StockTransfer> collection = new XPCollection<StockTransfer>(Session);
-                //Get In
-                var a = from st in collection
-                        where (st.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
-                        st.Product == this)
-                        select st;
 
-                double StockIn = 0;
+                
 
-                foreach (StockTransfer item in a)
-                {
-                    StockIn += item.Quantity;
-                }
+                var StockIn = new XPQuery<StockTransfer>(Session)
+                .Where(
+                x => x.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
+                x.Product == this
+                ).Select(x => x.Quantity).Sum();
+
+                var StockOut = new XPQuery<StockTransfer>(Session).Where(
+                    x => x.SourceLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
+                    x.Product == this
+                    ).Select(x => x.Quantity).Sum();
+
+                //XPCollection<StockTransfer> collection = new XPCollection<StockTransfer>(Session);
+                ////Get In
+                //var a = from st in collection
+                //        where (st.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
+                //        st.Product == this)
+                //        select st;
+
+                //double StockIn = 0;
+
+                //foreach (StockTransfer item in a)
+                //{
+                //    StockIn += item.Quantity;
+                //}
 
                 //Get Out
 
-                var b = from st in collection
-                        where (st.SourceLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
-                        st.Product == this)
-                        select st;
+                //var b = from st in collection
+                //        where (st.SourceLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
+                //        st.Product == this)
+                //        select st;
 
-                double StockOut = 0;
+                //double StockOut = 0;
 
-                foreach (StockTransfer item in b)
-                {
-                    StockOut += item.Quantity;
-                }
+                //foreach (StockTransfer item in b)
+                //{
+                //    StockOut += item.Quantity;
+                //}
 
                 //Get Actual
                 stockOnHand = StockIn - StockOut;
