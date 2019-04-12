@@ -29,6 +29,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        PaymentTerm defaultPaymentTerm;
+        string paymentTerms;
         string tINNumber;
         bool vATVendor;
         int nextIn;
@@ -56,6 +58,21 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+        public PaymentTerm DefaultPaymentTerm
+        {
+            get => defaultPaymentTerm;
+            set => SetPropertyValue(nameof(DefaultPaymentTerm), ref defaultPaymentTerm, value);
+        }
+
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string PaymentTerms
+        //{
+        //    get => paymentTerms;
+        //    set => SetPropertyValue(nameof(PaymentTerms), ref paymentTerms, value);
+        //}
+
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string TINNumber
         {

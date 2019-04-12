@@ -149,6 +149,9 @@ namespace JolliantProd.Module.BusinessObjects
                     if (StorageUOM == PurchaseUOM.ReferenceMeasure)
                     {
                         StockingQuantity = Quantity * PurchaseUOM.Ratio;
+                    } else if (StorageUOM == PurchaseUOM)
+                    {
+                        StockingQuantity = Quantity;
                     }
                 }
             }

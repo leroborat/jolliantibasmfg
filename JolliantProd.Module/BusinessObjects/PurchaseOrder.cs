@@ -46,6 +46,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        PaymentTerm paymentTerm;
         bool vATApplies;
         WarehouseLocation deliveryLocation;
         [Persistent(nameof(VAT))]
@@ -79,7 +80,7 @@ namespace JolliantProd.Module.BusinessObjects
             set
             {
                 SetPropertyValue(nameof(Vendor), ref vendor, value);
-                
+
 
                 if (!IsSaving && !IsLoading)
                 {
@@ -89,6 +90,7 @@ namespace JolliantProd.Module.BusinessObjects
                             && x.ToDate > DateTime.Now
                             );
 
+                    PaymentTerm = Vendor.DefaultPaymentTerm;
 
                     if (thisPL.Count() != 0)
                     {
@@ -136,13 +138,20 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(DeliveryLocation), ref deliveryLocation, value);
         }
 
-
-        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
-        public string Terms
+        
+        public PaymentTerm PaymentTerm
         {
-            get => terms;
-            set => SetPropertyValue(nameof(Terms), ref terms, value);
+            get => paymentTerm;
+            set => SetPropertyValue(nameof(PaymentTerm), ref paymentTerm, value);
         }
+
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string Terms
+        //{
+        //    get => terms;
+        //    set => SetPropertyValue(nameof(Terms), ref terms, value);
+        //}
 
         [Association("PurchaseOrder-PurchaseOrderLines"), Aggregated()]
         public XPCollection<PurchaseOrderLine> PurchaseOrderLines
@@ -321,6 +330,9 @@ namespace JolliantProd.Module.BusinessObjects
                     if (StockingUOM == PurchaseUOM.ReferenceMeasure)
                     {
                         StockingQuantity = Quantity * PurchaseUOM.Ratio;
+                    } else if (StockingUOM == PurchaseUOM)
+                    {
+                        StockingQuantity = Quantity;
                     }
                 }
             }
@@ -377,9 +389,9 @@ namespace JolliantProd.Module.BusinessObjects
 
                 return receivedQuantity - retQ; }
         }
-        
 
 
+        [RuleValueComparison("", DefaultContexts.Save, ValueComparisonType.GreaterThan, "0")]
         public double StockingQuantity
         {
             get => stockingQuantity;

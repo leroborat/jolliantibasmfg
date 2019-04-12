@@ -2,7 +2,7 @@
 <Application Title="IBAS Manufacturing" AboutInfoString="IBAS Manufacturing Suite&lt;br&gt;{0:Version}&lt;br&gt;{0:Copyright}" Company="Jolliant" Copyright="Copyright IBAS Software Development Services" Description="IBAS Manufacturing" Logo="">
   <ActionDesign>
     <Actions>
-      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New# And IsCurrentUserInRole('Purchase Manager')" />
+      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Company] Is Not Null And [Vendor] Is Not Null And [DeliveryLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New# And IsCurrentUserInRole('Purchase Manager')" />
       <Action Id="AssignLotsAction" TargetObjectsCriteria="[WithdrawalLines][[WithdrawalLineLots][].Count() = 0]" />
       <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
@@ -14,6 +14,7 @@
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0]" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
+      <Action Id="ValidateWithdrawal" TargetObjectsCriteria="[Location] Is Not Null And [WithdrawalLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
     </Actions>
   </ActionDesign>
   <BOModel>
@@ -125,13 +126,15 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item">
       <AppearanceRules>
-        <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="255, 0, 0" FontColor="255, 255, 0" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
+        <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
       </AppearanceRules>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.PurchaseOrder">
       <AppearanceRules>
         <AppearanceRule Id="@133c811d-a9d7-4a30-9516-669f82ffa7ad" TargetItems="Receivings" Priority="5" Enabled="True" Context="DetailView" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" Visibility="Show" IsNewNode="True" />
+        <AppearanceRule Id="@1835d991-95c3-4337-96d2-f2348e374b86" TargetItems="*" Context="ListView" Criteria="[PurchaseOrderLines][].Sum([ReceivedQuantity]) &gt; 0.0" BackColor="255, 255, 192" IsNewNode="True" />
         <AppearanceRule Id="@29956797-0df5-4b32-a9f1-769291d76488" TargetItems="*" Context="DetailView" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="1" IsNewNode="True" />
+        <AppearanceRule Id="@2abc3600-5e42-4408-a03b-c7c444d6a0d2" TargetItems="*" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# And [PurchaseOrderLines][].Sum([ReceivedQuantity]) &gt;= [PurchaseOrderLines][].Sum([Quantity])" Context="ListView" BackColor="128, 255, 128" Priority="2" IsNewNode="True" />
         <AppearanceRule Id="@5849c999-ce55-474d-97a2-95cd6fabd0f4" Visibility="Hide" TargetItems="Receivings" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="999" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
@@ -241,6 +244,9 @@
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Withdrawal">
+      <AppearanceRules>
+        <AppearanceRule Id="@4169ad54-be41-4c22-954a-d8eec9d9b625" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" IsNewNode="True" />
+      </AppearanceRules>
       <OwnMembers>
         <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
         <Member Name="RequestedBy" AllowEdit="False" />
@@ -282,7 +288,6 @@
           <Item Id="Trip_ListView" ViewId="Trip_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Warehouse_ListView" ViewId="Warehouse_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="WarehouseLocation_ListView" ViewId="WarehouseLocation_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="Withdrawal_ListView" ViewId="Withdrawal_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="AccountingNavigation" Caption="Accounting" Index="10" IsNewNode="True">
@@ -332,6 +337,7 @@
           <Item Id="Receiving_ListView" ViewId="Receiving_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="ReceivingReturn_ListView" ViewId="ReceivingReturn_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Vendor_ListView" ViewId="Vendor_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Withdrawal_ListView" ViewId="Withdrawal_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="Utilities" IsNewNode="True">
@@ -680,7 +686,6 @@
       <Columns>
         <ColumnInfo Id="ApprovedBy" Width="166" Index="-1" />
         <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
-        <ColumnInfo Id="DeliveryDate" Width="95" Index="-1" />
         <ColumnInfo Id="DeliveryLocation" Width="116" Index="-1" />
         <ColumnInfo Id="SubTotal" Width="0" Index="-1" />
         <ColumnInfo Id="Terms" Width="57" Index="-1" />
@@ -688,11 +693,12 @@
         <ColumnInfo Id="VATApplies" Width="85" Index="-1" />
         <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
         <ColumnInfo Id="Company" Width="73" />
-        <ColumnInfo Id="Vendor" Width="61" />
-        <ColumnInfo Id="PurchaseOrderDate" Width="139" />
-        <ColumnInfo Id="Status" Width="56" Index="4" />
-        <ColumnInfo Id="CreatedBy" Width="82" Index="5" />
-        <ColumnInfo Id="Total" Width="49" Index="6" />
+        <ColumnInfo Id="Vendor" Width="61" Index="2" />
+        <ColumnInfo Id="PurchaseOrderDate" Width="139" Index="3" />
+        <ColumnInfo Id="DeliveryDate" Width="95" Index="4" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+        <ColumnInfo Id="CreatedBy" Width="82" Index="6" />
+        <ColumnInfo Id="Total" Width="49" Index="7" />
       </Columns>
     </ListView>
     <ListView Id="PurchaseOrder_LookupListView">
@@ -975,5 +981,6 @@
       </Columns>
     </ListView>
     <ListView Id="VendorPriceList_VendorPricelistLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="WithdrawalLineLot_LookupListView" AllowNew="True" />
   </Views>
 </Application>

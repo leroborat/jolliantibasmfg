@@ -26,7 +26,7 @@ namespace JolliantProd.Module.BusinessObjects
         {
             base.AfterConstruction();
             InventoryDate = DateTime.Now;
-            AdjustmentType = AdjustmentTypeEnum.AllProducts;
+            AdjustmentType = AdjustmentTypeEnum.SingleProduct;
             Status = StatusEnum.Draft;
         }
 
@@ -91,32 +91,22 @@ namespace JolliantProd.Module.BusinessObjects
                     Session.Delete(InventoryAdjustmentLines);
                     // Clear Lines
                     // Get Distinct Products
-                    var stList = new XPQuery<StockTransfer>(Session);
-                    var prods = from p in stList
-                                where p.DestinationLocation == InventoriedLocation
-                                select p.Product;
-
-                    var distinctProducts = prods.Distinct();
+                    var distinctProducts = new XPQuery<StockTransfer>(Session).Where(x => x.DestinationLocation == InventoriedLocation)
+                        .Select(x => x.Product).Distinct();
 
                     foreach (Product item in distinctProducts)
                     {
                         Debug.WriteLine(item.ProductName);
                         // Query Stock Transfer by product destination = location
-                        var stockTransfersDest = from p in stList
-                                                 where p.Product == item && 
-                                                 p.DestinationLocation == InventoriedLocation
-                                                 select p;
-                        // Query Stock Transfer by source location
-
-                        var stockTransfersSource = from p in stList
-                                                 where p.Product == item &&
-                                                 p.SourceLocation == InventoriedLocation
-                                                 select p;
-
+                        
                         if (item.Tracking == Product.TrackingEnum.NoTracking)
                         {
-                            var TotalIn = stockTransfersDest.Sum(x => x.Quantity);
-                            var TotalOut = stockTransfersSource.Sum(x => x.Quantity);
+                            var TotalIn = new XPQuery<StockTransfer>(Session)
+                                .Where(x => x.Product == item && x.DestinationLocation == InventoriedLocation)
+                                .Select(x => x.Quantity).Sum();
+                            var TotalOut = new XPQuery<StockTransfer>(Session)
+                                .Where(x => x.Product == item && x.SourceLocation == InventoriedLocation)
+                                .Select(x => x.Quantity).Sum();
                             var balance = TotalIn - TotalOut;
                             if (balance != 0)
                             {
@@ -128,23 +118,27 @@ namespace JolliantProd.Module.BusinessObjects
                         }
                         else if (item.Tracking == Product.TrackingEnum.TrackByLot)
                         {
-                            var LotList = from a in stockTransfersDest
-                                          select a.Lot;
 
-                            var DistinctLot = LotList.Distinct();
+                            var DistinctLot = new XPQuery<StockTransfer>(Session)
+                                .Where(x => x.Product == item && x.DestinationLocation == InventoriedLocation)
+                                .Select(x => x.Lot)
+                                .Where(y => y.StockOnHand > 0)
+                                .Distinct();
+
                             foreach (Lot lot in DistinctLot)
                             {
-                                var LotInList = from a in stockTransfersDest
-                                                where a.Lot == lot
-                                                select a;
+                               
 
-                                var TotalIn = LotInList.Sum(x => x.Quantity);
+                                var TotalIn = new XPQuery<StockTransfer>(Session)
+                                    .Where(x => x.Product == item && x.DestinationLocation == InventoriedLocation)
+                                    .Where(x => x.Lot == lot)
+                                    .Select(x => x.Quantity).Sum();
 
-                                var LotOutList = from a in stockTransfersSource
-                                                 where a.Lot == lot
-                                                 select a;
+                                var TotalOut = new XPQuery<StockTransfer>(Session)
+                                    .Where(x => x.Product == item && x.SourceLocation == InventoriedLocation)
+                                    .Where(x => x.Lot == lot)
+                                    .Select(x => x.Quantity).Sum();
 
-                                var TotalOut = LotOutList.Sum(x => x.Quantity);
                                 var balance = TotalIn - TotalOut;
 
                                 if (balance != 0)
@@ -209,7 +203,6 @@ namespace JolliantProd.Module.BusinessObjects
             set {
 
                 SetPropertyValue(nameof(Product), ref product, value);
-                Debug.WriteLine("I am here");
                 if (!IsSaving && !IsLoading && InventoryAdjustment != null )
                 {
                     if (InventoryAdjustment.AdjustmentType == InventoryAdjustment.AdjustmentTypeEnum.SingleProduct)
@@ -235,7 +228,6 @@ namespace JolliantProd.Module.BusinessObjects
                         }
                     }
                 }            
-                Debug.WriteLine("I am here too");
             }
         }
 

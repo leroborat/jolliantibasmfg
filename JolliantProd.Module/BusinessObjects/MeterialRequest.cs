@@ -31,6 +31,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        DateTime deliveryDate;
+        Vendor vendor;
         PurchaseOrder purchaseOrder;
         RequestStatusEnum status;
         string note;
@@ -49,6 +51,20 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => requestedBy;
             set => SetPropertyValue(nameof(RequestedBy), ref requestedBy, value);
+        }
+
+        [RuleRequiredField()]
+        public Vendor Vendor
+        {
+            get => vendor;
+            set => SetPropertyValue(nameof(Vendor), ref vendor, value);
+        }
+
+        [RuleRequiredField()]
+        public DateTime DeliveryDate
+        {
+            get => deliveryDate;
+            set => SetPropertyValue(nameof(DeliveryDate), ref deliveryDate, value);
         }
 
 
@@ -133,6 +149,9 @@ namespace JolliantProd.Module.BusinessObjects
                     if (StockingUOM == PurchaseUOM.ReferenceMeasure)
                     {
                         StockingQuantity = Quantity * PurchaseUOM.Ratio;
+                    } else if (StockingUOM == PurchaseUOM)
+                    {
+                        StockingQuantity = Quantity;
                     }
                 }
             }
@@ -145,7 +164,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(PurchaseUOM), ref purchaseUOM, value);
         }
 
-
+        [RuleValueComparison("", DefaultContexts.Save, ValueComparisonType.GreaterThan, "0")]
         public double StockingQuantity
         {
             get => stockingQuantity;

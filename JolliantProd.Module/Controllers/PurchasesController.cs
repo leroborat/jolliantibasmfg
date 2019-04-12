@@ -64,6 +64,9 @@ namespace JolliantProd.Module.Controllers
                 obj.PurchaseOrderLines.Add(pol);
             }
 
+            obj.Vendor = thisMR.Vendor;
+            obj.DeliveryDate = thisMR.DeliveryDate;
+
             DetailView dv = Application.CreateDetailView(os, obj);//Specify the IsRoot parameter if necessary.
             dv.ViewEditMode = DevExpress.ExpressApp.Editors.ViewEditMode.Edit;
             e.ShowViewParameters.CreatedView = dv;
@@ -228,6 +231,55 @@ namespace JolliantProd.Module.Controllers
                     }
                 }
             }
+            ObjectSpace.CommitChanges();
+        }
+
+        private void ValidateWithdrawal_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ObjectSpace.CommitChanges();
+            var thisView = ((Withdrawal)View.CurrentObject);
+            WarehouseLocation warehouseLocation;
+            warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Production"));
+            if (warehouseLocation == null)
+            {
+                warehouseLocation = ObjectSpace.CreateObject<WarehouseLocation>();
+                warehouseLocation.LocationName = "Production";
+                warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.Production;
+                ObjectSpace.CommitChanges();
+            }
+
+            foreach (var item in thisView.WithdrawalLines)
+            {
+                foreach (var item2 in item.WithdrawalLineLots)
+                {
+                    if (item2.DoneQuantity <= 0)
+                    {
+                        continue;
+                    }
+                    StockTransfer st = ObjectSpace.CreateObject<StockTransfer>();
+                    st.DestinationLocation = warehouseLocation;
+                    st.SourceLocation = thisView.Location;
+
+                    if (item2.Lot != null)
+                    {
+                        st.Lot = item2.Lot;
+                    }
+                    st.Quantity = item2.DoneQuantity;
+                    st.UOM = item.UOM;
+                    st.Product = item.Product;
+                    st.Reference = "Move to Production: " + thisView.SeriesName;
+                    ObjectSpace.CommitChanges();
+                    st.Lot.UpdateStockOnHand(true);
+                    ObjectSpace.CommitChanges();
+                }
+               
+            }
+            //Set status to Validated
+            thisView.Status = Withdrawal.StatusEnum.Validated;
+            //Set Employee who handled
+            thisView.TransferredBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            //Save
+            thisView.Save();
             ObjectSpace.CommitChanges();
         }
     }

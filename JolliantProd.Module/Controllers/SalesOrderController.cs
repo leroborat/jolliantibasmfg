@@ -122,7 +122,7 @@ namespace JolliantProd.Module.Controllers
                     }
                     stockTransfer.Quantity = difference;
 
-                    ObjectSpace.CommitChanges();
+                    
                 } else if (item.TheoreticalQuantity > item.RealQuantity)
                 {
                     double difference = item.TheoreticalQuantity - item.RealQuantity;
@@ -136,9 +136,11 @@ namespace JolliantProd.Module.Controllers
                         stockTransfer.Lot = item.LotNumber;
                     }
                     stockTransfer.Quantity = difference;
-                    ObjectSpace.CommitChanges();
                 }
+
             }
+
+            ObjectSpace.CommitChanges();
         }
 
         private void ValidateInventoryReturnAction_Execute(object sender, SimpleActionExecuteEventArgs e)
@@ -219,8 +221,10 @@ namespace JolliantProd.Module.Controllers
                     stockTransfer.Lot = item.LotNumber;
                 }
                 stockTransfer.Quantity = item.QuantityDone;
-                ObjectSpace.CommitChanges();
+                
             }
+
+            ObjectSpace.CommitChanges();
         }
 
         private void GenerateInvoiceLinesAction_Execute(object sender, SimpleActionExecuteEventArgs e)

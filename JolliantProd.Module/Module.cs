@@ -32,6 +32,8 @@ namespace JolliantProd.Module {
             PredefinedReportsUpdater predefinedReportsUpdater = new PredefinedReportsUpdater(Application, objectSpace, versionFromDB);
             predefinedReportsUpdater.AddPredefinedReport<XtraReport2>("PO Summary Report", typeof(SalesOrderLine));
             predefinedReportsUpdater.AddPredefinedReport<XtraReport1>("JRC PJJ PJT PO Summary Report", typeof(SalesOrderLine));
+            predefinedReportsUpdater.AddPredefinedReport<VendorReport>("Vendor List", typeof(Vendor));
+            predefinedReportsUpdater.AddPredefinedReport<LotReport>("Purchaseable Products Lot Report", typeof(Lot));
             return new ModuleUpdater[] { updater, predefinedReportsUpdater };
         }
         public override void Setup(XafApplication application) {
