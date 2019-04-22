@@ -266,6 +266,8 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(PricePerUnit))]
+        decimal pricePerUnit;
         double discount;
         [Persistent(nameof(ReceivedQuantity))]
         double receivedQuantity;
@@ -330,7 +332,8 @@ namespace JolliantProd.Module.BusinessObjects
                     if (StockingUOM == PurchaseUOM.ReferenceMeasure)
                     {
                         StockingQuantity = Quantity * PurchaseUOM.Ratio;
-                    } else if (StockingUOM == PurchaseUOM)
+                    }
+                    else if (StockingUOM == PurchaseUOM)
                     {
                         StockingQuantity = Quantity;
                     }
@@ -345,7 +348,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Price), ref price, value);
         }
 
-        
+
         public double Discount
         {
             get => discount;
@@ -358,7 +361,7 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get
             {
-                lineTotal = Convert.ToDecimal(Quantity) * (Price - (Price *  Convert.ToDecimal(Discount / 100)));
+                lineTotal = Convert.ToDecimal(Quantity) * (Price - (Price * Convert.ToDecimal(Discount / 100)));
                 return lineTotal;
             }
         }
@@ -370,11 +373,12 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(PurchaseUOM), ref purchaseUOM, value);
         }
 
-        
+
         [PersistentAlias(nameof(receivedQuantity))]
         public double ReceivedQuantity
         {
-            get {
+            get
+            {
                 receivedQuantity = (from c in PurchaseOrder.Receivings
                                     where c.Status == Receiving.StatusEnum.Validated
                                     from a in c.ReceivedLines
@@ -387,7 +391,8 @@ namespace JolliantProd.Module.BusinessObjects
                             where a.Product == Product
                             select a.Quantity).Sum();
 
-                return receivedQuantity - retQ; }
+                return receivedQuantity - retQ;
+            }
         }
 
 
@@ -404,5 +409,21 @@ namespace JolliantProd.Module.BusinessObjects
             get => stockingUOM;
             set => SetPropertyValue(nameof(StockingUOM), ref stockingUOM, value);
         }
+
+        
+        [PersistentAlias(nameof(pricePerUnit))]
+        public decimal PricePerUnit
+        {
+            get {
+                if (StockingUOM == PurchaseUOM)
+                {
+                    pricePerUnit = Price;
+                } else
+                {
+                    pricePerUnit = Price / Convert.ToDecimal(PurchaseUOM.Ratio);
+                }
+                return pricePerUnit; }
+        }
+        
     }
 }
