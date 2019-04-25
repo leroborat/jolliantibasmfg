@@ -282,5 +282,53 @@ namespace JolliantProd.Module.Controllers
             thisView.Save();
             ObjectSpace.CommitChanges();
         }
+
+        private void SetToNewReceivedAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ObjectSpace.CommitChanges();
+            var thisView = ((Receiving)View.CurrentObject);
+            thisView.Save();
+            WarehouseLocation warehouseLocation;
+            warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Vendor"));
+            if (warehouseLocation == null)
+            {
+                warehouseLocation = ObjectSpace.CreateObject<WarehouseLocation>();
+                warehouseLocation.LocationName = "Vendor";
+                warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.VendorLocation;
+                ObjectSpace.CommitChanges();
+            }
+
+            foreach (ReceivedLine item in thisView.ReceivedLines)
+            {
+                if (item.PurchaseQuantityReceived <= 0)
+                {
+                    continue;
+                }
+                StockTransfer st = ObjectSpace.CreateObject<StockTransfer>();
+                st.SourceLocation = thisView.StorageLocation;
+                st.DestinationLocation = warehouseLocation;
+                if (item.Lot != null)
+                {
+                    st.Lot = item.Lot;
+                }
+                st.Quantity = item.StockingQuantityReceived;
+                st.UOM = item.StorageUOM;
+                st.Product = item.Product;
+                st.Reference = thisView.Series + " Reversal";
+                ObjectSpace.CommitChanges();
+                if (item?.LotExpiry != null)
+                {
+                    st.Lot.ExpirationDate = item.LotExpiry;
+                }
+                st.Lot.UpdateStockOnHand(true);
+            }
+            //Set status to Validated
+            thisView.Status = Receiving.StatusEnum.New;
+            //Set Employee who handled
+            thisView.ProcessedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            //Save
+            thisView.Save();
+            ObjectSpace.CommitChanges();
+        }
     }
 }

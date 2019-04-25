@@ -29,6 +29,9 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string nMISandCOA;
+        string vendorBillNumber;
+        string legacyPurchaseOrderNumber;
         StatusEnum status;
         string series;
         string processedBy;
@@ -42,7 +45,8 @@ namespace JolliantProd.Module.BusinessObjects
         public PurchaseOrder PurchaseOrder
         {
             get => purchaseOrder;
-            set {
+            set
+            {
                 SetPropertyValue(nameof(PurchaseOrder), ref purchaseOrder, value);
                 if (!IsLoading && !IsSaving)
                 {
@@ -52,14 +56,14 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         StorageLocation = PurchaseOrder?.DeliveryLocation;
                     }
-                    
+
                     foreach (PurchaseOrderLine item in PurchaseOrder.PurchaseOrderLines)
                     {
                         ReceivedLine rl = new ReceivedLine(Session);
                         rl.Receiving = this;
                         if (item.ReceivedQuantity < item.Quantity)
                         {
-                            
+
                             rl.Product = item.Product;
                             rl.Demand = item.Quantity - item.ReceivedQuantity;
                             ReceivedLines.Add(rl);
@@ -67,6 +71,14 @@ namespace JolliantProd.Module.BusinessObjects
                     }
                 }
             }
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string LegacyPurchaseOrderNumber
+        {
+            get => legacyPurchaseOrderNumber;
+            set => SetPropertyValue(nameof(LegacyPurchaseOrderNumber), ref legacyPurchaseOrderNumber, value);
         }
 
 
@@ -83,6 +95,16 @@ namespace JolliantProd.Module.BusinessObjects
             get => vendor;
             set => SetPropertyValue(nameof(Vendor), ref vendor, value);
         }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string VendorBillNumber
+        {
+            get => vendorBillNumber;
+            set => SetPropertyValue(nameof(VendorBillNumber), ref vendorBillNumber, value);
+        }
+
+
 
 
         public DateTime ExpectedDeliveryDate
@@ -114,12 +136,20 @@ namespace JolliantProd.Module.BusinessObjects
                     }
                     catch (Exception)
                     {
-                        
+
                     }
-                    
+
 
                 }
             }
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string NMISandCOA
+        {
+            get => nMISandCOA;
+            set => SetPropertyValue(nameof(NMISandCOA), ref nMISandCOA, value);
         }
 
 

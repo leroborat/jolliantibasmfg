@@ -37,6 +37,7 @@
             this.ProcessReceivingReturnAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.AssignLotsAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ValidateWithdrawal = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.SetToNewReceivedAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // CreatePOAction
             // 
@@ -126,6 +127,17 @@
             this.ValidateWithdrawal.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.ValidateWithdrawal.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.ValidateWithdrawal_Execute);
             // 
+            // SetToNewReceivedAction
+            // 
+            this.SetToNewReceivedAction.Caption = "Set To New";
+            this.SetToNewReceivedAction.ConfirmationMessage = null;
+            this.SetToNewReceivedAction.Id = "SetToNewReceivedAction";
+            this.SetToNewReceivedAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Receiving);
+            this.SetToNewReceivedAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.SetToNewReceivedAction.ToolTip = null;
+            this.SetToNewReceivedAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.SetToNewReceivedAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.SetToNewReceivedAction_Execute);
+            // 
             // PurchasesController
             // 
             this.Actions.Add(this.CreatePOAction);
@@ -136,6 +148,7 @@
             this.Actions.Add(this.ProcessReceivingReturnAction);
             this.Actions.Add(this.AssignLotsAction);
             this.Actions.Add(this.ValidateWithdrawal);
+            this.Actions.Add(this.SetToNewReceivedAction);
 
         }
 
@@ -149,5 +162,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction ProcessReceivingReturnAction;
         private DevExpress.ExpressApp.Actions.SimpleAction AssignLotsAction;
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateWithdrawal;
+        private DevExpress.ExpressApp.Actions.SimpleAction SetToNewReceivedAction;
     }
 }

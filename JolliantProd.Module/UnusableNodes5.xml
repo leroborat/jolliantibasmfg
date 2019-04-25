@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <ListView Id="PurchaseOrder_ListView">
+      <Columns Id="Columns">
+        <ColumnInfo Id="Terms" Width="57" Index="-1" />
+      </Columns>
+    </ListView>
+  </Views>
+</Application>

@@ -9,6 +9,7 @@
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
       <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
+      <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
@@ -166,8 +167,10 @@
       <AppearanceRules>
         <AppearanceRule Id="@28145d09-fd0f-4efa-95b4-d1a17a546212" TargetItems="Vendor" Enabled="False" Criteria="[PurchaseOrder] Is Not Null" IsNewNode="True" />
         <AppearanceRule Id="@38c88b02-f8d7-4ed9-a044-03c2a75e4c07" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" IsNewNode="True" />
+        <AppearanceRule Id="@efa238cc-f801-4f10-8866-bbae1ee1506d" BackColor="192, 255, 192" Context="ListView" Criteria="[ReceivedLines][[PurchaseQuantityReceived] &lt;&gt; 0.0] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" TargetItems="*" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
+        <Member Name="NMISandCOA" Caption="NMIS/COA" />
         <Member Name="ProcessedBy" AllowEdit="False" />
         <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
         <Member Name="Series" AllowEdit="False" />
@@ -688,7 +691,6 @@
         <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
         <ColumnInfo Id="DeliveryLocation" Width="116" Index="-1" />
         <ColumnInfo Id="SubTotal" Width="0" Index="-1" />
-        <ColumnInfo Id="Terms" Width="57" Index="-1" />
         <ColumnInfo Id="VAT" Width="44" Index="-1" />
         <ColumnInfo Id="VATApplies" Width="85" Index="-1" />
         <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
@@ -752,8 +754,8 @@
         <ColumnInfo Id="Series" Width="56" Index="0" />
         <ColumnInfo Id="PurchaseOrder" Width="109" Index="1" />
         <ColumnInfo Id="Vendor" Width="61" />
-        <ColumnInfo Id="ExpectedDeliveryDate" Width="150" />
         <ColumnInfo Id="ProcessedBy" Width="95" Index="4" />
+        <ColumnInfo Id="ExpectedDeliveryDate" Width="150" />
         <ColumnInfo Id="Status" Width="56" Index="5" />
       </Columns>
     </ListView>
