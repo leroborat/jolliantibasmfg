@@ -330,5 +330,60 @@ namespace JolliantProd.Module.Controllers
             thisView.Save();
             ObjectSpace.CommitChanges();
         }
+
+        private void POSetToDraft_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var thisView = ((PurchaseOrder)View.CurrentObject);
+            ((PurchaseOrder)View.CurrentObject).Status = PurchaseOrder.StatusEnum.New;
+            foreach (Receiving item in thisView.Receivings)
+            {
+                if (item.Status == Receiving.StatusEnum.Validated)
+                {
+                    WarehouseLocation warehouseLocation;
+                    warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Vendor"));
+                    if (warehouseLocation == null)
+                    {
+                        warehouseLocation = ObjectSpace.CreateObject<WarehouseLocation>();
+                        warehouseLocation.LocationName = "Vendor";
+                        warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.VendorLocation;
+                        ObjectSpace.CommitChanges();
+                    }
+
+                    foreach (ReceivedLine item2 in item.ReceivedLines)
+                    {
+                        if (item2.PurchaseQuantityReceived <= 0)
+                        {
+                            continue;
+                        }
+                        StockTransfer st = ObjectSpace.CreateObject<StockTransfer>();
+                        st.SourceLocation = item.StorageLocation;
+                        st.DestinationLocation = warehouseLocation;
+                        if (item2.Lot != null)
+                        {
+                            st.Lot = item2.Lot;
+                        }
+                        st.Quantity = item2.StockingQuantityReceived;
+                        st.UOM = item2.StorageUOM;
+                        st.Product = item2.Product;
+                        st.Reference = item.Series + " Reversal";
+                        ObjectSpace.CommitChanges();
+                        if (item2?.LotExpiry != null)
+                        {
+                            st.Lot.ExpirationDate = item2.LotExpiry;
+                        }
+                        st.Lot.UpdateStockOnHand(true);
+                    }
+                    //Set status to Validated
+                    item.Status = Receiving.StatusEnum.Cancelled;
+                    //Set Employee who handled
+                    item.ProcessedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+                    //Save
+                    item.Save();
+                    ObjectSpace.CommitChanges();
+                }
+
+                ObjectSpace.CommitChanges();
+            }
+        }
     }
 }

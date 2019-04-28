@@ -8,6 +8,7 @@
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
+      <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
       <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
       <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
@@ -334,7 +335,9 @@
       </Item>
       <Item Id="Purchases" IsNewNode="True">
         <Items IsNewNode="True">
+          <Item Id="@7b9756f7-7310-4c24-ab29-4fb980ecc233" Caption="PO Balance Report" ViewId="ReceivedLine_ListView_PO_Report" IsNewNode="True" />
           <Item Id="MaterialRequest_ListView" ViewId="MaterialRequest_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="POPriceHistory" Caption="Price History" ViewId="PurchaseOrderLine_ListView_Price_History" IsNewNode="True" />
           <Item Id="Products_Purchasing" ObjectKey="" Caption="Purchaesable Products" ViewId="Product_ListView_Copy" IsNewNode="True" />
           <Item Id="PurchaseOrder_ListView" ViewId="PurchaseOrder_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Receiving_ListView" ViewId="Receiving_ListView" ObjectKey="" IsNewNode="True" />
@@ -539,8 +542,8 @@
     </DetailView>
     <ListView Id="Invoice_InvoiceLines_ListView" AllowEdit="True">
       <Columns>
-        <ColumnInfo Id="Product" Width="63" />
         <ColumnInfo Id="Description" Index="1" />
+        <ColumnInfo Id="Product" Width="63" />
         <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
         <ColumnInfo Id="Quantity" Width="67" Index="3" />
         <ColumnInfo Id="SubTotal" Width="0" Index="4" />
@@ -712,14 +715,45 @@
     <ListView Id="PurchaseOrder_PurchaseOrderLines_ListView">
       <Columns>
         <ColumnInfo Id="Product" Width="63" />
-        <ColumnInfo Id="Quantity" Width="67" />
         <ColumnInfo Id="PurchaseUOM" Width="103" Index="2" />
+        <ColumnInfo Id="Quantity" Width="67" />
         <ColumnInfo Id="Price" Width="48" Index="3" />
         <ColumnInfo Id="Discount" Width="68" Index="4" />
         <ColumnInfo Id="LineTotal" Width="76" Index="5" />
         <ColumnInfo Id="ReceivedQuantity" Width="122" />
         <ColumnInfo Id="StockingQuantity" Width="119" />
         <ColumnInfo Id="StockingUOM" Width="99" />
+      </Columns>
+    </ListView>
+    <ListView Id="PurchaseOrderLine_ListView_Price_History" ClassName="JolliantProd.Module.BusinessObjects.PurchaseOrderLine" Criteria="[PurchaseOrder.Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseOrder" PropertyName="PurchaseOrder" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="Price" PropertyName="Price" Width="50" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Discount" PropertyName="Discount" Width="50" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="LineTotal" PropertyName="LineTotal" Width="50" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="70" Index="6" IsNewNode="True" />
+        <ColumnInfo Id="ReceivedQuantity" PropertyName="ReceivedQuantity" Width="50" Index="7" IsNewNode="True" />
+        <ColumnInfo Id="StockingQuantity" PropertyName="StockingQuantity" Width="50" Index="8" IsNewNode="True" />
+        <ColumnInfo Id="StockingUOM" PropertyName="StockingUOM" Width="70" Index="9" IsNewNode="True" />
+        <ColumnInfo Id="PricePerUnit" PropertyName="PricePerUnit" Width="50" Index="10" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="ReceivedLine_ListView_PO_Report" ClassName="JolliantProd.Module.BusinessObjects.ReceivedLine" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Receiving" PropertyName="Receiving" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Demand" PropertyName="Demand" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="70" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Lot" PropertyName="Lot" Width="70" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="LotExpiry" PropertyName="LotExpiry" Width="70" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="VendorLotCode" PropertyName="VendorLotCode" Width="70" Index="6" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseQuantityReceived" PropertyName="PurchaseQuantityReceived" Width="50" Index="7" IsNewNode="True" />
+        <ColumnInfo Id="StockingQuantityReceived" PropertyName="StockingQuantityReceived" Width="50" Index="8" IsNewNode="True" />
+        <ColumnInfo Id="StorageUOM" PropertyName="StorageUOM" Width="70" Index="9" IsNewNode="True" />
       </Columns>
     </ListView>
     <DetailView Id="Receiving_DetailView">
@@ -880,8 +914,8 @@
         <ColumnInfo Id="Amount" Width="64" Index="3" />
         <ColumnInfo Id="QuantityDelivered" Width="124" Index="4" />
         <ColumnInfo Id="QuantityReturned" Width="123" Index="5" />
-        <ColumnInfo Id="QuantityUnserved" Width="124" />
         <ColumnInfo Id="QuantityInvoiced" Width="118" Index="6" />
+        <ColumnInfo Id="QuantityUnserved" Width="124" />
       </Columns>
     </ListView>
     <ListView Id="SalesOrder_Trips_ListView" AllowDelete="False" AllowUnlink="True">

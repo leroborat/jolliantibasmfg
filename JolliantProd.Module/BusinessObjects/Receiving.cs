@@ -133,6 +133,7 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         StorageLocation.NextIn += 1;
                         Series = StorageLocation.Warehouse.WarehouseName + "-IN-" + StorageLocation.NextIn;
+                        Session.Save(this);
                     }
                     catch (Exception)
                     {

@@ -38,6 +38,7 @@
             this.AssignLotsAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.ValidateWithdrawal = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.SetToNewReceivedAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.POSetToDraft = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // CreatePOAction
             // 
@@ -138,6 +139,17 @@
             this.SetToNewReceivedAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.SetToNewReceivedAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.SetToNewReceivedAction_Execute);
             // 
+            // POSetToDraft
+            // 
+            this.POSetToDraft.Caption = "Set To Draft";
+            this.POSetToDraft.ConfirmationMessage = null;
+            this.POSetToDraft.Id = "POSetToDraft";
+            this.POSetToDraft.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.PurchaseOrder);
+            this.POSetToDraft.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.POSetToDraft.ToolTip = null;
+            this.POSetToDraft.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.POSetToDraft.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.POSetToDraft_Execute);
+            // 
             // PurchasesController
             // 
             this.Actions.Add(this.CreatePOAction);
@@ -149,6 +161,7 @@
             this.Actions.Add(this.AssignLotsAction);
             this.Actions.Add(this.ValidateWithdrawal);
             this.Actions.Add(this.SetToNewReceivedAction);
+            this.Actions.Add(this.POSetToDraft);
 
         }
 
@@ -163,5 +176,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction AssignLotsAction;
         private DevExpress.ExpressApp.Actions.SimpleAction ValidateWithdrawal;
         private DevExpress.ExpressApp.Actions.SimpleAction SetToNewReceivedAction;
+        private DevExpress.ExpressApp.Actions.SimpleAction POSetToDraft;
     }
 }

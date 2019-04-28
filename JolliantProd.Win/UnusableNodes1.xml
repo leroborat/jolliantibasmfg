@@ -1,7 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application>
   <Views Id="Views">
-    <ListView Id="SalesOrderLine_ListView_PO_Summary" EditorTypeName="DevExpress.ExpressApp.PivotGrid.Win.PivotGridListEditor" />
+    <ListView Id="PurchaseOrderLine_ListView_PO_Balance" EditorTypeName="DevExpress.ExpressApp.PivotGrid.Win.PivotGridListEditor" Criteria="[PurchaseOrder.Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#">
+      <Filters Id="Filters" CurrentFilterId="" />
+      <PivotSettings Id="PivotSettings" Settings="" />
+    </ListView>
   </Views>
   <NavigationItems Id="NavigationItems">
     <Items Id="Items">
