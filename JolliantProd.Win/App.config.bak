@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configuration>
   <configSections>
-    <section name="DevExpressXpoProfiler" type="DevExpress.Xpo.Logger.ProfilerConfigSection, DevExpress.Data.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" allowLocation="true" allowDefinition="Everywhere" />
+    <section name="DevExpressXpoProfiler" type="DevExpress.Xpo.Logger.ProfilerConfigSection, DevExpress.Data.v18.2, Version=18.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" allowLocation="true" allowDefinition="Everywhere" />
   </configSections>
   <appSettings>
     <add key="Modules" value="" />
@@ -16,8 +16,7 @@
   </appSettings>
   <connectionStrings>
     <add name="EasyTestConnectionString" connectionString="Integrated Security=SSPI;Pooling=false;Data Source=(localdb)\mssqllocaldb;Initial Catalog=JolliantProdEasyTest" />
-    <add name="ConnectionString" connectionString="XpoProvider=MySql;Server=localhost;User ID=root;;Password=;Database=jolliant_test;
-         Persist Security Info= true;Charset=utf8" />
+    <add name="ConnectionString" connectionString="XpoProvider=MySql;Server=localhost;User ID=root;;Password=;Database=jolliant_test;&#xD;&#xA;         Persist Security Info= true;Charset=utf8" />
     <!--
     Use the following connection string to connect to a Jet (Microsoft Access) database:
     <add name="ConnectionString" connectionString="Provider=Microsoft.Jet.OLEDB.4.0;Password=;User ID=Admin;Data Source=JolliantProd.mdb;Mode=Share Deny None;"/>
@@ -36,5 +35,5 @@
   <startup>
     <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.0" />
   </startup>
-  <DevExpressXpoProfiler serverType="DevExpress.Xpo.Logger.Transport.LogServer" serverAssembly="DevExpress.Xpo.v19.1, Version=19.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" categories="SQL;Session;DataCache" port="52934" />
+  <DevExpressXpoProfiler serverType="DevExpress.Xpo.Logger.Transport.LogServer" serverAssembly="DevExpress.Xpo.v18.2, Version=18.2.4.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" categories="SQL;Session;DataCache" port="52934" />
 </configuration>

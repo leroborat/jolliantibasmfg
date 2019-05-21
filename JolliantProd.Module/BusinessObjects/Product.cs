@@ -28,6 +28,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        double uOMRatioProduction;
+        UnitOfMeasure productionUOM;
         TrackingEnum tracking;
         [Persistent(nameof(StockOnHand))]
         double stockOnHand;
@@ -129,6 +131,21 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(PurchaseUOM), ref purchaseUOM, value);
         }
 
+        [RuleRequiredField()]
+        public UnitOfMeasure ProductionUOM
+        {
+            get => productionUOM;
+            set => SetPropertyValue(nameof(ProductionUOM), ref productionUOM, value);
+        }
+
+        
+        public double UOMRatioProduction
+        {
+            get => uOMRatioProduction;
+            set => SetPropertyValue(nameof(UOMRatioProduction), ref uOMRatioProduction, value);
+        }
+
+
 
         [PersistentAlias(nameof(stockOnHand))]
         public double StockOnHand
@@ -149,35 +166,6 @@ namespace JolliantProd.Module.BusinessObjects
                     x.Product == this
                     ).Select(x => x.Quantity).Sum();
 
-                //XPCollection<StockTransfer> collection = new XPCollection<StockTransfer>(Session);
-                ////Get In
-                //var a = from st in collection
-                //        where (st.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
-                //        st.Product == this)
-                //        select st;
-
-                //double StockIn = 0;
-
-                //foreach (StockTransfer item in a)
-                //{
-                //    StockIn += item.Quantity;
-                //}
-
-                //Get Out
-
-                //var b = from st in collection
-                //        where (st.SourceLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
-                //        st.Product == this)
-                //        select st;
-
-                //double StockOut = 0;
-
-                //foreach (StockTransfer item in b)
-                //{
-                //    StockOut += item.Quantity;
-                //}
-
-                //Get Actual
                 stockOnHand = StockIn - StockOut;
                 return stockOnHand;
             }

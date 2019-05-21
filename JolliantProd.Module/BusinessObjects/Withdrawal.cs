@@ -26,9 +26,11 @@ namespace JolliantProd.Module.BusinessObjects
         {
             base.AfterConstruction();
             RequestedBy = Session.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            WithdrawalDate = DateTime.Now;
         }
 
 
+        DateTime withdrawalDate;
         StatusEnum status;
         string transferredBy;
         string requestedBy;
@@ -40,6 +42,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => seriesName;
             set => SetPropertyValue(nameof(SeriesName), ref seriesName, value);
+        }
+
+        
+        public DateTime WithdrawalDate
+        {
+            get => withdrawalDate;
+            set => SetPropertyValue(nameof(WithdrawalDate), ref withdrawalDate, value);
         }
 
 
@@ -103,6 +112,9 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(ProductionQuantity))]
+        double productionQuantity;
+        UnitOfMeasure productionUOM;
         UnitOfMeasure uOM;
         [Persistent(nameof(ProcessedQuantity))]
         double processedQuantity;
@@ -122,10 +134,13 @@ namespace JolliantProd.Module.BusinessObjects
         public Product Product
         {
             get => product;
-            set { SetPropertyValue(nameof(Product), ref product, value);
+            set
+            {
+                SetPropertyValue(nameof(Product), ref product, value);
                 if (!IsLoading && !IsSaving)
                 {
                     UOM = Product.UOM;
+                    ProductionUOM = Product.ProductionUOM;
                     //Set Default Lots
                 }
             }
@@ -142,16 +157,42 @@ namespace JolliantProd.Module.BusinessObjects
         [PersistentAlias(nameof(processedQuantity))]
         public double ProcessedQuantity
         {
-            get {
+            get
+            {
                 processedQuantity = WithdrawalLineLots.Select(x => x.DoneQuantity).Sum();
-                return processedQuantity; }
+                return processedQuantity;
+            }
         }
 
-        
+
         public UnitOfMeasure UOM
         {
             get => uOM;
             set => SetPropertyValue(nameof(UOM), ref uOM, value);
+        }
+
+        
+        [PersistentAlias(nameof(productionQuantity))]
+        public double ProductionQuantity
+        {
+            get {
+                if (ProductionUOM != UOM)
+                {
+                    productionQuantity = ProcessedQuantity * Product.UOMRatioProduction;
+                } else
+                {
+                    productionQuantity = ProcessedQuantity;
+                }
+                
+                return productionQuantity; }
+        }
+        
+
+
+        public UnitOfMeasure ProductionUOM
+        {
+            get => productionUOM;
+            set => SetPropertyValue(nameof(ProductionUOM), ref productionUOM, value);
         }
 
         [Association("WithdrawalLine-WithdrawalLineLots"), Aggregated()]

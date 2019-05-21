@@ -373,13 +373,18 @@ namespace JolliantProd.Module.Controllers
                         }
                         st.Lot.UpdateStockOnHand(true);
                     }
-                    //Set status to Validated
                     item.Status = Receiving.StatusEnum.Cancelled;
                     //Set Employee who handled
                     item.ProcessedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
                     //Save
                     item.Save();
                     ObjectSpace.CommitChanges();
+                }
+
+                else if (item.Status == Receiving.StatusEnum.New)
+                {
+                    item.Status = Receiving.StatusEnum.Cancelled;
+                    item.Save();
                 }
 
                 ObjectSpace.CommitChanges();

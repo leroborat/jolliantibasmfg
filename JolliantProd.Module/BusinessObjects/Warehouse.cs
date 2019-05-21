@@ -51,7 +51,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
     }
 
-    [DefaultClassOptions]
+    [DefaultClassOptions, OptimisticLocking(Enabled = false)]
     public class WarehouseLocation : BaseObject
     {
         public WarehouseLocation(Session session) : base(session)

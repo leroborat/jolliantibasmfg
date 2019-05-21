@@ -1,11 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application>
-  <Views Id="Views">
-    <ListView Id="PurchaseOrderLine_ListView_PO_Balance" EditorTypeName="DevExpress.ExpressApp.PivotGrid.Win.PivotGridListEditor" Criteria="[PurchaseOrder.Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#">
-      <Filters Id="Filters" CurrentFilterId="" />
-      <PivotSettings Id="PivotSettings" Settings="" />
-    </ListView>
-  </Views>
   <NavigationItems Id="NavigationItems">
     <Items Id="Items">
       <Item Id="Default">
@@ -15,4 +9,11 @@
       </Item>
     </Items>
   </NavigationItems>
+  <Views Id="Views">
+    <ListView Id="StockTransfer_Aeging">
+      <Filters Id="Filters">
+        <Filter Id="@5be5fe2d-9df6-4c1e-8287-f058b4b43f94" Removed="True" />
+      </Filters>
+    </ListView>
+  </Views>
 </Application>

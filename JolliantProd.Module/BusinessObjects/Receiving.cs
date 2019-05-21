@@ -15,7 +15,7 @@ using AggregatedAttribute = DevExpress.Xpo.AggregatedAttribute;
 
 namespace JolliantProd.Module.BusinessObjects
 {
-    [DefaultClassOptions]
+    [DefaultClassOptions, OptimisticLocking(Enabled = false)]
     public class Receiving : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
         public Receiving(Session session)
@@ -29,6 +29,13 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string receivedBy;
+        [Persistent(nameof(TotalStockingQuantityReceived))]
+        double totalStockingQuantityReceived;
+        [Persistent(nameof(TotalPurchaseQuantityReceived))]
+        double totalPurchaseQuantityReceived;
+        [Persistent(nameof(TotalDemand))]
+        double totalDemand;
         string nMISandCOA;
         string vendorBillNumber;
         string legacyPurchaseOrderNumber;
@@ -145,7 +152,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string NMISandCOA
         {
@@ -161,6 +168,14 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ProcessedBy), ref processedBy, value);
         }
 
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string ReceivedBy
+        {
+            get => receivedBy;
+            set => SetPropertyValue(nameof(ReceivedBy), ref receivedBy, value);
+        }
+
         [Association("Receiving-ReceivedLines"), Aggregated()]
         public XPCollection<ReceivedLine> ReceivedLines
         {
@@ -170,7 +185,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         public enum StatusEnum
         {
             New,
@@ -178,12 +193,46 @@ namespace JolliantProd.Module.BusinessObjects
             Cancelled
         }
 
-        
+
         public StatusEnum Status
         {
             get => status;
             set => SetPropertyValue(nameof(Status), ref status, value);
         }
+
+
+        [PersistentAlias(nameof(totalDemand))]
+        public double TotalDemand
+        {
+            get
+            {
+                totalDemand = ReceivedLines.Select(x => x.Demand).Sum();
+                return totalDemand;
+            }
+        }
+
+
+        [PersistentAlias(nameof(totalPurchaseQuantityReceived))]
+        public double TotalPurchaseQuantityReceived
+        {
+            get
+            {
+                totalPurchaseQuantityReceived = ReceivedLines.Select(x => x.PurchaseQuantityReceived).Sum();
+                return totalPurchaseQuantityReceived;
+            }
+        }
+
+        
+        [PersistentAlias(nameof(totalStockingQuantityReceived))]
+        public double TotalStockingQuantityReceived
+        {
+            get {
+                totalStockingQuantityReceived = ReceivedLines.Select(x => x.StockingQuantityReceived).Sum();
+                return totalStockingQuantityReceived; }
+        }
+        
+
+
 
 
     }
