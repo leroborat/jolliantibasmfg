@@ -12,6 +12,7 @@ using DevExpress.ExpressApp.Model;
 using DevExpress.Persistent.BaseImpl;
 using DevExpress.Persistent.Validation;
 using AggregatedAttribute = DevExpress.Xpo.AggregatedAttribute;
+using System.Text.RegularExpressions;
 
 namespace JolliantProd.Module.BusinessObjects
 {
@@ -29,6 +30,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        DateTime lastModifiedOn;
+        string lastModifiedBy;
         string receivedBy;
         [Persistent(nameof(TotalStockingQuantityReceived))]
         double totalStockingQuantityReceived;
@@ -55,7 +58,7 @@ namespace JolliantProd.Module.BusinessObjects
             set
             {
                 SetPropertyValue(nameof(PurchaseOrder), ref purchaseOrder, value);
-                if (!IsLoading && !IsSaving)
+                if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     Vendor = PurchaseOrder.Vendor;
                     ExpectedDeliveryDate = PurchaseOrder.DeliveryDate;
@@ -168,12 +171,27 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ProcessedBy), ref processedBy, value);
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string ReceivedBy
         {
             get => receivedBy;
             set => SetPropertyValue(nameof(ReceivedBy), ref receivedBy, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string LastModifiedBy
+        {
+            get => lastModifiedBy;
+            set => SetPropertyValue(nameof(LastModifiedBy), ref lastModifiedBy, value);
+        }
+
+        
+        public DateTime LastModifiedOn
+        {
+            get => lastModifiedOn;
+            set => SetPropertyValue(nameof(LastModifiedOn), ref lastModifiedOn, value);
         }
 
         [Association("Receiving-ReceivedLines"), Aggregated()]
@@ -273,10 +291,13 @@ namespace JolliantProd.Module.BusinessObjects
                     StorageUOM = Product.UOM;
                     if (Product.Tracking != Product.TrackingEnum.NoTracking)
                     {
+                        Regex rgx = new Regex("[^a-zA-Z0-9 -]");
+                        string VendorName = rgx.Replace(Receiving?.Vendor?.VendorName, "");
+
                         Lot lot = new Lot(Session);
                         lot.InternalReference = Receiving?.Series;
                         lot.LotCode = Product?.InternalReference + "-" + DateTime.Now.ToString("MMddyyyy") +
-                            "-" + Receiving?.Vendor?.VendorName + "-" + Receiving?.Vendor?.NextIn;
+                            "-" + VendorName + "-" + Receiving?.Vendor?.NextIn;
                         try
                         {
                             Receiving.Vendor.NextIn += 1;

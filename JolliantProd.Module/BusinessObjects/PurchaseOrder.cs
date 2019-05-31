@@ -46,6 +46,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        DateTime lastModifiedOn;
+        string lastModifiedBy;
         PaymentTerm paymentTerm;
         bool vATApplies;
         WarehouseLocation deliveryLocation;
@@ -138,7 +140,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(DeliveryLocation), ref deliveryLocation, value);
         }
 
-        
+
         public PaymentTerm PaymentTerm
         {
             get => paymentTerm;
@@ -193,6 +195,23 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string LastModifiedBy
+        {
+            get => lastModifiedBy;
+            set => SetPropertyValue(nameof(LastModifiedBy), ref lastModifiedBy, value);
+        }
+
+        
+        public DateTime LastModifiedOn
+        {
+            get => lastModifiedOn;
+            set => SetPropertyValue(nameof(LastModifiedOn), ref lastModifiedOn, value);
+        }
+
+
+
+
         [PersistentAlias(nameof(total))]
         public decimal Total
         {
@@ -234,7 +253,14 @@ namespace JolliantProd.Module.BusinessObjects
         public decimal VAT
         {
             get {
-                vAT = Total - SubTotal;
+                if (VATApplies)
+                {
+                    vAT = Total - SubTotal;
+                } else
+                {
+                    vAT = 0;
+                }
+                
                 return vAT; }
         }
 

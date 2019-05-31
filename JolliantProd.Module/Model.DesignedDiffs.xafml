@@ -143,6 +143,8 @@
         <Member Name="ApprovedBy" AllowEdit="False" Caption="Approved or Cancelled By" />
         <Member Name="CreatedBy" AllowEdit="False" />
         <Member Name="DeliveryLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="LastModifiedBy" AllowEdit="False" />
+        <Member Name="LastModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
         <Member Name="PurchaseOrderNumber" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
       </OwnMembers>
@@ -171,6 +173,8 @@
         <AppearanceRule Id="@efa238cc-f801-4f10-8866-bbae1ee1506d" BackColor="192, 255, 192" Context="ListView" Criteria="[ReceivedLines][[PurchaseQuantityReceived] &lt;&gt; 0.0] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" TargetItems="*" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
+        <Member Name="LastModifiedBy" AllowEdit="False" />
+        <Member Name="LastModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
         <Member Name="NMISandCOA" Caption="NMIS/COA" />
         <Member Name="ProcessedBy" AllowEdit="False" />
         <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
@@ -261,6 +265,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLine" DefaultListViewAllowEdit="False" DefaultListViewNewItemRowPosition="Bottom">
       <OwnMembers>
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
         <Member Name="ProductionUOM" AllowEdit="False" />
         <Member Name="UOM" AllowEdit="False" />
       </OwnMembers>

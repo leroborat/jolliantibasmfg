@@ -44,7 +44,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(SeriesName), ref seriesName, value);
         }
 
-        
+        [RuleRequiredField()]
         public DateTime WithdrawalDate
         {
             get => withdrawalDate;
@@ -213,6 +213,8 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(LotAge))]
+        int lotAge;
         double doneQuantity;
         Lot lot;
         WithdrawalLine withdrawalLine;
@@ -231,11 +233,41 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Lot), ref lot, value);
         }
 
-        
+
         public double DoneQuantity
         {
             get => doneQuantity;
             set => SetPropertyValue(nameof(DoneQuantity), ref doneQuantity, value);
         }
+
+        
+        [PersistentAlias(nameof(lotAge))]
+        public int LotAge
+        {
+            get {
+                try
+                {
+                    if (Lot != null)
+                    {
+                        var age = new XPQuery<StockTransfer>(Session)
+                            .Where(x => x.DestinationLocation == WithdrawalLine.Withdrawal.Location)
+                            .Where(x => x.Product == WithdrawalLine.Product)
+                            .Where(x => x.Lot == Lot)
+                            .Select(x => x.Date).First();
+
+                        Console.WriteLine(age);
+                        lotAge = (WithdrawalLine.Withdrawal.WithdrawalDate - age).Days;
+                        Console.WriteLine(lotAge);
+                    }
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error");
+                    lotAge = 0;
+                }
+                
+                return lotAge; }
+        }
+        
     }
 }
