@@ -65,7 +65,6 @@ namespace JolliantProd.Module.BusinessObjects
             get => emailAddress;
             set => SetPropertyValue(nameof(EmailAddress), ref emailAddress, value);
         }
-
         
         public int NextPONumber
         {
