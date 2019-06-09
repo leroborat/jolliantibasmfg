@@ -142,6 +142,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessObjects\BillOfMaterial.cs" />
     <Compile Include="BusinessObjects\Company.cs" />
     <Compile Include="BusinessObjects\Customer.cs" />
     <Compile Include="BusinessObjects\CustomerPayment.cs" />
@@ -153,9 +154,11 @@
     <Compile Include="BusinessObjects\InventoryScrap.cs" />
     <Compile Include="BusinessObjects\Invoice.cs" />
     <Compile Include="BusinessObjects\Lot.cs" />
+    <Compile Include="BusinessObjects\ManufacturingOrder.cs" />
     <Compile Include="BusinessObjects\MeterialRequest.cs" />
     <Compile Include="BusinessObjects\PaymentTerm.cs" />
     <Compile Include="BusinessObjects\Product.cs" />
+    <Compile Include="BusinessObjects\ProductionRoute.cs" />
     <Compile Include="BusinessObjects\PurchaseOrder.cs" />
     <Compile Include="BusinessObjects\Receiving.cs" />
     <Compile Include="BusinessObjects\ReceivingReturn.cs" />
@@ -170,6 +173,8 @@
     <Compile Include="BusinessObjects\Vendor.cs" />
     <Compile Include="BusinessObjects\Warehouse.cs" />
     <Compile Include="BusinessObjects\Withdrawal.cs" />
+    <Compile Include="BusinessObjects\WorkCenter.cs" />
+    <Compile Include="BusinessObjects\WorkOrder.cs" />
     <Compile Include="Controllers\PurchaseSaving.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -263,6 +268,7 @@
       <SubType>Designer</SubType>
       <DependentUpon>Module.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Reports\LotAgeWithdrawal.resx">
       <DependentUpon>LotAgeWithdrawal.cs</DependentUpon>
     </EmbeddedResource>

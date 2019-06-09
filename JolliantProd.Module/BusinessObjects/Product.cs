@@ -66,6 +66,15 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(CanBePurchased), ref canBePurchased, value);
         }
 
+        
+        public bool CanBeManufactured
+        {
+            get => canBeManufactured;
+            set => SetPropertyValue(nameof(CanBeManufactured), ref canBeManufactured, value);
+        }
+        bool canBeManufactured;
+        
+
         public enum ProductTypeEnum
         {
             Storable,
@@ -194,6 +203,15 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => tracking;
             set => SetPropertyValue(nameof(Tracking), ref tracking, value);
+        }
+
+        [Association("Product-BillOfMaterials"), DevExpress.Xpo.Aggregated()]
+        public XPCollection<BillOfMaterial> BillOfMaterials
+        {
+            get
+            {
+                return GetCollection<BillOfMaterial>(nameof(BillOfMaterials));
+            }
         }
 
 
