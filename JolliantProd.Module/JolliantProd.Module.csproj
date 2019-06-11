@@ -159,6 +159,7 @@
     <Compile Include="BusinessObjects\PaymentTerm.cs" />
     <Compile Include="BusinessObjects\Product.cs" />
     <Compile Include="BusinessObjects\ProductionRoute.cs" />
+    <Compile Include="BusinessObjects\ProductionTransfer.cs" />
     <Compile Include="BusinessObjects\PurchaseOrder.cs" />
     <Compile Include="BusinessObjects\Receiving.cs" />
     <Compile Include="BusinessObjects\ReceivingReturn.cs" />
@@ -173,8 +174,15 @@
     <Compile Include="BusinessObjects\Vendor.cs" />
     <Compile Include="BusinessObjects\Warehouse.cs" />
     <Compile Include="BusinessObjects\Withdrawal.cs" />
+    <Compile Include="BusinessObjects\WithdrawalRequest.cs" />
     <Compile Include="BusinessObjects\WorkCenter.cs" />
     <Compile Include="BusinessObjects\WorkOrder.cs" />
+    <Compile Include="Controllers\ProductionController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\ProductionController.Designer.cs">
+      <DependentUpon>ProductionController.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\PurchaseSaving.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -251,6 +259,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controllers\ProductionController.resx">
+      <DependentUpon>ProductionController.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\PurchaseSaving.resx">
       <DependentUpon>PurchaseSaving.cs</DependentUpon>
     </EmbeddedResource>

@@ -41,6 +41,7 @@ namespace JolliantProd.Module.BusinessObjects
                 }
             }
         }
+        DateTime productionStartDateTime;
         StatusEnum status;
         ProductionRoute routing;
         BillOfMaterial billOfMaterial;
@@ -61,6 +62,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => product;
             set => SetPropertyValue(nameof(Product), ref product, value);
+        }
+
+        [RuleRequiredField()]
+        public DateTime ProductionStartDateTime
+        {
+            get => productionStartDateTime;
+            set => SetPropertyValue(nameof(ProductionStartDateTime), ref productionStartDateTime, value);
         }
 
         [RuleRequiredField()]
@@ -132,6 +140,15 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<WorkOrder>(nameof(WorkOrders));
             }
         }
+
+        [Association("ManufacturingOrder-WithdrawalRequests"), Aggregated()]
+        public XPCollection<WithdrawalRequest> WithdrawalRequests
+        {
+            get
+            {
+                return GetCollection<WithdrawalRequest>(nameof(WithdrawalRequests));
+            }
+        }
     }
 
     public class ConsumedMaterial : BaseObject
@@ -147,6 +164,8 @@ namespace JolliantProd.Module.BusinessObjects
             get => manufacturingOrder;
             set => SetPropertyValue(nameof(ManufacturingOrder), ref manufacturingOrder, value);
         }
+        [Persistent(nameof(QuantityAvailable))]
+        double quantityAvailable;
         double consumed;
         double toConsume;
         UnitOfMeasure unitOfMeasure;
@@ -165,6 +184,14 @@ namespace JolliantProd.Module.BusinessObjects
             get => unitOfMeasure;
             set => SetPropertyValue(nameof(UnitOfMeasure), ref unitOfMeasure, value);
         }
+
+        
+        [PersistentAlias(nameof(quantityAvailable))]
+        public double QuantityAvailable
+        {
+            get { return quantityAvailable; }
+        }
+        
 
 
         public double ToConsume

@@ -8,6 +8,7 @@
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
+      <Action Id="PlanMO" TargetObjectsCriteria="[BillOfMaterial] Is Not Null And [Product] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft# And [Company] Is Not Null And [Routing] Is Not Null And [Company] Is Not Null And [QuantityToProduce] &gt; 0.0" />
       <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Declined#" />
       <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
       <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
@@ -114,10 +115,15 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Lot" DefaultLookupEditorMode="AllItemsWithSearch" ImageName="BO_Note" />
     <Class Name="JolliantProd.Module.BusinessObjects.ManufacturingOrder">
+      <AppearanceRules>
+        <AppearanceRule Id="@33b4a384-f9fa-4fd1-a560-65390e19ce06" Visibility="Hide" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft#" TargetItems="FinishedGoods,WithdrawalRequests,WorkOrders" IsNewNode="True" />
+      </AppearanceRules>
       <OwnMembers>
         <Member Name="BillOfMaterial" DataSourceCriteria="[Product] = '@This.Product'" />
         <Member Name="ConsumedMaterials" AllowEdit="False" />
+        <Member Name="Product" DataSourceCriteria="[CanBeManufactured] = True" />
         <Member Name="Routing" AllowEdit="False" />
+        <Member Name="SeriesName" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
       </OwnMembers>
     </Class>
@@ -339,7 +345,7 @@
       </Item>
       <Item Id="Default" Visible="False">
         <Items>
-          <Item Id="BillOfMaterial_ListView" Removed="True" />
+          <Item Id="BillOfMaterial_ListView" ViewId="BillOfMaterial_ListView" ObjectKey="" IsNewNode="True" Removed="True" />
           <Item Id="Company_ListView" Removed="True" />
           <Item Id="Customer_ListView" Removed="True" />
           <Item Id="CustomerPayment_ListView" Removed="True" />
@@ -351,6 +357,7 @@
           <Item Id="InventoryScrap_ListView" Removed="True" />
           <Item Id="Invoice_ListView" Removed="True" />
           <Item Id="Lot_ListView" Removed="True" />
+          <Item Id="ManufacturingOrder_ListView" Removed="True" />
           <Item Id="MaterialRequest_ListView" Removed="True" />
           <Item Id="PaymentTerm_ListView" Removed="True" />
           <Item Id="Product_ListView" Removed="True" />
@@ -369,14 +376,18 @@
           <Item Id="Warehouse_ListView" Removed="True" />
           <Item Id="WarehouseLocation_ListView" Removed="True" />
           <Item Id="Withdrawal_ListView" Removed="True" />
+          <Item Id="WithdrawalRequest_ListView" Removed="True" />
           <Item Id="WorkCenter_ListView" Removed="True" />
+          <Item Id="WorkOrder_ListView" Removed="True" />
         </Items>
       </Item>
       <Item Id="Production" Caption="Production" IsNewNode="True">
         <Items IsNewNode="True">
-          <Item Id="BillOfMaterial_ListView" ViewId="BillOfMaterial_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="ManufacturingOrder_ListView" ViewId="ManufacturingOrder_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="ProductionRoute_ListView" ViewId="ProductionRoute_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WithdrawalRequest_ListView" ViewId="WithdrawalRequest_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="WorkCenter_ListView" ViewId="WorkCenter_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WorkOrder_ListView" ViewId="WorkOrder_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="Purchases" IsNewNode="True">
