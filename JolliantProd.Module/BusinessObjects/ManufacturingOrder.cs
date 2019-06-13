@@ -41,6 +41,8 @@ namespace JolliantProd.Module.BusinessObjects
                 }
             }
         }
+        DateTime finishedDate;
+        string processedBy;
         DateTime productionStartDateTime;
         StatusEnum status;
         ProductionRoute routing;
@@ -108,6 +110,15 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+
+        public WarehouseLocation StockLocation
+        {
+            get => stockLocation;
+            set => SetPropertyValue(nameof(StockLocation), ref stockLocation, value);
+        }
+        WarehouseLocation stockLocation;
+
+
         public enum StatusEnum
         {
             Draft,
@@ -116,11 +127,26 @@ namespace JolliantProd.Module.BusinessObjects
             Done
         }
 
-        
+
         public StatusEnum Status
         {
             get => status;
             set => SetPropertyValue(nameof(Status), ref status, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string ProcessedBy
+        {
+            get => processedBy;
+            set => SetPropertyValue(nameof(ProcessedBy), ref processedBy, value);
+        }
+
+        
+        public DateTime FinishedDate
+        {
+            get => finishedDate;
+            set => SetPropertyValue(nameof(FinishedDate), ref finishedDate, value);
         }
 
         [Association("ManufacturingOrder-FinishedGoods"), Aggregated()]
@@ -132,7 +158,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        [Association("ManufacturingOrder-WorkOrders")]
+        [Association("ManufacturingOrder-WorkOrders"), Aggregated()]
         public XPCollection<WorkOrder> WorkOrders
         {
             get
@@ -189,7 +215,14 @@ namespace JolliantProd.Module.BusinessObjects
         [PersistentAlias(nameof(quantityAvailable))]
         public double QuantityAvailable
         {
-            get { return quantityAvailable; }
+            get {
+                quantityAvailable = (from c in ManufacturingOrder.WithdrawalRequests
+                                     from a in c.WithdrawalRequestLines
+                                     where a.Product == Product
+                                     select a.ProcessedQuantity).Sum();
+
+                quantityAvailable = quantityAvailable * Product.UOMRatioProduction;
+                return quantityAvailable; }
         }
         
 
@@ -200,7 +233,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ToConsume), ref toConsume, value);
         }
 
-        
+        [RuleValueComparison("", DefaultContexts.Save, ValueComparisonType.LessThanOrEqual, "QuantityAvailable", ParametersMode.Expression)]
         public double Consumed
         {
             get => consumed;
@@ -215,6 +248,7 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        DateTime expirationDate;
         double quantity;
         string lotCode;
         UnitOfMeasure unitOfMeasure;
@@ -250,11 +284,18 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(LotCode), ref lotCode, value);
         }
 
-        
+
         public double Quantity
         {
             get => quantity;
             set => SetPropertyValue(nameof(Quantity), ref quantity, value);
+        }
+
+        
+        public DateTime ExpirationDate
+        {
+            get => expirationDate;
+            set => SetPropertyValue(nameof(ExpirationDate), ref expirationDate, value);
         }
 
     }

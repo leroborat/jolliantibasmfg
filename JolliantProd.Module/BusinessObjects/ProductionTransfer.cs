@@ -24,9 +24,12 @@ namespace JolliantProd.Module.BusinessObjects
         public override void AfterConstruction()
         {
             base.AfterConstruction();
-            // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
+            ProcessedDate = DateTime.Now;
         }
 
+        WarehouseLocation location;
+        StatusEnum status;
+        string processedBy;
         DateTime processedDate;
         WithdrawalRequest withdrawalRequest;
 
@@ -34,14 +37,46 @@ namespace JolliantProd.Module.BusinessObjects
         public WithdrawalRequest WithdrawalRequest
         {
             get => withdrawalRequest;
-            set => SetPropertyValue(nameof(WithdrawalRequest), ref withdrawalRequest, value);
+            set
+            {
+                SetPropertyValue(nameof(WithdrawalRequest), ref withdrawalRequest, value);
+                if (!IsLoading && !IsSaving && !IsDeleted && ProductionTransferLines.Count <= 0)
+                {
+                    Location = WithdrawalRequest.FromLocation;
+                    foreach (var item in WithdrawalRequest.WithdrawalRequestLines)
+                    {
+                        if (item.ProcessedQuantity < item.StockingQuantity)
+                        {
+                            var thisProductLine = new ProductionTransferLine(Session);
+                            thisProductLine.Product = item.Product;
+                            ProductionTransferLines.Add(thisProductLine);
+                        }
+                    }
+                    Session.Save(this);
+                }
+            }
         }
 
         
+        public WarehouseLocation Location
+        {
+            get => location;
+            set => SetPropertyValue(nameof(Location), ref location, value);
+        }
+
+
         public DateTime ProcessedDate
         {
             get => processedDate;
             set => SetPropertyValue(nameof(ProcessedDate), ref processedDate, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string ProcessedBy
+        {
+            get => processedBy;
+            set => SetPropertyValue(nameof(ProcessedBy), ref processedBy, value);
         }
 
         [Association("ProductionTransfer-ProductionTransferLines"), DevExpress.Xpo.Aggregated()]
@@ -52,6 +87,20 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<ProductionTransferLine>(nameof(ProductionTransferLines));
             }
         }
+
+        public enum StatusEnum
+        {
+            Draft,
+            Validated,
+            Cancelled
+        }
+
+        
+        public StatusEnum Status
+        {
+            get => status;
+            set => SetPropertyValue(nameof(Status), ref status, value);
+        }
     }
 
     public class ProductionTransferLine : BaseObject
@@ -60,25 +109,41 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(ProcessedStockingQuantity))]
+        double processedStockingQuantity;
+        [Persistent(nameof(ProductionQuantity))]
+        double productionQuantity;
         ProductionTransfer productionTransfer;
         UnitOfMeasure productionUOM;
-        double productionQuantity;
+
         UnitOfMeasure stockingUOM;
-        double processedStockingQuantity;
+
         Product product;
 
         public Product Product
         {
             get => product;
-            set => SetPropertyValue(nameof(Product), ref product, value);
+            set
+            {
+                SetPropertyValue(nameof(Product), ref product, value);
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    StockingUOM = Product.UOM;
+                    ProductionUOM = Product.ProductionUOM;
+                }
+            }
         }
 
 
+        
+        [PersistentAlias(nameof(processedStockingQuantity))]
         public double ProcessedStockingQuantity
         {
-            get => processedStockingQuantity;
-            set => SetPropertyValue(nameof(ProcessedStockingQuantity), ref processedStockingQuantity, value);
+            get {
+                processedStockingQuantity = ProductionTransferLineLots.Select(x => x.StockingQuantity).Sum();
+                return processedStockingQuantity; }
         }
+        
 
 
         public UnitOfMeasure StockingUOM
@@ -88,11 +153,23 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        
+        [PersistentAlias(nameof(productionQuantity))]
         public double ProductionQuantity
         {
-            get => productionQuantity;
-            set => SetPropertyValue(nameof(ProductionQuantity), ref productionQuantity, value);
+            get {
+                try
+                {
+                    productionQuantity = ProcessedStockingQuantity * Product.UOMRatioProduction;
+                }
+                catch (Exception)
+                {
+
+                }
+                
+                return productionQuantity; }
         }
+        
 
 
         public UnitOfMeasure ProductionUOM
@@ -101,12 +178,14 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ProductionUOM), ref productionUOM, value);
         }
 
+
         
         [Association("ProductionTransfer-ProductionTransferLines")]
         public ProductionTransfer ProductionTransfer
         {
             get => productionTransfer;
-            set => SetPropertyValue(nameof(ProductionTransfer), ref productionTransfer, value);
+            set { SetPropertyValue(nameof(ProductionTransfer), ref productionTransfer, value);
+            }
         }
 
 
@@ -137,7 +216,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ProductionTransferLine), ref productionTransferLine, value);
         }
 
-
+        [RuleRequiredField()]
         public Lot Lot
         {
             get => lot;

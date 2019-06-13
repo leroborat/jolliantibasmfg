@@ -36,6 +36,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        StatusEnum status;
         ManufacturingOrder manufacturingOrder;
         string processedBy;
         string requestedBy;
@@ -53,7 +54,9 @@ namespace JolliantProd.Module.BusinessObjects
         public WarehouseLocation FromLocation
         {
             get => fromLocation;
-            set { SetPropertyValue(nameof(FromLocation), ref fromLocation, value);
+            set
+            {
+                SetPropertyValue(nameof(FromLocation), ref fromLocation, value);
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     SeriesName = "PRODWITH-" + (FromLocation.NextWithdrawal + 1).ToString();
@@ -73,8 +76,16 @@ namespace JolliantProd.Module.BusinessObjects
 
         public enum StatusEnum
         {
-            Draft,
-            Validated
+            InProgress,
+            Cancelled,
+            Completed
+        }
+
+        
+        public StatusEnum Status
+        {
+            get => status;
+            set => SetPropertyValue(nameof(Status), ref status, value);
         }
 
         [Association("WithdrawalRequest-WithdrawalRequestLines"), DevExpress.Xpo.Aggregated()]
@@ -95,6 +106,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+       
 
     }
 
@@ -111,6 +123,7 @@ namespace JolliantProd.Module.BusinessObjects
             get => withdrawalRequest;
             set => SetPropertyValue(nameof(WithdrawalRequest), ref withdrawalRequest, value);
         }
+        
         UnitOfMeasure stockingUOM;
         double stockingQuantity;
         [Persistent(nameof(ProcessedQuantity))]
@@ -147,7 +160,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(StockingQuantity), ref stockingQuantity, value);
         }
 
-        
+
         public UnitOfMeasure StockingUOM
         {
             get => stockingUOM;
@@ -157,12 +170,18 @@ namespace JolliantProd.Module.BusinessObjects
         [PersistentAlias(nameof(processedQuantity))]
         public double ProcessedQuantity
         {
-            get {
-                //TODO Iterate
-                return processedQuantity; }
+            get
+            {
+                processedQuantity = (from c in WithdrawalRequest.ProductionTransfers
+                                     where c.Status == ProductionTransfer.StatusEnum.Validated
+                                     from a in c.ProductionTransferLines
+                                     where a.Product == Product
+                                     select a.ProcessedStockingQuantity).Sum();
+                return processedQuantity;
+            }
         }
 
-
+        
 
     }
 }

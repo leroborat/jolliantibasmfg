@@ -8,6 +8,8 @@
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
+      <Action Id="MarkProductionCompleted" TargetObjectsCriteria="[ConsumedMaterials][[Consumed] &lt;&gt; 0.0] And [FinishedGoods][Not IsNullOrEmpty([LotCode]) And [ExpirationDate] Is Not Null] And [WorkOrders][[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WorkOrder+StatusEnum,Ready#] And [WithdrawalRequests][[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalRequest+StatusEnum,Completed#] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,InProgress#" />
+      <Action Id="MarkWorkOrderDone" TargetObjectsCriteria="[ActualStartDate] Is Not Null And [ActualEndDate] Is Not Null And [ActualStartDate] &lt; [ActualEndDate]" />
       <Action Id="PlanMO" TargetObjectsCriteria="[BillOfMaterial] Is Not Null And [Product] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft# And [Company] Is Not Null And [Routing] Is Not Null And [Company] Is Not Null And [QuantityToProduce] &gt; 0.0" />
       <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Declined#" />
       <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
@@ -15,6 +17,7 @@
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="ValidateProductionTransfer" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" />
       <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0]" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
       <Action Id="ValidateWithdrawal" TargetObjectsCriteria="[Location] Is Not Null And [WithdrawalLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
@@ -33,6 +36,11 @@
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Company" ImageName="BO_Organization" />
+    <Class Name="JolliantProd.Module.BusinessObjects.ConsumedMaterial">
+      <OwnMembers>
+        <Member Name="ToConsume" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Customer" ImageName="BO_Customer" />
     <Class Name="JolliantProd.Module.BusinessObjects.CustomerDeliveryAddress" ImageName="BO_Address" />
     <Class Name="JolliantProd.Module.BusinessObjects.CustomerPayment" ImageName="Currency" />
@@ -117,14 +125,19 @@
     <Class Name="JolliantProd.Module.BusinessObjects.ManufacturingOrder">
       <AppearanceRules>
         <AppearanceRule Id="@33b4a384-f9fa-4fd1-a560-65390e19ce06" Visibility="Hide" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft#" TargetItems="FinishedGoods,WithdrawalRequests,WorkOrders" IsNewNode="True" />
+        <AppearanceRule Id="@b66585c7-2b9a-424d-8e7a-f5690f2c3e8c" Enabled="False" TargetItems="*" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Done#" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="BillOfMaterial" DataSourceCriteria="[Product] = '@This.Product'" />
-        <Member Name="ConsumedMaterials" AllowEdit="False" />
+        <Member Name="ConsumedMaterials" AllowEdit="True" />
+        <Member Name="FinishedDate" AllowEdit="False" />
+        <Member Name="ProcessedBy" AllowEdit="False" />
         <Member Name="Product" DataSourceCriteria="[CanBeManufactured] = True" />
+        <Member Name="ProductionStartDateTime" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
         <Member Name="Routing" AllowEdit="False" />
         <Member Name="SeriesName" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
+        <Member Name="StockLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.MaterialRequest">
@@ -155,6 +168,21 @@
       <AppearanceRules>
         <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
       </AppearanceRules>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionTransfer">
+      <AppearanceRules>
+        <AppearanceRule Id="@f4b87fc2-d6a5-451c-b269-eefcd888b09c" Enabled="False" TargetItems="*" Context="DetailView" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="ProcessedDate" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionTransferLineLot">
+      <OwnMembers>
+        <Member Name="Lot" LookupEditorMode="Search" DataSourceCriteria="[Product] = '@This.ProductionTransferLine.Product'" />
+      </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.PurchaseOrder">
       <AppearanceRules>
@@ -300,7 +328,18 @@
         <Member Name="Lot" DataSourceCriteria="[Product] = '@This.WithdrawalLine.Product'" LookupEditorMode="Search" />
       </OwnMembers>
     </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalRequest">
+      <AppearanceRules>
+        <AppearanceRule Id="@19f1b276-39f8-4cd7-a853-1999961c9d16" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalRequest+StatusEnum,InProgress#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.WorkOrder">
+      <AppearanceRules>
+        <AppearanceRule Id="@46553cf1-1519-4153-8f48-22de25656008" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WorkOrder+StatusEnum,Ready#" TargetItems="*" IsNewNode="True" />
+      </AppearanceRules>
       <OwnMembers>
         <Member Name="ActualEndDate" EditMask="f" DisplayFormat="{0:f}" />
         <Member Name="ActualStartDate" DisplayFormat="{0:f}" EditMask="f" />
@@ -708,6 +747,9 @@
         <SortProperty Id="@33c0b085-b2ee-4b79-8662-511a50b79597" PropertyName="LotCode" Index="2" IsNewNode="True" />
       </Sorting>
     </ListView>
+    <ListView Id="ManufacturingOrder_ConsumedMaterials_ListView" AllowEdit="True" AllowNew="True" AllowLink="False" />
+    <ListView Id="ManufacturingOrder_FinishedGoods_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="ManufacturingOrder_WorkOrders_ListView" AllowEdit="True" AllowNew="False" />
     <ListView Id="Product_ListView" DataAccessMode="Client">
       <Columns>
         <ColumnInfo Id="Barcode" Width="66" Index="-1" />
@@ -745,6 +787,16 @@
         <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="116" Index="3" IsNewNode="True" />
       </Columns>
     </ListView>
+    <ListView Id="ProductionTransfer_ProductionTransferLines_ListView" MasterDetailMode="ListViewAndDetailView">
+      <Columns>
+        <ColumnInfo Id="ProcessedStockingQuantity" Width="157" Index="-1" />
+        <ColumnInfo Id="ProductionQuantity" Width="116" Index="-1" />
+        <ColumnInfo Id="ProductionUOM" Width="97" Index="-1" />
+        <ColumnInfo Id="StockingUOM" Width="86" Index="-1" />
+        <ColumnInfo Id="Product" Width="57" />
+      </Columns>
+    </ListView>
+    <ListView Id="ProductionTransferLine_ProductionTransferLineLots_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
     <ListView Id="PurchaseOrder_ListView">
       <Columns>
         <ColumnInfo Id="ApprovedBy" Width="166" Index="-1" />
