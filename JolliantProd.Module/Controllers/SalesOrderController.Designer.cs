@@ -41,6 +41,7 @@
             this.GenerateTripLinesAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.POSummaryAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.UpdateLotExpiry = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.TripSetToDraft = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // simpleAction1
             // 
@@ -173,6 +174,17 @@
             this.UpdateLotExpiry.TypeOfView = typeof(DevExpress.ExpressApp.ListView);
             this.UpdateLotExpiry.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.UpdateLotExpiry_Execute);
             // 
+            // TripSetToDraft
+            // 
+            this.TripSetToDraft.Caption = "Set to Draft";
+            this.TripSetToDraft.ConfirmationMessage = "Are you sure you want to proceed?";
+            this.TripSetToDraft.Id = "TripSetToDraft";
+            this.TripSetToDraft.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Trip);
+            this.TripSetToDraft.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.TripSetToDraft.ToolTip = null;
+            this.TripSetToDraft.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.TripSetToDraft.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.TripSetToDraft_Execute);
+            // 
             // SalesOrderController
             // 
             this.Actions.Add(this.simpleAction1);
@@ -187,6 +199,7 @@
             this.Actions.Add(this.GenerateTripLinesAction);
             this.Actions.Add(this.POSummaryAction);
             this.Actions.Add(this.UpdateLotExpiry);
+            this.Actions.Add(this.TripSetToDraft);
             this.TypeOfView = typeof(DevExpress.ExpressApp.View);
             this.Activated += new System.EventHandler(this.SalesOrderController_Activated);
 
@@ -206,5 +219,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction GenerateTripLinesAction;
         private DevExpress.ExpressApp.Actions.SimpleAction POSummaryAction;
         private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotExpiry;
+        private DevExpress.ExpressApp.Actions.SimpleAction TripSetToDraft;
     }
 }

@@ -354,5 +354,33 @@ namespace JolliantProd.Module.Controllers
                 }
             }
         }
+
+        private void TripSetToDraft_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+
+            Trip trip = ((Trip)View.CurrentObject);
+            trip.Save();
+            trip.TripStatus = Trip.TripStatusEnum.Draft;
+
+            foreach (TripLine item in trip.TripLines)
+            {
+                foreach (TripLineDetail tripLineDetail in item.TripLineDetails)
+                {
+                    StockTransfer stockTransfer = ObjectSpace.CreateObject<StockTransfer>();
+                    stockTransfer.SourceLocation = trip.DestinationLocation;
+                    stockTransfer.DestinationLocation = tripLineDetail.From;
+                    stockTransfer.Quantity = tripLineDetail.QuantityDone;
+                    stockTransfer.Product = item.Product;
+                    if (tripLineDetail.LotCode != null)
+                    {
+                        stockTransfer.Lot = tripLineDetail.LotCode;
+                    }
+
+                    stockTransfer.Reference = "Delivery Cancelled: " + trip.DisplayName + " " + trip.PONumber;
+                    stockTransfer.Lot.UpdateStockOnHand(true);
+                }
+            }
+            ObjectSpace.CommitChanges();
+        }
     }
 }

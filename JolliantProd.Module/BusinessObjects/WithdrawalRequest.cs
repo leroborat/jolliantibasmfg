@@ -123,7 +123,9 @@ namespace JolliantProd.Module.BusinessObjects
             get => withdrawalRequest;
             set => SetPropertyValue(nameof(WithdrawalRequest), ref withdrawalRequest, value);
         }
-        
+
+        [Persistent(nameof(Balance))]
+        double balance;
         UnitOfMeasure stockingUOM;
         double stockingQuantity;
         [Persistent(nameof(ProcessedQuantity))]
@@ -181,6 +183,15 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+
+        
+        [PersistentAlias(nameof(balance))]
+        public double Balance
+        {
+            get {
+                balance = StockingQuantity - ProcessedQuantity;
+                return balance; }
+        }
         
 
     }

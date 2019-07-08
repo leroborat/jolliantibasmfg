@@ -247,6 +247,11 @@ namespace JolliantProd.Module.BusinessObjects
         public FinishedGood(Session session) : base(session)
         { }
 
+        public override void AfterConstruction()
+        {
+            base.AfterConstruction();
+        }
+
 
         DateTime expirationDate;
         double quantity;
@@ -259,7 +264,13 @@ namespace JolliantProd.Module.BusinessObjects
         public ManufacturingOrder ManufacturingOrder
         {
             get => manufacturingOrder;
-            set => SetPropertyValue(nameof(ManufacturingOrder), ref manufacturingOrder, value);
+            set { SetPropertyValue(nameof(ManufacturingOrder), ref manufacturingOrder, value);
+                if (!IsSaving && !IsLoading && !IsDeleted)
+                {
+                    Product = ManufacturingOrder.Product;
+                    UnitOfMeasure = Product.UOM;
+                }
+            }
         }
 
 

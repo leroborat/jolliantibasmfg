@@ -31,6 +31,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string lastModifiedBy;
+        DateTime lastModifiedDate;
         DateTime deliveryDate;
         Vendor vendor;
         PurchaseOrder purchaseOrder;
@@ -89,7 +91,22 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Status), ref status, value);
         }
 
+
+        public DateTime LastModifiedDate
+        {
+            get => lastModifiedDate;
+            set => SetPropertyValue(nameof(LastModifiedDate), ref lastModifiedDate, value);
+        }
+
         
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string LastModifiedBy
+        {
+            get => lastModifiedBy;
+            set => SetPropertyValue(nameof(LastModifiedBy), ref lastModifiedBy, value);
+        }
+
+
         public PurchaseOrder PurchaseOrder
         {
             get => purchaseOrder;
