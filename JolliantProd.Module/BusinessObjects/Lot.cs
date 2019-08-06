@@ -27,6 +27,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        KitchenPlan kitchenPlan;
         TripLine tripLine;
         [Persistent(nameof(StockOnHand))]
         double stockOnHand;
@@ -80,7 +81,7 @@ namespace JolliantProd.Module.BusinessObjects
                         x.Product == Product && x.Lot == this).Select(x => x.Quantity).Sum();
                 //Get Out
 
-                
+
 
                 //Get Actual
                 stockOnHand = StockIn - StockOut;
@@ -102,6 +103,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => tripLine;
             set => SetPropertyValue(nameof(TripLine), ref tripLine, value);
+        }
+
+        
+        public KitchenPlan KitchenPlan
+        {
+            get => kitchenPlan;
+            set => SetPropertyValue(nameof(KitchenPlan), ref kitchenPlan, value);
         }
     }
 }

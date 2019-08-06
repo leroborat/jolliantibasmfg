@@ -8,11 +8,14 @@
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
+      <Action Id="KitchenPlan.DoneMethod" TargetObjectsCriteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Done# And [ProductionFinishedGoods][]" />
+      <Action Id="KitchenPlan.PlanMethod" ImageName="Shopping_ShoppingBasket" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Draft#" />
       <Action Id="MarkProductionCompleted" TargetObjectsCriteria="[ConsumedMaterials][[Consumed] &lt;&gt; 0.0] And [FinishedGoods][Not IsNullOrEmpty([LotCode]) And [ExpirationDate] Is Not Null] And [WorkOrders][[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WorkOrder+StatusEnum,Ready#] And [WithdrawalRequests][[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalRequest+StatusEnum,Completed#] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,InProgress#" />
       <Action Id="MarkWorkOrderDone" TargetObjectsCriteria="[ActualStartDate] Is Not Null And [ActualEndDate] Is Not Null And [ActualStartDate] &lt; [ActualEndDate]" />
       <Action Id="PlanMO" TargetObjectsCriteria="[BillOfMaterial] Is Not Null And [Product] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft# And [Company] Is Not Null And [Routing] Is Not Null And [Company] Is Not Null And [QuantityToProduce] &gt; 0.0" />
       <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Declined#" />
       <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
+      <Action Id="ProductionBatch.ValidateStatus" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft# And [KitchenPlan] Is Not Null And Not IsNullOrEmpty([KitchenCode]) And [CookedWeight] &lt;&gt; 0.0 And [Time] Is Not Null" />
       <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
       <Action Id="TripSetToDraft" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
@@ -21,10 +24,22 @@
       <Action Id="ValidateProductionTransfer" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" />
       <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0]" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
-      <Action Id="ValidateWithdrawal" TargetObjectsCriteria="[Location] Is Not Null And [WithdrawalLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
+      <Action Id="ValidateWithdrawal" TargetObjectsCriteria="[Location] Is Not Null And [WithdrawalLines][[ProductionUOM] Is Not Null] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Submitted#" />
+      <Action Id="Withdrawal.ActionMethod" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
     </Actions>
   </ActionDesign>
   <BOModel>
+    <Class Name="JolliantProd.Module.BusinessObjects.BatchConsumptionLine">
+      <OwnMembers>
+        <Member Name="LotCode" DataSourceCriteria="[Product] = '@This.BatchConsumption.ItemConsumed' And [KitchenPlan] = '@This.BatchConsumption.ProductionBatch.KitchenPlan'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.BatchRoute">
+      <OwnMembers>
+        <Member Name="EndTime" DisplayFormat="{0:f}" EditMask="f" />
+        <Member Name="StartTime" DisplayFormat="{0:f}" EditMask="f" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.BillOfMaterial">
       <OwnMembers>
         <Member Name="Product" DataSourceCriteria="[CanBeManufactured] = True" />
@@ -128,6 +143,22 @@
         <Member Name="Trips" DataSourceCriteria="[SalesOrder] = '@This.SalesOrder' And [TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
       </OwnMembers>
     </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.KitchenPlan">
+      <AppearanceRules>
+        <AppearanceRule Id="@ae49497e-e4ff-40d5-b96a-42c41845bc67" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Draft#" TargetItems="Shift,Warehouse, Date,Withdrawals,KitchenPlanLines" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="SeriesName" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="StockLocation" DataSourceCriteria="[Warehouse] = '@This.Warehouse'" />
+        <Member Name="Warehouse" Caption="Commissary" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.KitchenPlanLine">
+      <OwnMembers>
+        <Member Name="ItemName" DataSourceCriteria="[CanBeManufactured] = True" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Lot" DefaultLookupEditorMode="AllItemsWithSearch" ImageName="BO_Note" />
     <Class Name="JolliantProd.Module.BusinessObjects.ManufacturingOrder">
       <AppearanceRules>
@@ -171,10 +202,29 @@
         <Member Name="Invoice" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# And [Company] = '@This.CustomerPayment.Company'" />
       </OwnMembers>
     </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.PFGLine">
+      <OwnMembers>
+        <Member Name="KitchenCode" DataSourceCriteria="[KitchenPlan] = '@This.PFG.KitchenPlan' And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Validated#" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item">
       <AppearanceRules>
         <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
       </AppearanceRules>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionBatch">
+      <AppearanceRules>
+        <AppearanceRule Id="@a4bb850e-2d4f-42b7-9644-60a88c65caf0" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="Time" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionFinishedGood">
+      <OwnMembers>
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.ProductionTransfer">
       <AppearanceRules>
@@ -430,11 +480,8 @@
       </Item>
       <Item Id="Production" Caption="Production" IsNewNode="True">
         <Items IsNewNode="True">
-          <Item Id="ManufacturingOrder_ListView" ViewId="ManufacturingOrder_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="ProductionRoute_ListView" ViewId="ProductionRoute_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="WithdrawalRequest_ListView" ViewId="WithdrawalRequest_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="WorkCenter_ListView" ViewId="WorkCenter_ListView" ObjectKey="" IsNewNode="True" />
-          <Item Id="WorkOrder_ListView" ViewId="WorkOrder_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="@85761e1d-2073-48ef-b690-d65e4427e59f" ViewId="KitchenPlan_ListView" IsNewNode="True" />
+          <Item Id="@d92db58c-15f8-4bbc-892f-9c45794d136c" ViewId="WorkCenter_ListView" Caption="Work Centers" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="Purchases" IsNewNode="True">
@@ -466,8 +513,8 @@
     <LayoutManagerOptions RequiredFieldMark="*" />
   </Options>
   <SchemaModules>
-    <SchemaModule Name="CloneObjectModule" Version="19.1.3.0" IsNewNode="True" />
-    <SchemaModule Name="SystemModule" Version="19.1.3.0" IsNewNode="True" />
+    <SchemaModule Name="CloneObjectModule" Version="19.1.5.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="19.1.5.0" IsNewNode="True" />
   </SchemaModules>
   <Validation>
     <Rules>
@@ -701,6 +748,8 @@
         <ColumnInfo Id="SubTotal" Width="0" />
       </Columns>
     </ListView>
+    <ListView Id="KitchenPlan_KitchenPlanLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="KitchenPlanLine_ListView" AllowEdit="False" NewItemRowPosition="None" />
     <DetailView Id="Lot_DetailView">
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
@@ -712,7 +761,6 @@
                 <LayoutItem Id="InternalReference" RelativeSize="87.029288702928866" />
               </LayoutGroup>
               <LayoutGroup Id="Lot_col2" RelativeSize="50.090090090090094">
-                <LayoutItem Id="ExpirationDate" RelativeSize="7.531380753138075" />
                 <LayoutItem Id="StockOnHand" RelativeSize="92.46861924686192" />
                 <LayoutItem Id="TripLine" Removed="True" />
               </LayoutGroup>
@@ -731,7 +779,7 @@
         <ColumnInfo Id="StockOnHand" Width="104" />
       </Columns>
     </ListView>
-    <ListView Id="Lot_LookupListView" Criteria="[StockOnHand] &lt;&gt; 0.0" DataAccessMode="Client" TopReturnedObjects="150" Filter="">
+    <ListView Id="Lot_LookupListView" Criteria="[StockOnHand] &lt;&gt; 0.0" DataAccessMode="Client" TopReturnedObjects="150" Filter="" AllowNew="False">
       <Columns>
         <ColumnInfo Id="LotCode" Width="81" />
         <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Index="1" Width="94" IsNewNode="True" />
@@ -794,6 +842,15 @@
         <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="1" IsNewNode="True" />
         <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="2" IsNewNode="True" />
         <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="116" Index="3" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="ProductionBatch_BatchRoutes_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="ProductionBatch_LookupListView" AllowNew="False" />
+    <ListView Id="ProductionFinishedGood_PFGLines_ListView" MasterDetailMode="ListViewOnly" AllowEdit="True" NewItemRowPosition="Bottom">
+      <Columns>
+        <ColumnInfo Id="PFG" Index="-1" />
+        <ColumnInfo Id="KitchenCode" Width="83" />
+        <ColumnInfo Id="Weight" Index="1" />
       </Columns>
     </ListView>
     <ListView Id="ProductionTransfer_ProductionTransferLines_ListView" MasterDetailMode="ListViewAndDetailView">

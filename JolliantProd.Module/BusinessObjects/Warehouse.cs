@@ -32,6 +32,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        int nextKitchenPlan;
         string warehouseName;
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
@@ -40,6 +41,14 @@ namespace JolliantProd.Module.BusinessObjects
             get => warehouseName;
             set => SetPropertyValue(nameof(WarehouseName), ref warehouseName, value);
         }
+
+        
+        public int NextKitchenPlan
+        {
+            get => nextKitchenPlan;
+            set => SetPropertyValue(nameof(NextKitchenPlan), ref nextKitchenPlan, value);
+        }
+
 
         [Association("Warehouse-WarehouseLocations")]
         public XPCollection<WarehouseLocation> WarehouseLocations
@@ -58,6 +67,7 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        
         int nextWithdrawal;
         int nextIn;
         LocationTypeEnum locationType;
@@ -126,12 +136,15 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(NextIn), ref nextIn, value);
         }
 
-        
+
         public int NextWithdrawal
         {
             get => nextWithdrawal;
             set => SetPropertyValue(nameof(NextWithdrawal), ref nextWithdrawal, value);
         }
+
+        
+      
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
         public string LocationName

@@ -101,8 +101,17 @@ namespace JolliantProd.Module.Controllers
 
         private void ValidateReceiptAction_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
+            
             var thisView = ((Receiving)View.CurrentObject);
             thisView.Save();
+
+            if (thisView.Series == null)
+            {
+                thisView.StorageLocation.NextIn += 1;
+                thisView.Series = thisView.StorageLocation.Warehouse.WarehouseName + "-IN-" + thisView.StorageLocation.NextIn;
+                ObjectSpace.CommitChanges();
+            }
+            
             WarehouseLocation warehouseLocation;
             warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Vendor"));
             if (warehouseLocation == null)
@@ -262,6 +271,7 @@ namespace JolliantProd.Module.Controllers
 
                     if (item2.Lot != null)
                     {
+                        item2.Lot.KitchenPlan = thisView.KitchenPlan;
                         st.Lot = item2.Lot;
                     }
                     st.Quantity = item2.DoneQuantity;

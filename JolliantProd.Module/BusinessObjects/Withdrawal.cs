@@ -30,6 +30,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        KitchenPlan kitchenPlan;
         DateTime withdrawalDate;
         StatusEnum status;
         string transferredBy;
@@ -95,14 +96,31 @@ namespace JolliantProd.Module.BusinessObjects
         {
             New,
             Validated,
-            Cancelled
+            Cancelled,
+            Submitted
         }
 
-        
+
         public StatusEnum Status
         {
             get => status;
             set => SetPropertyValue(nameof(Status), ref status, value);
+        }
+
+        
+        [Association("KitchenPlan-Withdrawals")]
+        public KitchenPlan KitchenPlan
+        {
+            get => kitchenPlan;
+            set => SetPropertyValue(nameof(KitchenPlan), ref kitchenPlan, value);
+        }
+
+        [Action(Caption = "Submit", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void ActionMethod()
+        {
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            this.Status = StatusEnum.Submitted;
+            Session.Save(this);
         }
     }
 

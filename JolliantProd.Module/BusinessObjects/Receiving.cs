@@ -139,16 +139,16 @@ namespace JolliantProd.Module.BusinessObjects
                 SetPropertyValue(nameof(StorageLocation), ref storageLocation, value);
                 if (!IsLoading && !IsSaving)
                 {
-                    try
-                    {
-                        StorageLocation.NextIn += 1;
-                        Series = StorageLocation.Warehouse.WarehouseName + "-IN-" + StorageLocation.NextIn;
-                        Session.Save(this);
-                    }
-                    catch (Exception)
-                    {
+                    //try
+                    //{
+                    //    StorageLocation.NextIn += 1;
+                    //    Series = StorageLocation.Warehouse.WarehouseName + "-IN-" + StorageLocation.NextIn;
+                    //    Session.Save(this);
+                    //}
+                    //catch (Exception)
+                    //{
 
-                    }
+                    //}
 
 
                 }
