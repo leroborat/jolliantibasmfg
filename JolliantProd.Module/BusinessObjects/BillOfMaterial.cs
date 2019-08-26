@@ -15,11 +15,6 @@ using DevExpress.Persistent.Validation;
 namespace JolliantProd.Module.BusinessObjects
 {
     [DefaultClassOptions]
-    //[ImageName("BO_Contact")]
-    //[DefaultProperty("DisplayMemberNameForLookupEditorsOfThisType")]
-    //[DefaultListViewOptions(MasterDetailMode.ListViewOnly, false, NewItemRowPosition.None)]
-    //[Persistent("DatabaseTableName")]
-    // Specify more UI options using a declarative approach (https://documentation.devexpress.com/#eXpressAppFramework/CustomDocument112701).
     public class BillOfMaterial : BaseObject
     { // Inherit from a different class to provide a custom primary key, concurrency and deletion behavior, etc. (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument113146.aspx).
         public BillOfMaterial(Session session)
@@ -29,7 +24,8 @@ namespace JolliantProd.Module.BusinessObjects
         public override void AfterConstruction()
         {
             base.AfterConstruction();
-            // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
+            ReferenceName = "Standard";
+            Quantity = 1;
         }
 
 
@@ -124,7 +120,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
-        [RuleRequiredField()]
+        
         public RouteOperation ConsumedInRouteOperation
         {
             get => consumedInRouteOperation;

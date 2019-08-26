@@ -4,6 +4,7 @@ using System.Text;
 using DevExpress.Xpo;
 using DevExpress.ExpressApp;
 using System.ComponentModel;
+using System.Diagnostics;
 using DevExpress.ExpressApp.DC;
 using DevExpress.Data.Filtering;
 using DevExpress.Persistent.Base;
@@ -112,7 +113,34 @@ namespace JolliantProd.Module.BusinessObjects
         public KitchenPlan KitchenPlan
         {
             get => kitchenPlan;
-            set => SetPropertyValue(nameof(KitchenPlan), ref kitchenPlan, value);
+            set {
+                SetPropertyValue(nameof(KitchenPlan), ref kitchenPlan, value);
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    Location = KitchenPlan.StockLocation;
+                    //GET ALL Allocations wherein kitchen plan = this
+                    var allocations = new XPQuery<ComponentAllotment>(Session).Where(
+                        x => x.KitchenPlanLine.KitchenPlan == KitchenPlan);
+                    var materialList = allocations.Select(x => x.Material).Distinct();
+                    //GET Distinct Materials
+                    foreach (var item in materialList)
+                    {
+                        //Get Quantity for each material
+                        double allocCount= allocations.Where(x => x.Material == item).Select(x => x.Quantity).Sum();
+                        WithdrawalLine withdrawalLine = new WithdrawalLine(Session);
+                        withdrawalLine.Product = item;
+                        if (item.UOM != item.ProductionUOM)
+                        {
+                            allocCount = allocCount / item.UOMRatioProduction;
+                        }
+                        withdrawalLine.DemandQuantity = allocCount;
+                        WithdrawalLines.Add(withdrawalLine);
+                    }
+                    //Get Quantity for each material
+                    //Convert to Storage UOM
+                    //Generate entries
+                }
+            }
         }
 
         [Action(Caption = "Submit", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
@@ -130,6 +158,10 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(ProductionPerUnitCost))]
+        decimal productionPerUnitCost;
+        [Persistent(nameof(RawCost))]
+        decimal rawCost;
         [Persistent(nameof(ProductionQuantity))]
         double productionQuantity;
         UnitOfMeasure productionUOM;
@@ -189,22 +221,25 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(UOM), ref uOM, value);
         }
 
-        
+
         [PersistentAlias(nameof(productionQuantity))]
         public double ProductionQuantity
         {
-            get {
+            get
+            {
                 if (ProductionUOM != UOM)
                 {
                     productionQuantity = ProcessedQuantity * Product.UOMRatioProduction;
-                } else
+                }
+                else
                 {
                     productionQuantity = ProcessedQuantity;
                 }
-                
-                return productionQuantity; }
+
+                return productionQuantity;
+            }
         }
-        
+
 
 
         public UnitOfMeasure ProductionUOM
@@ -221,6 +256,30 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<WithdrawalLineLot>(nameof(WithdrawalLineLots));
             }
         }
+
+
+        [PersistentAlias(nameof(rawCost))]
+        public decimal RawCost
+        {
+            get
+            {
+                rawCost = WithdrawalLineLots.Select(x => x.Lot).Sum(y => y.CostPerUnit);
+                rawCost = rawCost * Convert.ToDecimal(ProcessedQuantity);
+                return rawCost;
+            }
+        }
+
+        
+        [PersistentAlias(nameof(productionPerUnitCost))]
+        public decimal ProductionPerUnitCost
+        {
+            get {
+                productionPerUnitCost = RawCost / Convert.ToDecimal(ProductionQuantity);
+                return productionPerUnitCost; }
+        }
+        
+        
+
     }
 
 

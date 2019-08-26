@@ -28,6 +28,10 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Persistent(nameof(CostPerFG))]
+        decimal costPerFG;
+        [Persistent(nameof(TotalFGCost))]
+        decimal totalFGCost;
         DateTime expirationDate;
         string lotNumber;
         UnitOfMeasure uOM;
@@ -81,13 +85,39 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(LotNumber), ref lotNumber, value);
         }
 
-        
+
         [RuleRequiredField()]
         public DateTime ExpirationDate
         {
             get => expirationDate;
             set => SetPropertyValue(nameof(ExpirationDate), ref expirationDate, value);
         }
+
+
+        [PersistentAlias(nameof(totalFGCost))]
+        public decimal TotalFGCost
+        {
+            get
+            {
+                totalFGCost = PFGLines.Select(x => x.Cost).Sum();
+                return totalFGCost;
+            }
+        }
+
+        
+        [PersistentAlias(nameof(costPerFG))]
+        public decimal CostPerFG
+        {
+            get {
+                if (Quantity != 0)
+                {
+                    costPerFG = TotalFGCost / Convert.ToDecimal(Quantity);
+                }
+                
+                return costPerFG; }
+        }
+        
+
 
 
 
@@ -109,6 +139,8 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(Cost))]
+        decimal cost;
         [Persistent(nameof(Component))]
         string component;
         double weight;
@@ -137,11 +169,12 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         [PersistentAlias(nameof(component))]
         public string Component
         {
-            get {
+            get
+            {
                 try
                 {
                     component = KitchenCode.Component.ProductName;
@@ -149,11 +182,12 @@ namespace JolliantProd.Module.BusinessObjects
                 catch (Exception)
                 {
 
-                    
+
                 }
-                return component; }
+                return component;
+            }
         }
-        
+
 
 
         public double Weight
@@ -161,6 +195,20 @@ namespace JolliantProd.Module.BusinessObjects
             get => weight;
             set => SetPropertyValue(nameof(Weight), ref weight, value);
         }
+
+        
+        [PersistentAlias(nameof(cost))]
+        public decimal Cost
+        {
+            get {
+                if (KitchenCode != null)
+                {
+                    cost = KitchenCode.CostPerWeight * Convert.ToDecimal(Weight);
+                }
+                
+                return cost; }
+        }
+        
 
     }
 }

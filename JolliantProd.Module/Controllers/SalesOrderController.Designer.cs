@@ -42,6 +42,7 @@
             this.POSummaryAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.UpdateLotExpiry = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.TripSetToDraft = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.SetToDraftSO = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // simpleAction1
             // 
@@ -185,6 +186,17 @@
             this.TripSetToDraft.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.TripSetToDraft.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.TripSetToDraft_Execute);
             // 
+            // SetToDraftSO
+            // 
+            this.SetToDraftSO.Caption = "Set To Draft";
+            this.SetToDraftSO.ConfirmationMessage = "Are you sure?";
+            this.SetToDraftSO.Id = "SOSetToDraft";
+            this.SetToDraftSO.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.SalesOrder);
+            this.SetToDraftSO.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.SetToDraftSO.ToolTip = null;
+            this.SetToDraftSO.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.SetToDraftSO.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.SetToDraftSO_Execute);
+            // 
             // SalesOrderController
             // 
             this.Actions.Add(this.simpleAction1);
@@ -200,7 +212,7 @@
             this.Actions.Add(this.POSummaryAction);
             this.Actions.Add(this.UpdateLotExpiry);
             this.Actions.Add(this.TripSetToDraft);
-            this.TypeOfView = typeof(DevExpress.ExpressApp.View);
+            this.Actions.Add(this.SetToDraftSO);
             this.Activated += new System.EventHandler(this.SalesOrderController_Activated);
 
         }
@@ -220,5 +232,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction POSummaryAction;
         private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotExpiry;
         private DevExpress.ExpressApp.Actions.SimpleAction TripSetToDraft;
+        private DevExpress.ExpressApp.Actions.SimpleAction SetToDraftSO;
     }
 }

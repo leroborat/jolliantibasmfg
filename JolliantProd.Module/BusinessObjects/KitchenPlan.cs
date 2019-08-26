@@ -30,6 +30,7 @@ namespace JolliantProd.Module.BusinessObjects
         {
             base.AfterConstruction();
             Date = DateTime.Now;
+            CreatedBy = Session.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
             // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
         }
 
@@ -41,6 +42,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(SeriesName), ref seriesName, value);
         }
 
+        string createdBy;
         WarehouseLocation stockLocation;
         string processedBy;
         StatusEnum status;
@@ -91,6 +93,18 @@ namespace JolliantProd.Module.BusinessObjects
             get => shift;
             set => SetPropertyValue(nameof(Shift), ref shift, value);
         }
+
+        
+        [PersistentAlias(nameof(totalProductionCost))]
+        public decimal TotalProductionCost
+        {
+            get {
+                totalProductionCost = ProductionBatches.Select(x => x.BatchTotalCost).Sum();
+                return totalProductionCost; }
+        }
+        [Persistent(nameof(TotalProductionCost))]
+        decimal totalProductionCost;
+        
 
         public enum StatusEnum
         {
@@ -145,6 +159,13 @@ namespace JolliantProd.Module.BusinessObjects
 
         
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string CreatedBy
+        {
+            get => createdBy;
+            set => SetPropertyValue(nameof(CreatedBy), ref createdBy, value);
+        }
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string ProcessedBy
         {
             get => processedBy;
@@ -158,13 +179,77 @@ namespace JolliantProd.Module.BusinessObjects
             this.Status = StatusEnum.Planned;
             foreach (KitchenPlanLine line in KitchenPlanLines)
             {
-                for (int i = 0; i < line.Batches; i++)
+                if (line.Batches == 0 && line.Pieces > 0)
                 {
                     ProductionBatch pb = new ProductionBatch(Session);
                     pb.Component = line.ItemName;
                     pb.KitchenPlan = line.KitchenPlan;
+                    try
+                    {
+                        foreach (var route in line.ItemName.BillOfMaterials?.First().ProductionRoute.RouteOperations)
+                        {
+                            var broute = new BatchRoute(Session);
+                            broute.ProductionBatch = pb;
+                            broute.WorkCenter = route.WorkCenter;
+                            pb.BatchRoutes.Add(broute);
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    
                     ProductionBatches.Add(pb);
                 }
+
+                if (line.Batches == 0 && line.Basins > 0)
+                {
+                    ProductionBatch pb = new ProductionBatch(Session);
+                    pb.Component = line.ItemName;
+                    pb.KitchenPlan = line.KitchenPlan;
+                    try
+                    {
+                        foreach (var route in line.ItemName.BillOfMaterials?.First().ProductionRoute.RouteOperations)
+                        {
+                            var broute = new BatchRoute(Session);
+                            broute.ProductionBatch = pb;
+                            broute.WorkCenter = route.WorkCenter;
+                            pb.BatchRoutes.Add(broute);
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                    ProductionBatches.Add(pb);
+                }
+
+                if (line.Batches > 0)
+                {
+                    for (int i = 0; i < line.Batches; i++)
+                    {
+                        ProductionBatch pb = new ProductionBatch(Session);
+                        pb.Component = line.ItemName;
+                        pb.KitchenPlan = line.KitchenPlan;
+                        try
+                        {
+                            foreach (var route in line.ItemName.BillOfMaterials?.First().ProductionRoute.RouteOperations)
+                            {
+                                var broute = new BatchRoute(Session);
+                                broute.ProductionBatch = pb;
+                                broute.WorkCenter = route.WorkCenter;
+                                pb.BatchRoutes.Add(broute);
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                        ProductionBatches.Add(pb);
+                    }
+                }
+
+               
             }
             Session.Save(this);
             Session.CommitTransaction();
@@ -217,13 +302,21 @@ namespace JolliantProd.Module.BusinessObjects
         public KitchenPlanLine(Session session) : base(session)
         { }
 
+        public override void AfterConstruction()
+        {
+            base.AfterConstruction();
+            Batches = 1;
+        }
 
+
+        int basins;
+        int pieces;
         KitchenPlan kitchenPlan;
         string remarks;
         int batches;
         Product itemName;
 
-        
+
         [Association("KitchenPlan-KitchenPlanLines")]
         public KitchenPlan KitchenPlan
         {
@@ -235,23 +328,136 @@ namespace JolliantProd.Module.BusinessObjects
         public Product ItemName
         {
             get => itemName;
-            set => SetPropertyValue(nameof(ItemName), ref itemName, value);
+            set { SetPropertyValue(nameof(ItemName), ref itemName, value);
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    var myBOM = ItemName.BillOfMaterials.First();
+                    if (myBOM != null)
+                    {
+                        foreach (var item in myBOM.BomComponents)
+                        {
+                            ComponentAllotment ca = new ComponentAllotment(Session);
+                            ca.KitchenPlanLine = this;
+                            ca.Material = item.Component;
+                            ca.Quantity = item.Quantity;
+                            ComponentAllotments.Add(ca);
+                        }
+                    }
+                }
+            }
         }
 
 
         public int Batches
         {
             get => batches;
-            set => SetPropertyValue(nameof(Batches), ref batches, value);
+            set { SetPropertyValue(nameof(Batches), ref batches, value);
+
+                if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
+                {
+                    Pieces = 0;
+                    Basins = 0;
+                    foreach (var item in ComponentAllotments)
+                    {
+                        var prod = ItemName.BillOfMaterials.First().BomComponents
+                            .Where(x => x.Component == item.Material).First();
+                        item.Quantity = prod.Quantity * Batches;
+                    }
+                }
+            }
+        }
+
+
+        public int Pieces
+        {
+            get => pieces;
+            set { SetPropertyValue(nameof(Pieces), ref pieces, value);
+                if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
+                {
+                    Batches = 0;
+                    Basins = 0;
+                }
+            }
         }
 
         
+        public int Basins
+        {
+            get => basins;
+            set { SetPropertyValue(nameof(Basins), ref basins, value);
+                if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
+                {
+                    Pieces = 0;
+                    Batches = 0;
+                }
+            }
+        }
+
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string Remarks
         {
             get => remarks;
             set => SetPropertyValue(nameof(Remarks), ref remarks, value);
         }
+
+        [Association("KitchenPlanLine-ComponentAllotments")]
+        public XPCollection<ComponentAllotment> ComponentAllotments
+        {
+            get
+            {
+                return GetCollection<ComponentAllotment>(nameof(ComponentAllotments));
+            }
+        }
+
+    }
+
+    public class ComponentAllotment : BaseObject
+    {
+        public ComponentAllotment(Session session) : base(session)
+        { }
+
+
+        KitchenPlan kitchenPlan;
+        UnitOfMeasure uOM;
+        double quantity;
+        Product material;
+        KitchenPlanLine kitchenPlanLine;
+
+        [Association("KitchenPlanLine-ComponentAllotments")]
+        public KitchenPlanLine KitchenPlanLine
+        {
+            get => kitchenPlanLine;
+            set { SetPropertyValue(nameof(KitchenPlanLine), ref kitchenPlanLine, value); }
+        }
+
+
+        public Product Material
+        {
+            get => material;
+            set { SetPropertyValue(nameof(Material), ref material, value);
+                if (!IsLoading && !IsDeleted && !IsSaving)
+                {
+                    UOM = Material.ProductionUOM;
+                    
+                }
+            }
+        }
+
+
+        public double Quantity
+        {
+            get => quantity;
+            set => SetPropertyValue(nameof(Quantity), ref quantity, value);
+        }
+
+        
+        public UnitOfMeasure UOM
+        {
+            get => uOM;
+            set => SetPropertyValue(nameof(UOM), ref uOM, value);
+        }
+
 
     }
 }

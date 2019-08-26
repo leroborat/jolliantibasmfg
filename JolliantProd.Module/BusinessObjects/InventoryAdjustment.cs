@@ -28,9 +28,13 @@ namespace JolliantProd.Module.BusinessObjects
             InventoryDate = DateTime.Now;
             AdjustmentType = AdjustmentTypeEnum.SingleProduct;
             Status = StatusEnum.Draft;
+            CreatedDate = DateTime.Now;
+            CreatedBy = Session.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
         }
 
 
+        string createdBy;
+        DateTime createdDate;
         AdjustmentTypeEnum adjustmentType;
         WarehouseLocation inventoriedLocation;
         DateTime inventoryDate;
@@ -57,7 +61,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Status), ref status, value);
         }
 
-        
+
 
         public enum AdjustmentTypeEnum
         {
@@ -79,7 +83,23 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(InventoryDate), ref inventoryDate, value);
         }
 
+
+        public DateTime CreatedDate
+        {
+            get => createdDate;
+            set => SetPropertyValue(nameof(CreatedDate), ref createdDate, value);
+        }
+
         
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string CreatedBy
+        {
+            get => createdBy;
+            set => SetPropertyValue(nameof(CreatedBy), ref createdBy, value);
+        }
+
+
+
         public WarehouseLocation InventoriedLocation
         {
             get => inventoriedLocation;

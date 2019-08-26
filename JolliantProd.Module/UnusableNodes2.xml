@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <Views Id="Views">
+    <DetailView Id="BatchConsumption_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="SimpleEditors">
+            <LayoutGroup Id="BatchConsumption">
+              <LayoutItem Id="ItemConsumed" RelativeSize="7.9207920792079207" />
+              <LayoutItem Id="QuantityConsumed" RelativeSize="5.9405940594059405" />
+              <LayoutItem Id="UOM" RelativeSize="86.138613861386133" />
+            </LayoutGroup>
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+</Application>

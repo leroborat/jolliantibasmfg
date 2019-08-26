@@ -28,6 +28,10 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Persistent(nameof(CostPerWeight))]
+        decimal costPerWeight;
+        [Persistent(nameof(BatchTotalCost))]
+        decimal batchTotalCost;
         StatusEnum status;
         DateTime time;
         double cookedWeight;
@@ -56,7 +60,30 @@ namespace JolliantProd.Module.BusinessObjects
         public Product Component
         {
             get => component;
-            set => SetPropertyValue(nameof(Component), ref component, value);
+            set
+            {
+                SetPropertyValue(nameof(Component), ref component, value);
+
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    try
+                    {
+                        var toConsume = Component.BillOfMaterials.First();
+                        foreach (var item in toConsume.BomComponents)
+                        {
+                            var nline = new BatchConsumption(Session);
+                            nline.ProductionBatch = this;
+                            nline.ItemConsumed = item.Component;
+                            BatchConsumptions.Add(nline);
+                        }
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+
+                }
+            }
         }
 
 
@@ -66,6 +93,33 @@ namespace JolliantProd.Module.BusinessObjects
             get => cookedWeight;
             set => SetPropertyValue(nameof(CookedWeight), ref cookedWeight, value);
         }
+
+
+        [PersistentAlias(nameof(batchTotalCost))]
+        public decimal BatchTotalCost
+        {
+            get
+            {
+                batchTotalCost = BatchConsumptions.Select(x => x.Cost).Sum() +
+                    BatchRoutes.Select(x => x.Cost).Sum();
+                return batchTotalCost;
+            }
+        }
+
+        
+        [PersistentAlias(nameof(costPerWeight))]
+        public decimal CostPerWeight
+        {
+            get {
+                if (CookedWeight != 0)
+                {
+                    costPerWeight = BatchTotalCost / Convert.ToDecimal(CookedWeight);
+                }
+                
+                return costPerWeight; }
+        }
+        
+
 
         [RuleRequiredField()]
         public DateTime Time
@@ -121,7 +175,11 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
-        [Persistent(nameof(QuantityConsumed))]
+        [Persistent(nameof(Cost))]
+        decimal cost;
+        [Persistent(nameof(ConsumptionVariance))]
+        double consumptionVariance;
+        double actualConsumed;
         double quantityConsumed;
         UnitOfMeasure uOM;
         Product itemConsumed;
@@ -145,20 +203,79 @@ namespace JolliantProd.Module.BusinessObjects
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     UOM = ItemConsumed.ProductionUOM;
+                    try
+                    {
+                        var myBom = ProductionBatch.Component.BillOfMaterials.First()
+                            .BomComponents.Where(x => x.Component == ItemConsumed).First();
+
+                        QuantityConsumed = myBom.Quantity;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
                 }
             }
         }
 
 
-        
-        [PersistentAlias(nameof(quantityConsumed))]
+
+
         public double QuantityConsumed
         {
+            get => quantityConsumed;
+            set => SetPropertyValue(nameof(QuantityConsumed), ref quantityConsumed, value);
+        }
+
+
+        public double ActualConsumed
+        {
+            get => actualConsumed;
+            set => SetPropertyValue(nameof(ActualConsumed), ref actualConsumed, value);
+        }
+
+        
+        [PersistentAlias(nameof(cost))]
+        public decimal Cost
+        {
             get {
-                quantityConsumed = BatchConsumptionLines.Select(x => x.Quantity).Sum();
-                return quantityConsumed; }
+                try
+                {
+                    var cpu = new XPQuery<WithdrawalLine>(Session)
+                    .Where(x => x.Withdrawal.KitchenPlan == ProductionBatch.KitchenPlan)
+                    .Where(x => x.Product == ItemConsumed)
+                    .FirstOrDefault();
+
+                    if (QuantityConsumed >= ActualConsumed)
+                    {
+                        cost = cpu.ProductionPerUnitCost * Convert.ToDecimal(QuantityConsumed);
+                    } else
+                    {
+                        cost = cpu.ProductionPerUnitCost * Convert.ToDecimal(ActualConsumed);
+                    }
+                    
+                }
+                catch (Exception)
+                {
+
+                }
+                
+                  
+                return cost; }
         }
         
+        
+
+
+        [PersistentAlias(nameof(consumptionVariance))]
+        public double ConsumptionVariance
+        {
+            get {
+                consumptionVariance = ActualConsumed - QuantityConsumed;
+                return consumptionVariance; }
+        }
+        
+
 
 
         public UnitOfMeasure UOM
@@ -218,6 +335,8 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        [Persistent(nameof(Cost))]
+        decimal cost;
         ProductionBatch productionBatch;
         DateTime endTime;
         DateTime startTime;
@@ -245,6 +364,23 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+        [PersistentAlias(nameof(cost))]
+        public decimal Cost
+        {
+            get {
+                try
+                {
+                    cost = Convert.ToDecimal((EndTime - StartTime).TotalHours) * WorkCenter.CostPerHour;
+                }
+                catch (Exception)
+                {
+
+                }
+                
+                return cost; }
+        }
+        
+
         [Association("ProductionBatch-BatchRoutes")]
         public ProductionBatch ProductionBatch
         {

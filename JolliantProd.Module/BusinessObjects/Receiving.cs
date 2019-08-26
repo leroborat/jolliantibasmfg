@@ -69,11 +69,11 @@ namespace JolliantProd.Module.BusinessObjects
 
                     foreach (PurchaseOrderLine item in PurchaseOrder.PurchaseOrderLines)
                     {
-                        ReceivedLine rl = new ReceivedLine(Session);
-                        rl.Receiving = this;
+                       
                         if (item.ReceivedQuantity < item.Quantity)
                         {
-
+                            ReceivedLine rl = new ReceivedLine(Session);
+                            rl.Receiving = this;
                             rl.Product = item.Product;
                             rl.Demand = item.Quantity - item.ReceivedQuantity;
                             ReceivedLines.Add(rl);

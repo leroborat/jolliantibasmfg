@@ -27,6 +27,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Persistent(nameof(CostPerUnit))]
+        decimal costPerUnit;
         KitchenPlan kitchenPlan;
         TripLine tripLine;
         [Persistent(nameof(StockOnHand))]
@@ -88,6 +90,34 @@ namespace JolliantProd.Module.BusinessObjects
                 return stockOnHand;
             }
         }
+
+        
+        [PersistentAlias(nameof(costPerUnit))]
+        public decimal CostPerUnit
+        {
+            get {
+                var mycpu = new XPQuery<ReceivedLine>(Session).Where(x => x.Lot == this);
+                if (mycpu.Count() == 0)
+                {
+                    costPerUnit= Product.Cost;
+                } else
+                {
+                    try
+                    {
+                        var PO = mycpu.First().Receiving.PurchaseOrder.PurchaseOrderLines
+                        .Where(x => x.Product == Product).First();
+                        costPerUnit = PO.PricePerUnit;
+                    }
+                    catch (Exception)
+                    {
+
+                        costPerUnit = Product.Cost;
+                    }
+                    
+                }
+                return costPerUnit; }
+        }
+        
 
         public void UpdateStockOnHand(bool forceChangeEvents)
         {

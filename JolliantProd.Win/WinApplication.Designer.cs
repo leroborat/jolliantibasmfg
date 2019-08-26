@@ -45,12 +45,14 @@
             this.reportsWindowsFormsModuleV2 = new DevExpress.ExpressApp.ReportsV2.Win.ReportsWindowsFormsModuleV2();
             this.validationModule = new DevExpress.ExpressApp.Validation.ValidationModule();
             this.validationWindowsFormsModule = new DevExpress.ExpressApp.Validation.Win.ValidationWindowsFormsModule();
+            this.cloneObjectModule1 = new DevExpress.ExpressApp.CloneObject.CloneObjectModule();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // securityStrategyComplex1
             // 
             this.securityStrategyComplex1.AllowAnonymousAccess = false;
             this.securityStrategyComplex1.Authentication = this.authenticationStandard1;
+            this.securityStrategyComplex1.PermissionsReloadMode = DevExpress.ExpressApp.Security.PermissionsReloadMode.NoCache;
             this.securityStrategyComplex1.RoleType = typeof(DevExpress.Persistent.BaseImpl.PermissionPolicy.PermissionPolicyRole);
             this.securityStrategyComplex1.SupportNavigationPermissionsForTypes = false;
             this.securityStrategyComplex1.UserType = typeof(DevExpress.Persistent.BaseImpl.PermissionPolicy.PermissionPolicyUser);
@@ -92,6 +94,10 @@
             this.validationModule.AllowValidationDetailsAccess = true;
             this.validationModule.IgnoreWarningAndInformationRules = false;
             // 
+            // cloneObjectModule1
+            // 
+            this.cloneObjectModule1.ClonerType = null;
+            // 
             // JolliantProdWindowsFormsApplication
             // 
             this.ApplicationName = "JolliantProd";
@@ -106,6 +112,7 @@
             this.Modules.Add(this.pivotGridModule);
             this.Modules.Add(this.reportsModuleV2);
             this.Modules.Add(this.validationModule);
+            this.Modules.Add(this.cloneObjectModule1);
             this.Modules.Add(this.module3);
             this.Modules.Add(this.dashboardsWindowsFormsModule);
             this.Modules.Add(this.fileAttachmentsWindowsFormsModule);
@@ -148,5 +155,6 @@
         private DevExpress.ExpressApp.ReportsV2.Win.ReportsWindowsFormsModuleV2 reportsWindowsFormsModuleV2;
         private DevExpress.ExpressApp.Validation.ValidationModule validationModule;
         private DevExpress.ExpressApp.Validation.Win.ValidationWindowsFormsModule validationWindowsFormsModule;
+        private DevExpress.ExpressApp.CloneObject.CloneObjectModule cloneObjectModule1;
     }
 }

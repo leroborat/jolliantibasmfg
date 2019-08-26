@@ -382,5 +382,10 @@ namespace JolliantProd.Module.Controllers
             }
             ObjectSpace.CommitChanges();
         }
+
+        private void SetToDraftSO_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ((SalesOrder)View.CurrentObject).Status = SalesOrder.StatusEnum.Draft;
+        }
     }
 }
