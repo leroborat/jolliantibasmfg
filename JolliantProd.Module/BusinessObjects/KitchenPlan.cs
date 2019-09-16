@@ -139,7 +139,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        [Association("KitchenPlan-ProductionBatches")]
+        [Association("KitchenPlan-ProductionBatches"), DevExpress.Xpo.Aggregated()]
         public XPCollection<ProductionBatch> ProductionBatches
         {
             get
@@ -184,6 +184,10 @@ namespace JolliantProd.Module.BusinessObjects
                     ProductionBatch pb = new ProductionBatch(Session);
                     pb.Component = line.ItemName;
                     pb.KitchenPlan = line.KitchenPlan;
+                    pb.Basins = line.Basins;
+                    pb.Pieces = line.Pieces;
+                    pb.Batches = line.Batches;
+
                     try
                     {
                         foreach (var route in line.ItemName.BillOfMaterials?.First().ProductionRoute.RouteOperations)
@@ -207,6 +211,10 @@ namespace JolliantProd.Module.BusinessObjects
                     ProductionBatch pb = new ProductionBatch(Session);
                     pb.Component = line.ItemName;
                     pb.KitchenPlan = line.KitchenPlan;
+                    pb.Basins = line.Basins;
+                    pb.Pieces = line.Pieces;
+                    pb.Batches = line.Batches;
+
                     try
                     {
                         foreach (var route in line.ItemName.BillOfMaterials?.First().ProductionRoute.RouteOperations)
@@ -226,12 +234,14 @@ namespace JolliantProd.Module.BusinessObjects
 
                 if (line.Batches > 0)
                 {
-                    for (int i = 0; i < line.Batches; i++)
-                    {
                         ProductionBatch pb = new ProductionBatch(Session);
                         pb.Component = line.ItemName;
                         pb.KitchenPlan = line.KitchenPlan;
-                        try
+                        pb.Basins = line.Basins;
+                        pb.Pieces = line.Pieces;
+                        pb.Batches = line.Batches;
+
+                    try
                         {
                             foreach (var route in line.ItemName.BillOfMaterials?.First().ProductionRoute.RouteOperations)
                             {
@@ -246,7 +256,7 @@ namespace JolliantProd.Module.BusinessObjects
 
                         }
                         ProductionBatches.Add(pb);
-                    }
+                    
                 }
 
                
@@ -309,11 +319,11 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        int basins;
-        int pieces;
+        double basins;
+        double pieces;
         KitchenPlan kitchenPlan;
         string remarks;
-        int batches;
+        double batches;
         Product itemName;
 
 
@@ -348,7 +358,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        public int Batches
+        public double Batches
         {
             get => batches;
             set { SetPropertyValue(nameof(Batches), ref batches, value);
@@ -368,7 +378,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        public int Pieces
+        public double Pieces
         {
             get => pieces;
             set { SetPropertyValue(nameof(Pieces), ref pieces, value);
@@ -381,7 +391,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
-        public int Basins
+        public double Basins
         {
             get => basins;
             set { SetPropertyValue(nameof(Basins), ref basins, value);

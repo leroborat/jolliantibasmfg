@@ -7,6 +7,7 @@
       <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="GenerateReceivingSummary" ValidationContexts="Save" />
       <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
       <Action Id="KitchenPlan.DoneMethod" TargetObjectsCriteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Done# And [ProductionFinishedGoods][]" />
       <Action Id="KitchenPlan.PlanMethod" ImageName="Shopping_ShoppingBasket" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Draft# And IsCurrentUserInRole('Production Supervisor')" />
@@ -23,7 +24,7 @@
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
       <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="ValidateProductionTransfer" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" />
-      <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0]" />
+      <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0] And Not IsNullOrEmpty([Series])" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
       <Action Id="ValidateWithdrawal" TargetObjectsCriteria="[Location] Is Not Null And [WithdrawalLines][[ProductionUOM] Is Not Null] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Submitted#" />
       <Action Id="Withdrawal.ActionMethod" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
@@ -231,11 +232,12 @@
         <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
       </AppearanceRules>
     </Class>
-    <Class Name="JolliantProd.Module.BusinessObjects.ProductionBatch">
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionBatch" IsCloneable="True">
       <AppearanceRules>
         <AppearanceRule Id="@a4bb850e-2d4f-42b7-9644-60a88c65caf0" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft#" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
+        <Member Name="Component" DataSourceCriteria="[CanBeManufactured] = True" />
         <Member Name="Status" AllowEdit="False" />
         <Member Name="Time" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
       </OwnMembers>
@@ -308,6 +310,7 @@
         <Member Name="NMISandCOA" Caption="NMIS/COA" />
         <Member Name="ProcessedBy" AllowEdit="False" />
         <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
+        <Member Name="ReceivedBy" AllowEdit="True" />
         <Member Name="Series" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
         <Member Name="StorageLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
@@ -474,6 +477,7 @@
           <Item Id="InventoryScrap_ListView" Removed="True" />
           <Item Id="Invoice_ListView" Removed="True" />
           <Item Id="Lot_ListView" Removed="True" />
+          <Item Id="MaintenanceRequest_ListView" Removed="True" />
           <Item Id="ManufacturingOrder_ListView" Removed="True" />
           <Item Id="MaterialRequest_ListView" Removed="True" />
           <Item Id="PaymentTerm_ListView" Removed="True" />
@@ -481,6 +485,7 @@
           <Item Id="ProductionRoute_ListView" Removed="True" />
           <Item Id="PurchaseOrder_ListView" Removed="True" />
           <Item Id="Receiving_ListView" Removed="True" />
+          <Item Id="ReceivingReportSummary_ListView" Removed="True" />
           <Item Id="ReceivingReturn_ListView" Removed="True" />
           <Item Id="SalesCategory_ListView" Removed="True" />
           <Item Id="SalesOrder_ListView" Removed="True" />
@@ -500,11 +505,23 @@
       </Item>
       <Item Id="Production" Caption="Production" IsNewNode="True">
         <Items IsNewNode="True">
-          <Item Id="@1632b7cc-9ace-4126-8d57-34df8926f849" ViewId="Product_ListView_Production" Caption="Production Products" IsNewNode="True" />
-          <Item Id="@5f613aa3-039a-44bf-a15d-6427c8296d51" ViewId="Withdrawal_ListView_Production" Caption="Pending Withdrawals" IsNewNode="True" />
-          <Item Id="@85761e1d-2073-48ef-b690-d65e4427e59f" ViewId="KitchenPlan_ListView" IsNewNode="True" />
-          <Item Id="@b813d63c-6d2f-4935-a499-5bb94b262044" ViewId="ProductionRoute_ListView" IsNewNode="True" />
-          <Item Id="@d92db58c-15f8-4bbc-892f-9c45794d136c" ViewId="WorkCenter_ListView" Caption="Work Centers" IsNewNode="True" />
+          <Item Id="@85761e1d-2073-48ef-b690-d65e4427e59f" ViewId="KitchenPlan_ListView" Index="1" IsNewNode="True" />
+          <Item Id="@5f613aa3-039a-44bf-a15d-6427c8296d51" ViewId="Withdrawal_ListView_Production" Caption="Pending Withdrawals" Index="2" IsNewNode="True" />
+          <Item Id="@31b2379b-b119-48b9-b23f-0857749b88ea" Index="3" Caption="Configuration" IsNewNode="True">
+            <Items IsNewNode="True">
+              <Item Id="@1632b7cc-9ace-4126-8d57-34df8926f849" ViewId="Product_ListView_Production" Caption="Production Products" IsNewNode="True" />
+              <Item Id="@b813d63c-6d2f-4935-a499-5bb94b262044" ViewId="ProductionRoute_ListView" IsNewNode="True" />
+              <Item Id="@d92db58c-15f8-4bbc-892f-9c45794d136c" ViewId="WorkCenter_ListView" Caption="Work Centers" IsNewNode="True" />
+            </Items>
+          </Item>
+          <Item Id="@85792da3-e644-4281-b5d3-39b320102ac4" Caption="Equipments" Index="99" IsNewNode="True">
+            <Items IsNewNode="True">
+              <Item Id="@b2d1d753-dd01-4022-aebf-64167bcac6e7" ViewId="Equipment_ListView" Index="1" IsNewNode="True" />
+              <Item Id="@d1a14c4f-fec9-4748-b19f-a0b180d794b1" ViewId="EquipmentCategory_ListView" Index="2" IsNewNode="True" />
+              <Item Id="MaintenanceRequest_ListView" ViewId="MaintenanceRequest_ListView" ObjectKey="" Index="3" IsNewNode="True" />
+            </Items>
+          </Item>
+          <Item Id="ReceivingReportSummary_ListView" ViewId="ReceivingReportSummary_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="Purchases" IsNewNode="True">
@@ -560,6 +577,7 @@
         </LayoutGroup>
       </Layout>
     </DetailView>
+    <ListView Id="BatchTransmittal_BatchTransmittalLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
     <ListView Id="BillOfMaterial_BomComponents_ListView">
       <Columns>
         <ColumnInfo Id="ConsumedInRouteOperation" Index="-1" />
@@ -847,6 +865,36 @@
         <ColumnInfo Id="Pieces" Index="-1" />
         <ColumnInfo Id="Remarks" Width="61" Index="-1" />
         <ColumnInfo Id="ItemName" Width="83" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_ListView">
+      <Columns>
+        <ColumnInfo Id="StockLocation" Width="89" Index="-1" />
+        <ColumnInfo Id="TotalProductionCost" Width="123" Index="-1" />
+        <ColumnInfo Id="SeriesName" Width="90" />
+        <ColumnInfo Id="Warehouse" Width="77" />
+        <ColumnInfo Id="Date" Width="51" Index="2" />
+        <ColumnInfo Id="Shift" Width="42" Index="3" />
+        <ColumnInfo Id="Status" Width="51" Index="4" />
+        <ColumnInfo Id="CreatedBy" Width="74" Index="5" />
+        <ColumnInfo Id="ProcessedBy" Width="84" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_ProductionBatches_ListView">
+      <Columns>
+        <ColumnInfo Id="BatchTotalCost" Width="99" Index="-1" />
+        <ColumnInfo Id="CostPerWeight" Width="98" Index="-1" />
+        <ColumnInfo Id="KitchenCode" Width="94" />
+        <ColumnInfo Id="Component" Width="0" />
+        <ColumnInfo Id="Time" Width="179" Index="3" />
+        <ColumnInfo Id="Status" Width="51" Index="4" />
+        <ColumnInfo Id="CookedWeight" Width="93" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_ProductionFinishedGoods_ListView">
+      <Columns>
+        <ColumnInfo Id="CostPerFG" Index="-1" />
+        <ColumnInfo Id="TotalFGCost" Index="-1" />
       </Columns>
     </ListView>
     <ListView Id="KitchenPlanLine_ComponentAllotments_ListView" NewItemRowPosition="Bottom" AllowEdit="True" />

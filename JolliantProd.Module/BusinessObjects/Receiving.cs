@@ -91,12 +91,38 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(LegacyPurchaseOrderNumber), ref legacyPurchaseOrderNumber, value);
         }
 
+        [Action(Caption = "Assign Series", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void AssignSeries()
+        {
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            if (Series == null)
+            {
+                StorageLocation.NextIn += 1;
+                Series = StorageLocation.Warehouse.WarehouseName + "-IN-" + StorageLocation.NextIn;
+            }
+            Session.Save(StorageLocation);
+            Session.Save(this);
+            Session.CommitTransaction();
+        }
+
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string Series
         {
             get => series;
-            set => SetPropertyValue(nameof(Series), ref series, value);
+            set { SetPropertyValue(nameof(Series), ref series, value);
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    foreach (var item in ReceivedLines)
+                    {
+                        if (item.Lot != null)
+                        {
+                            item.Lot.InternalReference = Series;
+                        }
+                        
+                    }
+                }
+            }
         }
 
         [RuleRequiredField()]
@@ -289,25 +315,7 @@ namespace JolliantProd.Module.BusinessObjects
                 {
                     PurchaseUOM = Product.PurchaseUOM;
                     StorageUOM = Product.UOM;
-                    if (Product.Tracking != Product.TrackingEnum.NoTracking)
-                    {
-                        Regex rgx = new Regex("[^a-zA-Z0-9 -]");
-                        string VendorName = rgx.Replace(Receiving?.Vendor?.VendorName, "");
-
-                        Lot lot = new Lot(Session);
-                        lot.InternalReference = Receiving?.Series;
-                        lot.LotCode = Product?.InternalReference + "-" + DateTime.Now.ToString("MMddyyyy") +
-                            "-" + VendorName + "-" + Receiving?.Vendor?.NextIn;
-                        try
-                        {
-                            Receiving.Vendor.NextIn += 1;
-                        }
-                        catch (Exception)
-                        { }
-                        lot.LotCode = (lot.LotCode.Replace(" ", string.Empty)).ToUpper();
-                        lot.Product = Product;
-                        Lot = lot;
-                    }
+                    
                 }
             }
         }
@@ -336,7 +344,21 @@ namespace JolliantProd.Module.BusinessObjects
         public DateTime LotExpiry
         {
             get => lotExpiry;
-            set => SetPropertyValue(nameof(LotExpiry), ref lotExpiry, value);
+            set { SetPropertyValue(nameof(LotExpiry), ref lotExpiry, value);
+
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    if (Product.Tracking != Product.TrackingEnum.NoTracking)
+                    {
+                        Lot lot = new Lot(Session);
+                        lot.InternalReference = Receiving?.Series;
+                        lot.LotCode = LotExpiry.ToString("MMddyyyy");
+                        lot.Product = Product;
+                        Lot = lot;
+                    }
+                }
+               
+            }
         }
 
         

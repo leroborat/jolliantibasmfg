@@ -162,6 +162,7 @@
     <Compile Include="BusinessObjects\Customer.cs" />
     <Compile Include="BusinessObjects\CustomerPayment.cs" />
     <Compile Include="BusinessObjects\Employee.cs" />
+    <Compile Include="BusinessObjects\Equipment.cs" />
     <Compile Include="BusinessObjects\FinishedGoodLoader.cs" />
     <Compile Include="BusinessObjects\InternalTransfer.cs" />
     <Compile Include="BusinessObjects\InventoryAdjustment.cs" />
@@ -180,6 +181,7 @@
     <Compile Include="BusinessObjects\ProductionTransfer.cs" />
     <Compile Include="BusinessObjects\PurchaseOrder.cs" />
     <Compile Include="BusinessObjects\Receiving.cs" />
+    <Compile Include="BusinessObjects\ReceivingReportSummary.cs" />
     <Compile Include="BusinessObjects\ReceivingReturn.cs" />
     <Compile Include="BusinessObjects\SalesCategory.cs" />
     <Compile Include="BusinessObjects\SalesOrder.cs" />
@@ -224,6 +226,12 @@
     </Compile>
     <Compile Include="Controllers\ReceivingController.Designer.cs">
       <DependentUpon>ReceivingController.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Controllers\ReceivingSummaryReportController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\ReceivingSummaryReportController.Designer.cs">
+      <DependentUpon>ReceivingSummaryReportController.cs</DependentUpon>
     </Compile>
     <Compile Include="Controllers\SalesOrderController.cs">
       <SubType>Component</SubType>
@@ -304,6 +312,9 @@
     <EmbeddedResource Include="Controllers\ReceivingController.resx">
       <DependentUpon>ReceivingController.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Controllers\ReceivingSummaryReportController.resx">
+      <DependentUpon>ReceivingSummaryReportController.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\SalesOrderController.resx">
       <DependentUpon>SalesOrderController.cs</DependentUpon>
     </EmbeddedResource>
@@ -370,6 +381,10 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="UnusableNodes3.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes4.xml">
       <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
       <SubType>Designer</SubType>
     </None>

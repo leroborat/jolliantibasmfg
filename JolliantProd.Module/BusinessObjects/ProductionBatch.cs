@@ -24,10 +24,13 @@ namespace JolliantProd.Module.BusinessObjects
         public override void AfterConstruction()
         {
             base.AfterConstruction();
-            // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
+            Batches = 1;
         }
 
 
+        double pieces;
+        double basins;
+        double batches;
         [Persistent(nameof(CostPerWeight))]
         decimal costPerWeight;
         [Persistent(nameof(BatchTotalCost))]
@@ -49,7 +52,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
-        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), NonCloneable()]
         public string KitchenCode
         {
             get => kitchenCode;
@@ -83,6 +86,96 @@ namespace JolliantProd.Module.BusinessObjects
                     }
 
                 }
+            }
+        }
+
+
+        public double Batches
+        {
+            get => batches;
+            set
+            {
+                SetPropertyValue(nameof(Batches), ref batches, value);
+                if (!IsLoading & !IsSaving & !IsDeleted)
+                {
+                    foreach (var item in BatchConsumptions)
+                    {
+                        try
+                        {
+                            if (Batches != 0)
+                            {
+                                var myBom = Component.BillOfMaterials.First()
+                                .BomComponents.Where(x => x.Component == item.ItemConsumed).First();
+
+                                item.QuantityConsumed = myBom.Quantity * Batches;
+                            }
+                            
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
+
+        public double Basins
+        {
+            get => basins;
+            set { SetPropertyValue(nameof(Basins), ref basins, value);
+                if (!IsLoading & !IsSaving & !IsDeleted)
+                {
+                    foreach (var item in BatchConsumptions)
+                    {
+                        try
+                        {
+                            if (Basins != 0)
+                            {
+                                var myBom = Component.BillOfMaterials.First()
+                                .BomComponents.Where(x => x.Component == item.ItemConsumed).First();
+
+                                item.QuantityConsumed = myBom.Quantity * Basins;
+                            }
+
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        
+        public double Pieces
+        {
+            get => pieces;
+            set { SetPropertyValue(nameof(Pieces), ref pieces, value);
+                if (!IsLoading & !IsSaving & !IsDeleted)
+                {
+                    foreach (var item in BatchConsumptions)
+                    {
+                        try
+                        {
+                            if (Pieces != 0)
+                            {
+                                var myBom = Component.BillOfMaterials.First()
+                                .BomComponents.Where(x => x.Component == item.ItemConsumed).First();
+
+                                item.QuantityConsumed = myBom.Quantity * Pieces;
+                            }
+
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+
             }
         }
 
@@ -121,7 +214,7 @@ namespace JolliantProd.Module.BusinessObjects
         
 
 
-        [RuleRequiredField()]
+        
         public DateTime Time
         {
             get => time;
@@ -146,13 +239,22 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Association("ProductionBatch-BatchTransmittals"), DevExpress.Xpo.Aggregated()]
+        public XPCollection<BatchTransmittal> BatchTransmittals
+        {
+            get
+            {
+                return GetCollection<BatchTransmittal>(nameof(BatchTransmittals));
+            }
+        }
+
         public enum StatusEnum
         {
             Draft,
             Validated
         }
 
-        
+        [NonCloneable()]
         public StatusEnum Status
         {
             get => status;
@@ -387,5 +489,117 @@ namespace JolliantProd.Module.BusinessObjects
             get => productionBatch;
             set => SetPropertyValue(nameof(ProductionBatch), ref productionBatch, value);
         }
+    }
+
+    public class BatchTransmittal : BaseObject
+    {
+        public BatchTransmittal(Session session) : base(session)
+        { }
+
+
+        [Persistent(nameof(TotalWeight))]
+        double totalWeight;
+        WorkCenter to;
+        WorkCenter from;
+        ProductionBatch productionBatch;
+
+        [Association("ProductionBatch-BatchTransmittals")]
+        public ProductionBatch ProductionBatch
+        {
+            get => productionBatch;
+            set => SetPropertyValue(nameof(ProductionBatch), ref productionBatch, value);
+        }
+
+
+        [RuleRequiredField()]
+        public WorkCenter From
+        {
+            get => from;
+            set => SetPropertyValue(nameof(From), ref from, value);
+        }
+
+        [RuleRequiredField()]
+        public WorkCenter To
+        {
+            get => to;
+            set => SetPropertyValue(nameof(To), ref to, value);
+        }
+
+        
+        [PersistentAlias(nameof(totalWeight))]
+        public double TotalWeight
+        {
+            get {
+                totalWeight = BatchTransmittalLines.Select(x => x.TotalUnits).Sum();
+                return totalWeight; }
+        }
+        
+
+
+        [Association("BatchTransmittal-BatchTransmittalLines"), DevExpress.Xpo.Aggregated()]
+        public XPCollection<BatchTransmittalLine> BatchTransmittalLines
+        {
+            get
+            {
+                return GetCollection<BatchTransmittalLine>(nameof(BatchTransmittalLines));
+            }
+        }
+
+
+
+    }
+
+    public class BatchTransmittalLine : BaseObject
+    {
+        public BatchTransmittalLine(Session session) : base(session)
+        { }
+
+
+        string remarks;
+        double totalUnits;
+        string description;
+        string itemCode;
+        BatchTransmittal batchTransmittal;
+
+        [Association("BatchTransmittal-BatchTransmittalLines")]
+        public BatchTransmittal BatchTransmittal
+        {
+            get => batchTransmittal;
+            set => SetPropertyValue(nameof(BatchTransmittal), ref batchTransmittal, value);
+        }
+
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
+        public string ItemCode
+        {
+            get => itemCode;
+            set => SetPropertyValue(nameof(ItemCode), ref itemCode, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
+        public string Description
+        {
+            get => description;
+            set => SetPropertyValue(nameof(Description), ref description, value);
+        }
+
+        [RuleRequiredField()]
+        public double TotalUnits
+        {
+            get => totalUnits;
+            set => SetPropertyValue(nameof(TotalUnits), ref totalUnits, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string Remarks
+        {
+            get => remarks;
+            set => SetPropertyValue(nameof(Remarks), ref remarks, value);
+        }
+
+
     }
 }

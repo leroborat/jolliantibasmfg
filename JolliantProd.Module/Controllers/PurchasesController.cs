@@ -105,12 +105,7 @@ namespace JolliantProd.Module.Controllers
             var thisView = ((Receiving)View.CurrentObject);
             thisView.Save();
 
-            if (thisView.Series == null)
-            {
-                thisView.StorageLocation.NextIn += 1;
-                thisView.Series = thisView.StorageLocation.Warehouse.WarehouseName + "-IN-" + thisView.StorageLocation.NextIn;
-                ObjectSpace.CommitChanges();
-            }
+            
             
             WarehouseLocation warehouseLocation;
             warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Vendor"));

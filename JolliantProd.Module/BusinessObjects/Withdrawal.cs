@@ -126,14 +126,14 @@ namespace JolliantProd.Module.BusinessObjects
                     foreach (var item in materialList)
                     {
                         //Get Quantity for each material
-                        double allocCount= allocations.Where(x => x.Material == item).Select(x => x.Quantity).Sum();
+                        double allocCount = allocations.Where(x => x.Material == item).Select(x => x.Quantity).Sum();
                         WithdrawalLine withdrawalLine = new WithdrawalLine(Session);
                         withdrawalLine.Product = item;
                         if (item.UOM != item.ProductionUOM)
                         {
                             allocCount = allocCount / item.UOMRatioProduction;
                         }
-                        withdrawalLine.DemandQuantity = allocCount;
+                        withdrawalLine.DemandQuantity = 0;
                         WithdrawalLines.Add(withdrawalLine);
                     }
                     //Get Quantity for each material
@@ -158,12 +158,12 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        double productionQuantity;
         [Persistent(nameof(ProductionPerUnitCost))]
         decimal productionPerUnitCost;
         [Persistent(nameof(RawCost))]
         decimal rawCost;
-        [Persistent(nameof(ProductionQuantity))]
-        double productionQuantity;
+
         UnitOfMeasure productionUOM;
         UnitOfMeasure uOM;
         [Persistent(nameof(ProcessedQuantity))]
@@ -222,22 +222,11 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        [PersistentAlias(nameof(productionQuantity))]
+        
         public double ProductionQuantity
         {
-            get
-            {
-                if (ProductionUOM != UOM)
-                {
-                    productionQuantity = ProcessedQuantity * Product.UOMRatioProduction;
-                }
-                else
-                {
-                    productionQuantity = ProcessedQuantity;
-                }
-
-                return productionQuantity;
-            }
+            get => productionQuantity;
+            set => SetPropertyValue(nameof(ProductionQuantity), ref productionQuantity, value);
         }
 
 
@@ -263,8 +252,12 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get
             {
-                rawCost = WithdrawalLineLots.Select(x => x.Lot).Sum(y => y.CostPerUnit);
-                rawCost = rawCost * Convert.ToDecimal(ProcessedQuantity);
+                if (WithdrawalLineLots.Count() !=0)
+                {
+                    rawCost = WithdrawalLineLots.Select(x => x.Lot).Sum(y => y.CostPerUnit) / Convert.ToDecimal(WithdrawalLineLots.Count());
+                    rawCost = rawCost * Convert.ToDecimal(ProcessedQuantity);
+                }
+                
                 return rawCost;
             }
         }
@@ -274,7 +267,11 @@ namespace JolliantProd.Module.BusinessObjects
         public decimal ProductionPerUnitCost
         {
             get {
-                productionPerUnitCost = RawCost / Convert.ToDecimal(ProductionQuantity);
+                if (ProductionQuantity != 0)
+                {
+                    productionPerUnitCost = RawCost / Convert.ToDecimal(ProductionQuantity);
+                }
+                
                 return productionPerUnitCost; }
         }
         
@@ -314,7 +311,23 @@ namespace JolliantProd.Module.BusinessObjects
         public double DoneQuantity
         {
             get => doneQuantity;
-            set => SetPropertyValue(nameof(DoneQuantity), ref doneQuantity, value);
+            set { SetPropertyValue(nameof(DoneQuantity), ref doneQuantity, value);
+
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    if (WithdrawalLine != null)
+                    {
+                        if (WithdrawalLine.ProductionUOM != WithdrawalLine.UOM)
+                        {
+                            WithdrawalLine.ProductionQuantity = WithdrawalLine.ProcessedQuantity * WithdrawalLine.Product.UOMRatioProduction;
+                        }
+                        else
+                        {
+                            WithdrawalLine.ProductionQuantity = WithdrawalLine.ProcessedQuantity;
+                        }
+                    }
+                }
+            }
         }
 
         
