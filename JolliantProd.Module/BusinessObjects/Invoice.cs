@@ -29,6 +29,8 @@ namespace JolliantProd.Module.BusinessObjects
             Status = StatusEnum.Draft;
         }
 
+        SupplierCode suppCode;
+        string trip;
         [Persistent(nameof(OpenAmount))]
         decimal openAmount;
         Company company;
@@ -102,6 +104,21 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => businessStyle;
             set => SetPropertyValue(nameof(BusinessStyle), ref businessStyle, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string Trip
+        {
+            get => trip;
+            set => SetPropertyValue(nameof(Trip), ref trip, value);
+        }
+
+        
+        public SupplierCode SuppCode
+        {
+            get => suppCode;
+            set => SetPropertyValue(nameof(SuppCode), ref suppCode, value);
         }
 
 

@@ -121,7 +121,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Status), ref status, value);
         }
 
-        [Association("KitchenPlan-Withdrawals"), DevExpress.Xpo.Aggregated()]
+        [Association("KitchenPlan-Withdrawals")]
         public XPCollection<Withdrawal> Withdrawals
         {
             get

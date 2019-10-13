@@ -109,7 +109,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
-        [Association("KitchenPlan-Withdrawals")]
+        [Association("KitchenPlan-Withdrawals"), RuleRequiredField()]
         public KitchenPlan KitchenPlan
         {
             get => kitchenPlan;
@@ -180,14 +180,14 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Withdrawal), ref withdrawal, value);
         }
 
-
+        [RuleRequiredField()]
         public Product Product
         {
             get => product;
             set
             {
                 SetPropertyValue(nameof(Product), ref product, value);
-                if (!IsLoading && !IsSaving)
+                if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     UOM = Product.UOM;
                     ProductionUOM = Product.ProductionUOM;

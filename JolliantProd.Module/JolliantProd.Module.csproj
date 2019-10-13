@@ -323,6 +323,7 @@
       <SubType>Designer</SubType>
       <DependentUpon>Module.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\licenses.licx" />
     <EmbeddedResource Include="Reports\FGInventoryReport.resx">
       <DependentUpon>FGInventoryReport.cs</DependentUpon>
     </EmbeddedResource>

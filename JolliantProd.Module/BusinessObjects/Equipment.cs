@@ -28,6 +28,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string serialCode;
+        string position;
         decimal cost;
         string serialNumber;
         string model;
@@ -45,6 +47,14 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => equipmentName;
             set => SetPropertyValue(nameof(EquipmentName), ref equipmentName, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string SerialCode
+        {
+            get => serialCode;
+            set => SetPropertyValue(nameof(SerialCode), ref serialCode, value);
         }
 
 
@@ -66,6 +76,14 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => usedBy;
             set => SetPropertyValue(nameof(UsedBy), ref usedBy, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string Position
+        {
+            get => position;
+            set => SetPropertyValue(nameof(Position), ref position, value);
         }
 
 
