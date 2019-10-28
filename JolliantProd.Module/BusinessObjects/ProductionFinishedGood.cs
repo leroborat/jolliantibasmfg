@@ -78,7 +78,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), VisibleInDetailView(false), VisibleInListView(false)]
         public string LotNumber
         {
             get => lotNumber;

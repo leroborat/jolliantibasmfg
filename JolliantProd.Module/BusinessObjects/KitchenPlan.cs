@@ -35,6 +35,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string SeriesName
         {
@@ -157,7 +159,21 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string CreatedBy
         {
@@ -271,36 +287,36 @@ namespace JolliantProd.Module.BusinessObjects
             // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
             Status = StatusEnum.Done;
             ProcessedBy = Session.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
-            
-            WarehouseLocation warehouseLocation;
-            warehouseLocation = Session.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Production"));
-            if (warehouseLocation == null)
-            {
-                warehouseLocation = new WarehouseLocation(Session);
-                warehouseLocation.LocationName = "Production";
-                warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.Production;
-                Session.Save(warehouseLocation);
-            }
 
-           
-            foreach (ProductionFinishedGood item in ProductionFinishedGoods)
-            {
-                StockTransfer st = new StockTransfer(Session);
-                st.DestinationLocation = StockLocation;
-                st.SourceLocation = warehouseLocation;
+            //WarehouseLocation warehouseLocation;
+            //warehouseLocation = Session.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Production"));
+            //if (warehouseLocation == null)
+            //{
+            //    warehouseLocation = new WarehouseLocation(Session);
+            //    warehouseLocation.LocationName = "Production";
+            //    warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.Production;
+            //    Session.Save(warehouseLocation);
+            //}
 
-                Lot newLot = new Lot(Session);
-                newLot.Product = item.FinishedGood;
-                newLot.LotCode = item.LotNumber;
-                newLot.ExpirationDate = item.ExpirationDate;
-                newLot.InternalReference = SeriesName;
-                st.Lot = newLot;
-                st.Quantity = item.Quantity;
-                st.UOM = item.FinishedGood.UOM;
-                st.Product = item.FinishedGood;
-                st.Reference = "Moved FG to Stock: " + SeriesName;
-                Session.Save(This);
-            }
+
+            //foreach (ProductionFinishedGood item in ProductionFinishedGoods)
+            //{
+            //    StockTransfer st = new StockTransfer(Session);
+            //    st.DestinationLocation = StockLocation;
+            //    st.SourceLocation = warehouseLocation;
+
+            //    Lot newLot = new Lot(Session);
+            //    newLot.Product = item.FinishedGood;
+            //    newLot.LotCode = item.LotNumber;
+            //    newLot.ExpirationDate = item.ExpirationDate;
+            //    newLot.InternalReference = SeriesName;
+            //    st.Lot = newLot;
+            //    st.Quantity = item.Quantity;
+            //    st.UOM = item.FinishedGood.UOM;
+            //    st.Product = item.FinishedGood;
+            //    st.Reference = "Moved FG to Stock: " + SeriesName;
+            //    Session.Save(This);
+            //}
 
             Session.CommitTransaction();
         }

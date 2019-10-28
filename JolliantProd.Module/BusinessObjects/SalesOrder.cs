@@ -343,6 +343,20 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
 
 
     }

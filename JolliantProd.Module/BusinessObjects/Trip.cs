@@ -325,7 +325,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
     }
 
-    //[RuleCombinationOfPropertiesIsUnique("UniqueLot", DefaultContexts.Save, "LotCode, TripLine")]
+    [RuleCombinationOfPropertiesIsUnique("UniqueLot", DefaultContexts.Save, "LotCode, TripLine")]
     public class TripLineDetail : BaseObject
     {
         public TripLineDetail(Session session) : base(session)
