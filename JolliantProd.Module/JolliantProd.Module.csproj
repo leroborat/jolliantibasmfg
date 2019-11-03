@@ -157,6 +157,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BusinessObjects\AssessmentReport.cs" />
+    <Compile Include="BusinessObjects\AuditUsageReport.cs" />
     <Compile Include="BusinessObjects\BillOfMaterial.cs" />
     <Compile Include="BusinessObjects\Company.cs" />
     <Compile Include="BusinessObjects\Customer.cs" />
@@ -179,6 +181,7 @@
     <Compile Include="BusinessObjects\ProductionFinishedGood.cs" />
     <Compile Include="BusinessObjects\ProductionRoute.cs" />
     <Compile Include="BusinessObjects\ProductionTransfer.cs" />
+    <Compile Include="BusinessObjects\ProductionYieldMonitor.cs" />
     <Compile Include="BusinessObjects\PurchaseOrder.cs" />
     <Compile Include="BusinessObjects\Receiving.cs" />
     <Compile Include="BusinessObjects\ReceivingReportSummary.cs" />
@@ -197,6 +200,12 @@
     <Compile Include="BusinessObjects\WithdrawalRequest.cs" />
     <Compile Include="BusinessObjects\WorkCenter.cs" />
     <Compile Include="BusinessObjects\WorkOrder.cs" />
+    <Compile Include="Controllers\AuditController.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controllers\AuditController.Designer.cs">
+      <DependentUpon>AuditController.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\MaterialRequestSaving.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -297,6 +306,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Controllers\AuditController.resx">
+      <DependentUpon>AuditController.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controllers\MaterialRequestSaving.resx">
       <DependentUpon>MaterialRequestSaving.cs</DependentUpon>
     </EmbeddedResource>

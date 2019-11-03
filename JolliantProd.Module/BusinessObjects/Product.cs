@@ -28,6 +28,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        ProductStatusEnum status;
         double uOMRatioProduction;
         UnitOfMeasure productionUOM;
         TrackingEnum tracking;
@@ -66,14 +67,14 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(CanBePurchased), ref canBePurchased, value);
         }
 
-        
+
         public bool CanBeManufactured
         {
             get => canBeManufactured;
             set => SetPropertyValue(nameof(CanBeManufactured), ref canBeManufactured, value);
         }
         bool canBeManufactured;
-        
+
 
         public enum ProductTypeEnum
         {
@@ -147,7 +148,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(ProductionUOM), ref productionUOM, value);
         }
 
-        
+
         public double UOMRatioProduction
         {
             get => uOMRatioProduction;
@@ -162,7 +163,7 @@ namespace JolliantProd.Module.BusinessObjects
             get
             {
 
-                
+
 
                 var StockIn = new XPQuery<StockTransfer>(Session)
                 .Where(
@@ -180,16 +181,25 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
-        
+
+
         public double ReorderingLevel
         {
             get => reorderingLevel;
             set => SetPropertyValue(nameof(ReorderingLevel), ref reorderingLevel, value);
         }
         double reorderingLevel;
-        
-        
+
+        [VisibleInListView(false)]
+        public double OverstockLevel
+        {
+            get => overstockLevel;
+            set => SetPropertyValue(nameof(OverstockLevel), ref overstockLevel, value);
+        }
+        double overstockLevel;
+
+
+
 
         public enum TrackingEnum
         {
@@ -214,6 +224,33 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        public enum ProductStatusEnum
+        {
+            Draft,
+            Approved,
+            DisApproved
+        }
 
+        
+        public ProductStatusEnum Status
+        {
+            get => status;
+            set => SetPropertyValue(nameof(Status), ref status, value);
+        }
+
+
+        [Action(Caption = "Approve Product", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void ApproveProduct()
+        {
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            this.Status = ProductStatusEnum.Approved;
+        }
+
+        [Action(Caption = "Disapprove Product", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void DisapproveProductAction()
+        {
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            this.Status = ProductStatusEnum.DisApproved;
+        }
     }
 }

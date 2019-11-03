@@ -52,6 +52,14 @@ namespace JolliantProd.Module.DatabaseUpdate {
             adminRole.IsAdministrative = true;
 			userAdmin.Roles.Add(adminRole);
 
+            PermissionPolicyRole RNDRole = ObjectSpace.FindObject<PermissionPolicyRole>(new BinaryOperator("Name", "RND"));
+            if (adminRole == null)
+            {
+                adminRole = ObjectSpace.CreateObject<PermissionPolicyRole>();
+                adminRole.Name = "RND";
+            }
+            
+
             WarehouseLocation warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Customers"));
             if (warehouseLocation == null)
             {

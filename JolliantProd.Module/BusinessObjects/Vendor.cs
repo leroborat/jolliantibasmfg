@@ -29,6 +29,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        StatusEnum status;
         PaymentTerm defaultPaymentTerm;
         string paymentTerms;
         string tINNumber;
@@ -57,11 +58,25 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(VATVendor), ref vATVendor, value);
         }
 
-        
+
         public PaymentTerm DefaultPaymentTerm
         {
             get => defaultPaymentTerm;
             set => SetPropertyValue(nameof(DefaultPaymentTerm), ref defaultPaymentTerm, value);
+        }
+
+        public enum StatusEnum
+        {
+            ForApproval,
+            Approved,
+            Disapproved
+        }
+
+        
+        public StatusEnum Status
+        {
+            get => status;
+            set => SetPropertyValue(nameof(Status), ref status, value);
         }
 
 
@@ -153,6 +168,19 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Action(Caption = "Set As Approved", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void ApprovedVendor()
+        {
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            this.Status = StatusEnum.Approved;
+        }
+
+        [Action(Caption = "Set As Dispproved", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void DisApprovedVendor()
+        {
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            this.Status = StatusEnum.Disapproved;
+        }
 
     }
 

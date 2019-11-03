@@ -31,6 +31,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        RequestTypeEnum requestType;
         string lastModifiedBy;
         DateTime lastModifiedDate;
         DateTime deliveryDate;
@@ -98,12 +99,25 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(LastModifiedDate), ref lastModifiedDate, value);
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string LastModifiedBy
         {
             get => lastModifiedBy;
             set => SetPropertyValue(nameof(LastModifiedBy), ref lastModifiedBy, value);
+        }
+
+        public enum RequestTypeEnum
+        {
+            Trade,
+            NonTrade
+        }
+
+        
+        public RequestTypeEnum RequestType
+        {
+            get => requestType;
+            set => SetPropertyValue(nameof(RequestType), ref requestType, value);
         }
 
 

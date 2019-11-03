@@ -239,6 +239,15 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Association("ProductionBatch-ProductionYieldMonitors"), DevExpress.Xpo.Aggregated()]
+        public XPCollection<ProductionYieldMonitor> ProductionYieldMonitors
+        {
+            get
+            {
+                return GetCollection<ProductionYieldMonitor>(nameof(ProductionYieldMonitors));
+            }
+        }
+
         [Association("ProductionBatch-BatchTransmittals"), DevExpress.Xpo.Aggregated()]
         public XPCollection<BatchTransmittal> BatchTransmittals
         {

@@ -156,6 +156,14 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Association("Equipment-AssessmentReports"), DevExpress.Xpo.Aggregated()]
+        public XPCollection<AssessmentReport> AssessmentReports
+        {
+            get
+            {
+                return GetCollection<AssessmentReport>(nameof(AssessmentReports));
+            }
+        }
 
 
     }
