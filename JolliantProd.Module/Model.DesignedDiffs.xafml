@@ -6,6 +6,7 @@
       <Action Id="AssignLotsAction" TargetObjectsCriteria="[WithdrawalLines][[WithdrawalLineLots][].Count() = 0]" />
       <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
+      <Action Id="FGInventoryReport.ActionMethod" ValidationContexts="Save" />
       <Action Id="GenerateAuditEntriesSimpleAction" ValidationContexts="Save" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
       <Action Id="GenerateReceivingSummary" ValidationContexts="Save" />
@@ -20,6 +21,7 @@
       <Action Id="Product.ApproveProduct" ValidationContexts="Save" ImageName="BO_Task" TargetObjectsCriteria="IsCurrentUserInRole('RND') And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Draft# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,DisApproved#" />
       <Action Id="Product.DisapproveProductAction" ValidationContexts="Save" TargetObjectsCriteria="IsCurrentUserInRole('RND')" />
       <Action Id="ProductionBatch.ValidateStatus" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft# And [KitchenPlan] Is Not Null And Not IsNullOrEmpty([KitchenCode]) And [CookedWeight] &lt;&gt; 0.0 And [Time] Is Not Null" />
+      <Action Id="SetToDraftWithdrawal" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Validated#" ValidationContexts="Save" />
       <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
       <Action Id="SOSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Confirmed#" />
       <Action Id="TripSetToDraft" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
@@ -83,6 +85,11 @@
     <Class Name="JolliantProd.Module.BusinessObjects.CustomerDeliveryAddress" ImageName="BO_Address" />
     <Class Name="JolliantProd.Module.BusinessObjects.CustomerPayment" ImageName="Currency" />
     <Class Name="JolliantProd.Module.BusinessObjects.Employee" ImageName="NewEmployee" />
+    <Class Name="JolliantProd.Module.BusinessObjects.FGInventoryReport">
+      <OwnMembers>
+        <Member Name="Product" DataSourceCriteria="[CanBeSold] = True" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.FinishedGood">
       <OwnMembers>
         <Member Name="Product" AllowEdit="False" />
@@ -236,7 +243,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item">
       <AppearanceRules>
-        <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
+        <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="Product_ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="Status" AllowEdit="False" />
@@ -461,6 +468,7 @@
       <Item Id="Inventory" Index="2" IsNewNode="True">
         <Items IsNewNode="True">
           <Item Id="@66b140e0-7a0a-4892-b0c3-d4d21ed070fb" Caption="Stock Aging" ViewId="StockTransfer_Aeging" IsNewNode="True" />
+          <Item Id="@b671b0d4-2ae8-4830-8096-5bf77559d63b" ViewId="Product_ListView_Fast_Load" Caption="Products - Fast Load" IsNewNode="True" />
           <Item Id="InternalTransfer_ListView" ViewId="InternalTransfer_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="InventoryAdjustment_ListView" ViewId="InventoryAdjustment_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="InventoryScrap_ListView" ViewId="InventoryScrap_ListView" ObjectKey="" IsNewNode="True" />
@@ -538,6 +546,7 @@
               <Item Id="MaintenanceRequest_ListView" ViewId="MaintenanceRequest_ListView" ObjectKey="" Index="3" IsNewNode="True" />
             </Items>
           </Item>
+          <Item Id="@7519cc54-320f-498d-921d-205e6c99058d" ViewId="FGInventoryReport_ListView" IsNewNode="True" />
           <Item Id="ReceivingReportSummary_ListView" ViewId="ReceivingReportSummary_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
@@ -683,6 +692,7 @@
         <ColumnInfo Id="EmployeeName" Width="112" />
       </Columns>
     </ListView>
+    <ListView Id="FGInventoryReport_FGInventoryReportLines_ListView" AllowNew="False" />
     <ListView Id="FinishedGoodLoader_ListView" TopReturnedObjects="100">
       <Columns>
         <ColumnInfo Id="ReferenceName" Index="-1" />
@@ -986,20 +996,26 @@
     </ListView>
     <ListView Id="Product_ListView" DataAccessMode="Client">
       <Columns>
-        <ColumnInfo Id="Barcode" Width="66" Index="-1" />
-        <ColumnInfo Id="CanBePurchased" Width="123" Index="-1" />
-        <ColumnInfo Id="CanBeSold" Width="89" Index="-1" />
-        <ColumnInfo Id="Cost" Width="45" Index="-1" />
-        <ColumnInfo Id="InternalReference" Width="126" Index="-1" />
-        <ColumnInfo Id="ProductType" Width="95" Index="-1" />
-        <ColumnInfo Id="PurchaseUOM" Width="103" Index="-1" />
-        <ColumnInfo Id="ReorderingLevel" Index="-1" />
-        <ColumnInfo Id="SalesPrice" Width="83" Index="-1" />
-        <ColumnInfo Id="Tracking" Width="69" Index="-1" />
-        <ColumnInfo Id="UOM" Width="47" Index="-1" />
-        <ColumnInfo Id="ProductName" Width="111" />
-        <ColumnInfo Id="SalesCategory" Width="106" Index="1" />
-        <ColumnInfo Id="StockOnHand" Width="104" Index="2" />
+        <ColumnInfo Id="Barcode" Width="66" Index="-1" Removed="True" />
+        <ColumnInfo Id="CanBePurchased" Width="123" Index="-1" Removed="True" />
+        <ColumnInfo Id="CanBeSold" Width="89" Index="-1" Removed="True" />
+        <ColumnInfo Id="Cost" Width="45" Index="-1" Removed="True" />
+        <ColumnInfo Id="ProductType" Width="95" Index="-1" Removed="True" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="-1" Removed="True" />
+        <ColumnInfo Id="ReorderingLevel" Index="-1" Removed="True" />
+        <ColumnInfo Id="SalesPrice" Width="83" Index="-1" Removed="True" />
+        <ColumnInfo Id="Tracking" Width="69" Index="-1" Removed="True" />
+        <ColumnInfo Id="UOM" Width="47" Index="-1" Removed="True" />
+        <ColumnInfo Id="ProductName" Width="111" Index="0" />
+        <ColumnInfo Id="InternalReference" Width="126" Index="1" />
+        <ColumnInfo Id="SalesCategory" Width="106" Index="2" />
+        <ColumnInfo Id="StockOnHand" Width="104" Index="3" />
+        <ColumnInfo Id="CanBeManufactured" Width="142" Index="4" />
+        <ColumnInfo Id="ProductionUOM" Width="111" Index="5" />
+        <ColumnInfo Id="UOMRatioProduction" Width="140" Index="6" />
+        <ColumnInfo Id="Status" Width="56" Index="7" />
+        <ColumnInfo Id="Oid" Removed="True" />
+        <ColumnInfo Id="OverstockLevel" Removed="True" />
       </Columns>
     </ListView>
     <ListView Id="Product_ListView_Copy" ClassName="JolliantProd.Module.BusinessObjects.Product" Criteria="[CanBePurchased] = True" Caption="Purchaseable Products" DataAccessMode="Client" IsNewNode="True">
@@ -1019,6 +1035,30 @@
         <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="1" IsNewNode="True" />
         <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="2" IsNewNode="True" />
         <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="116" Index="3" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="Product_ListView_Fast_Load" ClassName="JolliantProd.Module.BusinessObjects.Product" DataAccessMode="DataView" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Barcode" PropertyName="Barcode" Width="66" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBeManufactured" PropertyName="CanBeManufactured" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBePurchased" PropertyName="CanBePurchased" Width="123" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBeSold" PropertyName="CanBeSold" Width="89" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Cost" PropertyName="Cost" Width="45" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Width="126" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="OverstockLevel" PropertyName="OverstockLevel" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductionUOM" PropertyName="ProductionUOM" Width="111" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductType" PropertyName="ProductType" Width="95" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="103" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesPrice" PropertyName="SalesPrice" Width="83" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Tracking" PropertyName="Tracking" Width="69" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="UOMRatioProduction" PropertyName="UOMRatioProduction" Width="140" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductName" PropertyName="ProductName" Width="111" SortIndex="0" SortOrder="Ascending" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="UOM" PropertyName="UOM" Width="47" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="Status" PropertyName="Status" Width="56" Index="3" IsNewNode="True" />
       </Columns>
     </ListView>
     <ListView Id="Product_ListView_Production" ClassName="JolliantProd.Module.BusinessObjects.Product" Criteria="[CanBeManufactured] = True" IsNewNode="True">
@@ -1048,7 +1088,7 @@
     <DetailView Id="ProductionBatch_DetailView">
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
-          <LayoutGroup Id="SimpleEditors" RelativeSize="35.368043087971273">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="36.617100371747213">
             <LayoutGroup Id="ProductionBatch" RelativeSize="100">
               <LayoutGroup Id="ProductionBatch_col1" RelativeSize="50">
                 <LayoutItem Id="KitchenCode" RelativeSize="24" />
@@ -1066,17 +1106,22 @@
               </LayoutGroup>
             </LayoutGroup>
           </LayoutGroup>
-          <TabbedGroup Id="Tabs" RelativeSize="64.631956912028727">
-            <LayoutGroup Id="BatchConsumptions" RelativeSize="100">
-              <LayoutItem Id="BatchConsumptions" RelativeSize="100" />
+          <TabbedGroup Id="Tabs" Index="1" RelativeSize="63.382899628252787" IsNewNode="True" Removed="True">
+            <LayoutGroup Id="BatchConsumptions" ShowCaption="True" Caption="Batch Consumptions" Index="0" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="BatchConsumptions" ViewItem="BatchConsumptions" Index="0" RelativeSize="100" IsNewNode="True" />
             </LayoutGroup>
-            <LayoutGroup Id="BatchRoutes" RelativeSize="100">
-              <LayoutItem Id="BatchRoutes" RelativeSize="100" />
+            <LayoutGroup Id="BatchRoutes" ShowCaption="True" Caption="Batch Routes" Index="1" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="BatchRoutes" ViewItem="BatchRoutes" Index="0" RelativeSize="100" IsNewNode="True" />
             </LayoutGroup>
-            <LayoutGroup Id="AuditTrail" Index="2" RelativeSize="100">
-              <LayoutItem Id="AuditTrail" RelativeSize="100" />
+            <LayoutGroup Id="ProductionYieldMonitors" ShowCaption="True" Caption="Production Yield Monitors" Index="2" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="ProductionYieldMonitors" ViewItem="ProductionYieldMonitors" Index="0" RelativeSize="100" IsNewNode="True" />
             </LayoutGroup>
-            <LayoutGroup Id="BatchTransmittals" Removed="True" />
+            <LayoutGroup Id="Item1" ShowCaption="True" CaptionLocation="Top" Direction="Vertical" Index="3" RelativeSize="100" Caption="Batch Transmittals" IsNewNode="True">
+              <LayoutItem Id="BatchTransmittals" ViewItem="BatchTransmittals" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="AuditTrail" ShowCaption="True" Caption="Audit Trail" Index="4" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="AuditTrail" ViewItem="AuditTrail" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
           </TabbedGroup>
         </LayoutGroup>
       </Layout>
@@ -1388,7 +1433,7 @@
       <PivotSettings Settings="﻿&lt;XtraSerializer version=&quot;1.0&quot; application=&quot;PivotGrid&quot;&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutVersion&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutScaleFactor&quot;&gt;@1,Width=1@1,Height=1&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Fields&quot; iskey=&quot;true&quot; value=&quot;9&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Item1&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Visible&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item2&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Visible&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item3&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Source Location.Display Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item4&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Destination Location.Display Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item5&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Product.Product Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item6&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item7&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;6&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item8&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;ColumnArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GroupInterval&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;UnboundFieldName&quot;&gt;Field_Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;7&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item9&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Lot.LotCode&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Lot.LotCode&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Lot.Lot Code&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;8&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Prefilter&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Criteria&quot; isnull=&quot;true&quot; /&gt;&#xD;&#xA;    &lt;property name=&quot;ShowOperandTypeIcon&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Enabled&quot;&gt;false&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;DefaultFilterEditorView&quot;&gt;Visual&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;ShowCustomFunctions&quot;&gt;Default&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsCustomization&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;AllowPrefilter&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;CustomizationFormStyle&quot;&gt;Excel2007&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsChartDataSource&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;DataProvideMode&quot;&gt;UseCustomSettings&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Groups&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatRules&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatConditions&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;&lt;/XtraSerializer&gt;" IsNewNode="True" />
     </ListView>
     <DetailView Id="StockTransfer_DetailView" AllowEdit="True" AllowNew="True" />
-    <ListView Id="StockTransfer_ListView" AllowNew="True" DataAccessMode="Client" TopReturnedObjects="0" Criteria="">
+    <ListView Id="StockTransfer_ListView" AllowNew="True" DataAccessMode="DataView" TopReturnedObjects="0" Criteria="">
       <Columns>
         <ColumnInfo Id="Lot" Index="-1" />
         <ColumnInfo Id="Date" EditMask="f" DisplayFormat="{0:f}" />

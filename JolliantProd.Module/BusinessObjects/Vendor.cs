@@ -25,10 +25,12 @@ namespace JolliantProd.Module.BusinessObjects
         public override void AfterConstruction()
         {
             base.AfterConstruction();
+            IsActive = true;
             // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
         }
 
 
+        bool isActive;
         StatusEnum status;
         PaymentTerm defaultPaymentTerm;
         string paymentTerms;
@@ -56,6 +58,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => vATVendor;
             set => SetPropertyValue(nameof(VATVendor), ref vATVendor, value);
+        }
+
+        
+        public bool IsActive
+        {
+            get => isActive;
+            set => SetPropertyValue(nameof(IsActive), ref isActive, value);
         }
 
 

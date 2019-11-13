@@ -273,5 +273,79 @@ namespace JolliantProd.Module.Win.Controllers
         {
            
         }
+
+        private void LoadPurchaseableProduct_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                using (var stream = File.Open(openFileDialog1.FileName, FileMode.Open, FileAccess.Read))
+                {
+                    using (var reader = ExcelReaderFactory.CreateReader(stream))
+                    {
+                        reader.Read();
+                        do
+                        {
+                            while (reader.Read())
+                            {
+                                Product product = ObjectSpace.FindObject<Product>(new BinaryOperator("ProductName", reader.GetValue(0)));
+                                if (product == null)
+                                {
+                                    product = ObjectSpace.CreateObject<Product>();
+                                    product.ProductName = (String)reader.GetValue(0);
+                                    product.CanBePurchased = true;
+                                    product.ProductType = Product.ProductTypeEnum.Storable;
+                                    product.Tracking = Product.TrackingEnum.TrackByLot;
+                                    product.InternalReference = reader.GetValue(4).ToString();
+                                    SalesCategory category = ObjectSpace.FindObject<SalesCategory>(new BinaryOperator("CategoryName", reader.GetValue(1)));
+                                    if (category != null)
+                                    {
+                                        product.SalesCategory = category;
+                                    }
+                                    else
+                                    {
+                                        ShowError("Category " + reader.GetValue(1) + " not found. Skipping: " + reader.GetValue(0));
+                                        product.Delete();
+                                        continue;
+                                    }
+                                    UnitOfMeasure unitOfMeasure = ObjectSpace.FindObject<UnitOfMeasure>(new BinaryOperator("UOMName", reader.GetValue(2)));
+                                    if (unitOfMeasure != null)
+                                    {
+                                        product.UOM = unitOfMeasure;
+                                        product.PurchaseUOM = unitOfMeasure;
+                                    }
+                                    else
+                                    {
+                                        ShowError("UOM " + reader.GetValue(2) + " not found. Skipping: " + reader.GetValue(0));
+                                        product.Delete();
+                                        continue;
+                                    }
+
+                                    UnitOfMeasure unitOfMeasure2 = ObjectSpace.FindObject<UnitOfMeasure>(new BinaryOperator("UOMName", reader.GetValue(3)));
+                                    if (unitOfMeasure2 != null)
+                                    {
+                                        product.ProductionUOM = unitOfMeasure2;
+                                    }
+
+                                    else
+                                    {
+                                        ShowError("UOM " + reader.GetValue(3) + " not found. Skipping: " + reader.GetValue(0));
+                                        product.Delete();
+                                        continue;
+                                    }
+
+                                    ObjectSpace.CommitChanges();
+                                }
+                                Debug.WriteLine(reader.GetValue(0));
+                                Debug.WriteLine(reader.GetValue(1));
+                            }
+                        } while (reader.NextResult());
+                    }
+                }
+
+                View.ObjectSpace.Refresh();
+                ShowSuccess("Finished Loading.");
+            }
+        }
     }
 }

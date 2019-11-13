@@ -165,6 +165,7 @@
     <Compile Include="BusinessObjects\CustomerPayment.cs" />
     <Compile Include="BusinessObjects\Employee.cs" />
     <Compile Include="BusinessObjects\Equipment.cs" />
+    <Compile Include="BusinessObjects\FGInventoryReport.cs" />
     <Compile Include="BusinessObjects\FinishedGoodLoader.cs" />
     <Compile Include="BusinessObjects\InternalTransfer.cs" />
     <Compile Include="BusinessObjects\InventoryAdjustment.cs" />

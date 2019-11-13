@@ -46,6 +46,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        RequestTypeEnum pOType;
         DateTime lastModifiedOn;
         string lastModifiedBy;
         PaymentTerm paymentTerm;
@@ -117,6 +118,19 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => purchaseOrderDate;
             set => SetPropertyValue(nameof(PurchaseOrderDate), ref purchaseOrderDate, value);
+        }
+
+        public enum RequestTypeEnum
+        {
+            Trade,
+            NonTrade
+        }
+
+        
+        public RequestTypeEnum POType
+        {
+            get => pOType;
+            set => SetPropertyValue(nameof(POType), ref pOType, value);
         }
 
         [RuleRequiredField()]

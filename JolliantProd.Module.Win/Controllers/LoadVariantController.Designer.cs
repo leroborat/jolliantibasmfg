@@ -33,6 +33,7 @@
             this.LoadProductAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.LoadFgAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.UpdateLotCountDB = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.LoadPurchaseableProduct = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // LoadVariantAction
             // 
@@ -78,12 +79,24 @@
             this.UpdateLotCountDB.TypeOfView = typeof(DevExpress.ExpressApp.ListView);
             this.UpdateLotCountDB.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.UpdateLotCountDB_Execute);
             // 
+            // LoadPurchaseableProduct
+            // 
+            this.LoadPurchaseableProduct.Caption = "Import Purchaseable Products from Template";
+            this.LoadPurchaseableProduct.ConfirmationMessage = null;
+            this.LoadPurchaseableProduct.Id = "LoadPurchaseableProduct";
+            this.LoadPurchaseableProduct.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Product);
+            this.LoadPurchaseableProduct.TargetViewType = DevExpress.ExpressApp.ViewType.ListView;
+            this.LoadPurchaseableProduct.ToolTip = null;
+            this.LoadPurchaseableProduct.TypeOfView = typeof(DevExpress.ExpressApp.ListView);
+            this.LoadPurchaseableProduct.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.LoadPurchaseableProduct_Execute);
+            // 
             // LoadVariantController
             // 
             this.Actions.Add(this.LoadVariantAction);
             this.Actions.Add(this.LoadProductAction);
             this.Actions.Add(this.LoadFgAction);
             this.Actions.Add(this.UpdateLotCountDB);
+            this.Actions.Add(this.LoadPurchaseableProduct);
 
         }
 
@@ -93,5 +106,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction LoadProductAction;
         private DevExpress.ExpressApp.Actions.SimpleAction LoadFgAction;
         private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotCountDB;
+        private DevExpress.ExpressApp.Actions.SimpleAction LoadPurchaseableProduct;
     }
 }

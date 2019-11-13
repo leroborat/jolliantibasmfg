@@ -396,6 +396,54 @@ namespace JolliantProd.Module.Controllers
             }
         }
 
-       
+        private void SetToDraftWithdrawal_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ObjectSpace.CommitChanges();
+            var thisView = ((Withdrawal)View.CurrentObject);
+            WarehouseLocation warehouseLocation;
+            warehouseLocation = ObjectSpace.FindObject<WarehouseLocation>(new BinaryOperator("LocationName", "Production"));
+            if (warehouseLocation == null)
+            {
+                warehouseLocation = ObjectSpace.CreateObject<WarehouseLocation>();
+                warehouseLocation.LocationName = "Production";
+                warehouseLocation.LocationType = WarehouseLocation.LocationTypeEnum.Production;
+                ObjectSpace.CommitChanges();
+            }
+
+            foreach (var item in thisView.WithdrawalLines)
+            {
+                foreach (var item2 in item.WithdrawalLineLots)
+                {
+                    if (item2.DoneQuantity <= 0)
+                    {
+                        continue;
+                    }
+                    StockTransfer st = ObjectSpace.CreateObject<StockTransfer>();
+                    st.DestinationLocation = thisView.Location;
+                    st.SourceLocation = warehouseLocation;
+
+                    if (item2.Lot != null)
+                    {
+                        item2.Lot.KitchenPlan = null;
+                        st.Lot = item2.Lot;
+                    }
+                    st.Quantity = item2.DoneQuantity;
+                    st.UOM = item.UOM;
+                    st.Product = item.Product;
+                    st.Reference = "Cancelled: " + thisView.SeriesName;
+                    ObjectSpace.CommitChanges();
+                    st.Lot.UpdateStockOnHand(true);
+                    ObjectSpace.CommitChanges();
+                }
+
+            }
+            //Set status to Validated
+            thisView.Status = Withdrawal.StatusEnum.New;
+            //Set Employee who handled
+            thisView.TransferredBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            //Save
+            thisView.Save();
+            ObjectSpace.CommitChanges();
+        }
     }
 }
