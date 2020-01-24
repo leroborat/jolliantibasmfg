@@ -27,18 +27,26 @@ namespace JolliantProd.Module.BusinessObjects
             LotExpirationDate = DateTime.Now.AddDays(4);
         }
 
+        KitchenPlan kitchenPlan;
         string referenceName;
         WarehouseLocation to;
         WarehouseLocation from;
         Product product;
         DateTime lotExpirationDate;
 
-        
-        [Size(SizeAttribute.DefaultStringMappingFieldSize),RuleRequiredField()]
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
         public string ReferenceName
         {
             get => referenceName;
             set => SetPropertyValue(nameof(ReferenceName), ref referenceName, value);
+        }
+
+        [RuleRequiredField()]
+        public KitchenPlan KitchenPlan
+        {
+            get => kitchenPlan;
+            set => SetPropertyValue(nameof(KitchenPlan), ref kitchenPlan, value);
         }
 
         [RuleRequiredField()]

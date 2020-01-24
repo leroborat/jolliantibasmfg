@@ -30,6 +30,11 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string acknowledgedBy;
+        string createdBy;
+        DateTime firstModifiedOn;
+        string remarks;
+        NMISCOA nMISorCOA;
         DateTime lastModifiedOn;
         string lastModifiedBy;
         string receivedBy;
@@ -69,7 +74,7 @@ namespace JolliantProd.Module.BusinessObjects
 
                     foreach (PurchaseOrderLine item in PurchaseOrder.PurchaseOrderLines)
                     {
-                       
+
                         if (item.ReceivedQuantity < item.Quantity)
                         {
                             ReceivedLine rl = new ReceivedLine(Session);
@@ -110,7 +115,9 @@ namespace JolliantProd.Module.BusinessObjects
         public string Series
         {
             get => series;
-            set { SetPropertyValue(nameof(Series), ref series, value);
+            set
+            {
+                SetPropertyValue(nameof(Series), ref series, value);
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     foreach (var item in ReceivedLines)
@@ -119,7 +126,7 @@ namespace JolliantProd.Module.BusinessObjects
                         {
                             item.Lot.InternalReference = Series;
                         }
-                        
+
                     }
                 }
             }
@@ -189,6 +196,19 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(NMISandCOA), ref nMISandCOA, value);
         }
 
+        public enum NMISCOA
+        {
+            NMIS,
+            COA
+        }
+
+
+        public NMISCOA NMISorCOA
+        {
+            get => nMISorCOA;
+            set => SetPropertyValue(nameof(NMISorCOA), ref nMISorCOA, value);
+        }
+
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string ProcessedBy
@@ -207,6 +227,22 @@ namespace JolliantProd.Module.BusinessObjects
 
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string CreatedBy
+        {
+            get => createdBy;
+            set => SetPropertyValue(nameof(CreatedBy), ref createdBy, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string AcknowledgedBy
+        {
+            get => acknowledgedBy;
+            set => SetPropertyValue(nameof(AcknowledgedBy), ref acknowledgedBy, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string LastModifiedBy
         {
             get => lastModifiedBy;
@@ -214,6 +250,14 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+        public DateTime FirstModifiedOn 
+        {   
+            get => firstModifiedOn;
+            set => SetPropertyValue(nameof(FirstModifiedOn), ref firstModifiedOn, value);
+        }
+
+
+
         public DateTime LastModifiedOn
         {
             get => lastModifiedOn;
@@ -266,15 +310,24 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         [PersistentAlias(nameof(totalStockingQuantityReceived))]
         public double TotalStockingQuantityReceived
         {
-            get {
+            get
+            {
                 totalStockingQuantityReceived = ReceivedLines.Select(x => x.StockingQuantityReceived).Sum();
-                return totalStockingQuantityReceived; }
+                return totalStockingQuantityReceived;
+            }
         }
+
         
+        [Size(500)]
+        public string Remarks
+        {
+            get => remarks;
+            set => SetPropertyValue(nameof(Remarks), ref remarks, value);
+        }
 
 
 

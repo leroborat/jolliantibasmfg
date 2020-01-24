@@ -173,6 +173,15 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Association("KitchenPlan-Lots")]
+        public XPCollection<Lot> Lots
+        {
+            get
+            {
+                return GetCollection<Lot>(nameof(Lots));
+            }
+        }
+
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string CreatedBy
@@ -230,6 +239,7 @@ namespace JolliantProd.Module.BusinessObjects
                     pb.Basins = line.Basins;
                     pb.Pieces = line.Pieces;
                     pb.Batches = line.Batches;
+                    
 
                     try
                     {
@@ -335,6 +345,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        double kilos;
         double basins;
         double pieces;
         KitchenPlan kitchenPlan;
@@ -354,7 +365,9 @@ namespace JolliantProd.Module.BusinessObjects
         public Product ItemName
         {
             get => itemName;
-            set { SetPropertyValue(nameof(ItemName), ref itemName, value);
+            set
+            {
+                SetPropertyValue(nameof(ItemName), ref itemName, value);
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     var myBOM = ItemName.BillOfMaterials.First();
@@ -377,12 +390,15 @@ namespace JolliantProd.Module.BusinessObjects
         public double Batches
         {
             get => batches;
-            set { SetPropertyValue(nameof(Batches), ref batches, value);
+            set
+            {
+                SetPropertyValue(nameof(Batches), ref batches, value);
 
                 if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
                 {
                     Pieces = 0;
                     Basins = 0;
+                    Kilos = 0;
                     foreach (var item in ComponentAllotments)
                     {
                         var prod = ItemName.BillOfMaterials.First().BomComponents
@@ -397,24 +413,44 @@ namespace JolliantProd.Module.BusinessObjects
         public double Pieces
         {
             get => pieces;
-            set { SetPropertyValue(nameof(Pieces), ref pieces, value);
+            set
+            {
+                SetPropertyValue(nameof(Pieces), ref pieces, value);
                 if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
                 {
                     Batches = 0;
                     Basins = 0;
+                    Kilos = 0;
+                }
+            }
+        }
+
+
+        public double Basins
+        {
+            get => basins;
+            set
+            {
+                SetPropertyValue(nameof(Basins), ref basins, value);
+                if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
+                {
+                    Pieces = 0;
+                    Batches = 0;
+                    Kilos = 0;
                 }
             }
         }
 
         
-        public double Basins
+        public double Kilos
         {
-            get => basins;
-            set { SetPropertyValue(nameof(Basins), ref basins, value);
+            get => kilos;
+            set { SetPropertyValue(nameof(Kilos), ref kilos, value);
                 if (!IsLoading && !IsSaving && !IsDeleted && value != 0)
                 {
                     Pieces = 0;
                     Batches = 0;
+                    Basins = 0;
                 }
             }
         }

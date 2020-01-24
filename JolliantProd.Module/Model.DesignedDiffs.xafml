@@ -35,6 +35,8 @@
       <Action Id="Vendor.ApprovedVendor" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,ForApproval# And IsCurrentUserInRole('Purchase Manager')" ImageName="BO_Security_Permission_Member" />
       <Action Id="Vendor.DisApprovedVendor" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,ForApproval# And IsCurrentUserInRole('Purchase Manager')" ImageName="DeleteDataSource" />
       <Action Id="Withdrawal.ActionMethod" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
+      <Action Id="WithdrawalOther.SubmitActionMethod" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalOther+StatusEnum,Draft#" />
+      <Action Id="WithdrawalOther.ValidateActionMethod" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalOther+StatusEnum,Submitted#" />
     </Actions>
   </ActionDesign>
   <BOModel>
@@ -301,6 +303,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.PurchaseOrderLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
       <OwnMembers>
+        <Member Name="LastApprovedPurchasePrice" AllowEdit="False" />
         <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Approved#" />
         <Member Name="PurchaseUOM" AllowEdit="False" />
         <Member Name="StockingQuantity" AllowEdit="False" />
@@ -323,6 +326,7 @@
         <AppearanceRule Id="@efa238cc-f801-4f10-8866-bbae1ee1506d" BackColor="192, 255, 192" Context="ListView" Criteria="[ReceivedLines][[PurchaseQuantityReceived] &lt;&gt; 0.0] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" TargetItems="*" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
+        <Member Name="FirstModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
         <Member Name="LastModifiedBy" AllowEdit="False" />
         <Member Name="LastModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
         <Member Name="NMISandCOA" Caption="NMIS/COA" />
@@ -410,7 +414,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.Withdrawal">
       <AppearanceRules>
-        <AppearanceRule Id="@4169ad54-be41-4c22-954a-d8eec9d9b625" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" IsNewNode="True" />
+        <AppearanceRule Id="@4169ad54-be41-4c22-954a-d8eec9d9b625" TargetItems="*" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Validated#" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
@@ -422,6 +426,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLine" DefaultListViewAllowEdit="False" DefaultListViewNewItemRowPosition="Bottom">
       <OwnMembers>
+        <Member Name="ItemName" AllowEdit="False" />
         <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
         <Member Name="ProductionUOM" AllowEdit="False" />
         <Member Name="UOM" AllowEdit="False" />
@@ -430,6 +435,22 @@
     <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLineLot" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
       <OwnMembers>
         <Member Name="Lot" DataSourceCriteria="[Product] = '@This.WithdrawalLine.Product'" LookupEditorMode="Search" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalOther">
+      <AppearanceRules>
+        <AppearanceRule Id="@8a57eb6d-8f44-4004-9971-4d30175188ee" TargetItems="*" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalOther+StatusEnum,Draft#" Enabled="False" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="RequestedBy" AllowEdit="False" />
+        <Member Name="Series" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalOtherLine">
+      <OwnMembers>
+        <Member Name="UOM" AllowEdit="False" />
       </OwnMembers>
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalRequest">
@@ -469,6 +490,7 @@
         <Items IsNewNode="True">
           <Item Id="@66b140e0-7a0a-4892-b0c3-d4d21ed070fb" Caption="Stock Aging" ViewId="StockTransfer_Aeging" IsNewNode="True" />
           <Item Id="@b671b0d4-2ae8-4830-8096-5bf77559d63b" ViewId="Product_ListView_Fast_Load" Caption="Products - Fast Load" IsNewNode="True" />
+          <Item Id="@d7b77570-437f-4fbe-afcb-c12ea60d4b76" ViewId="WithdrawalOther_ListView" Caption="Other Withdrawals" IsNewNode="True" />
           <Item Id="InternalTransfer_ListView" ViewId="InternalTransfer_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="InventoryAdjustment_ListView" ViewId="InventoryAdjustment_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="InventoryScrap_ListView" ViewId="InventoryScrap_ListView" ObjectKey="" IsNewNode="True" />
@@ -522,6 +544,7 @@
           <Item Id="Vendor_ListView" Removed="True" />
           <Item Id="Warehouse_ListView" Removed="True" />
           <Item Id="WarehouseLocation_ListView" Removed="True" />
+          <Item Id="WastagesDisposal_ListView" Removed="True" />
           <Item Id="Withdrawal_ListView" Removed="True" />
           <Item Id="WithdrawalRequest_ListView" Removed="True" />
           <Item Id="WorkCenter_ListView" Removed="True" />
@@ -548,6 +571,7 @@
           </Item>
           <Item Id="@7519cc54-320f-498d-921d-205e6c99058d" ViewId="FGInventoryReport_ListView" IsNewNode="True" />
           <Item Id="ReceivingReportSummary_ListView" ViewId="ReceivingReportSummary_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WastagesDisposal_ListView" ViewId="WastagesDisposal_ListView" ObjectKey="" IsNewNode="True" />
         </Items>
       </Item>
       <Item Id="Purchases" IsNewNode="True">
@@ -580,8 +604,8 @@
     <LayoutManagerOptions RequiredFieldMark="*" />
   </Options>
   <SchemaModules>
-    <SchemaModule Name="CloneObjectModule" Version="19.1.5.0" IsNewNode="True" />
-    <SchemaModule Name="SystemModule" Version="19.1.5.0" IsNewNode="True" />
+    <SchemaModule Name="CloneObjectModule" Version="19.2.5.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="19.2.5.0" IsNewNode="True" />
   </SchemaModules>
   <Validation>
     <Rules>
@@ -911,6 +935,17 @@
         <ColumnInfo Id="ProcessedBy" Width="84" Index="6" />
       </Columns>
     </ListView>
+    <ListView Id="KitchenPlan_Lots_ListView">
+      <Columns>
+        <ColumnInfo Id="CostPerUnit" Width="98" Index="-1" />
+        <ColumnInfo Id="StockOnHand" Width="108" Index="-1" />
+        <ColumnInfo Id="TripLine" Width="74" Index="-1" />
+        <ColumnInfo Id="Product" Width="67" Index="0" />
+        <ColumnInfo Id="LotCode" Width="89" Index="1" />
+        <ColumnInfo Id="InternalReference" Width="130" />
+        <ColumnInfo Id="ExpirationDate" Width="110" />
+      </Columns>
+    </ListView>
     <ListView Id="KitchenPlan_ProductionBatches_ListView">
       <Columns>
         <ColumnInfo Id="BatchTotalCost" Width="99" Index="-1" />
@@ -1214,24 +1249,42 @@
       </Columns>
     </ListView>
     <DetailView Id="Receiving_DetailView">
+      <Items>
+        <PropertyEditor Id="NMISorCOA" Caption="NMIS or COA" />
+      </Items>
       <Layout>
         <LayoutGroup Id="Main" RelativeSize="100">
-          <LayoutGroup Id="SimpleEditors" RelativeSize="34.406438631790742">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="62.318840579710148">
             <LayoutGroup Id="Receiving" RelativeSize="100">
               <LayoutGroup Id="Receiving_col1" RelativeSize="50">
-                <LayoutItem Id="Vendor" Index="0" RelativeSize="29.032258064516128" />
-                <LayoutItem Id="PurchaseOrder" Index="1" RelativeSize="20.967741935483872" />
-                <LayoutItem Id="Series" Index="2" RelativeSize="20.967741935483872" />
-                <LayoutItem Id="ExpectedDeliveryDate" RelativeSize="29.032258064516128" />
+                <LayoutItem Id="Vendor" Index="0" RelativeSize="14.173228346456693" />
+                <LayoutItem Id="LegacyPurchaseOrderNumber" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="PurchaseOrder" Index="2" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="Series" Index="3" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="VendorBillNumber" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="ExpectedDeliveryDate" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="ActualDeliveryDate" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="StorageLocation" RelativeSize="10.236220472440945" />
+                <LayoutItem Id="NMISorCOA" Index="8" RelativeSize="14.173228346456693" ViewItem="NMISorCOA" IsNewNode="True" />
+                <LayoutItem Id="NMISandCOA" Removed="True" />
               </LayoutGroup>
               <LayoutGroup Id="Receiving_col2" RelativeSize="50">
-                <LayoutItem Id="ProcessedBy" RelativeSize="20.967741935483872" />
-                <LayoutItem Id="Status" RelativeSize="29.032258064516128" />
+                <LayoutItem Id="ProcessedBy" RelativeSize="14.173228346456693" Index="0" />
+                <LayoutItem Id="ReceivedBy" RelativeSize="10.236220472440945" Index="1" />
+                <LayoutItem Id="LastModifiedBy" RelativeSize="10.236220472440945" Index="2" />
+                <LayoutItem Id="LastModifiedOn" RelativeSize="10.236220472440945" Index="3" />
+                <LayoutItem Id="Status" RelativeSize="10.236220472440945" Index="4" />
+                <LayoutItem Id="TotalDemand" RelativeSize="10.236220472440945" Index="5" />
+                <LayoutItem Id="TotalPurchaseQuantityReceived" RelativeSize="10.236220472440945" Index="6" />
+                <LayoutItem Id="TotalStockingQuantityReceived" RelativeSize="24.409448818897637" Index="7" />
               </LayoutGroup>
             </LayoutGroup>
           </LayoutGroup>
-          <LayoutGroup Id="ReceivedLines_Group" Direction="Vertical" RelativeSize="65.593561368209251">
-            <LayoutItem Id="ReceivedLines" RelativeSize="100" />
+          <LayoutGroup Id="SizeableEditors" RelativeSize="0">
+            <LayoutItem Id="Remarks" SizeConstraintsType="Default" MinSize="0, 0" />
+          </LayoutGroup>
+          <LayoutGroup Id="ReceivedLines_Group" Direction="Vertical" RelativeSize="100">
+            <LayoutItem Id="ReceivedLines" RelativeSize="100" MinSize="0, 100" SizeConstraintsType="Custom" />
           </LayoutGroup>
         </LayoutGroup>
       </Layout>
@@ -1239,6 +1292,8 @@
     <ListView Id="Receiving_ListView">
       <Columns>
         <ColumnInfo Id="ActualDeliveryDate" Width="134" Index="-1" />
+        <ColumnInfo Id="NMISandCOA" Index="-1" />
+        <ColumnInfo Id="NMISorCOA" Index="-1" />
         <ColumnInfo Id="StorageLocation" Width="116" Index="-1" />
         <ColumnInfo Id="Series" Width="56" Index="0" />
         <ColumnInfo Id="PurchaseOrder" Width="109" Index="1" />
@@ -1246,6 +1301,12 @@
         <ColumnInfo Id="ProcessedBy" Width="95" Index="4" />
         <ColumnInfo Id="ExpectedDeliveryDate" Width="150" />
         <ColumnInfo Id="Status" Width="56" Index="5" />
+        <ColumnInfo Id="ReceivedBy" Index="8" />
+        <ColumnInfo Id="LastModifiedBy" Index="9" />
+        <ColumnInfo Id="LastModifiedOn" Index="10" />
+        <ColumnInfo Id="TotalDemand" Index="11" />
+        <ColumnInfo Id="TotalPurchaseQuantityReceived" Index="12" />
+        <ColumnInfo Id="TotalStockingQuantityReceived" Index="13" />
       </Columns>
     </ListView>
     <ListView Id="Receiving_ReceivedLines_ListView">
@@ -1537,17 +1598,22 @@
         <ColumnInfo Id="KitchenPlan" PropertyName="KitchenPlan" Width="78" Index="5" IsNewNode="True" />
       </Columns>
     </ListView>
-    <ListView Id="Withdrawal_WithdrawalLines_ListView" MasterDetailMode="ListViewAndDetailView">
+    <ListView Id="Withdrawal_WithdrawalLines_ListView" MasterDetailMode="ListViewAndDetailView" IsGroupPanelVisible="True" AutoExpandAllGroups="True">
       <Columns>
-        <ColumnInfo Id="DemandQuantity" Width="118" Index="-1" />
+        <ColumnInfo Id="ProductionPerUnitCost" Width="158" Index="-1" />
         <ColumnInfo Id="ProductionQuantity" Width="131" Index="-1" />
         <ColumnInfo Id="ProductionUOM" Width="111" Index="-1" />
+        <ColumnInfo Id="RawCost" Width="74" Index="-1" />
         <ColumnInfo Id="UOM" Width="47" Index="-1" />
+        <ColumnInfo Id="ItemName" Width="94" SortIndex="-1" GroupIndex="0" />
         <ColumnInfo Id="Product" Width="63" />
-        <ColumnInfo Id="ProcessedQuantity" Width="129" Index="1" />
+        <ColumnInfo Id="DemandQuantity" Width="118" Index="2" />
+        <ColumnInfo Id="ProcessedQuantity" Width="129" Index="3" />
       </Columns>
     </ListView>
     <ListView Id="WithdrawalLine_ListView" AllowNew="True" />
     <ListView Id="WithdrawalLineLot_LookupListView" AllowNew="True" />
+    <ListView Id="WithdrawalOther_ListView" DataAccessMode="DataView" />
+    <ListView Id="WithdrawalOther_WithdrwalOtherLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
   </Views>
 </Application>

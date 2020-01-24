@@ -135,7 +135,8 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(TripLine), ref tripLine, value);
         }
 
-        
+
+        [Association("KitchenPlan-Lots")]
         public KitchenPlan KitchenPlan
         {
             get => kitchenPlan;

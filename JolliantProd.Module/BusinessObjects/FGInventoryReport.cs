@@ -98,24 +98,43 @@ namespace JolliantProd.Module.BusinessObjects
             set { SetPropertyValue(nameof(Lot), ref lot, value);
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
-                    BeginningQuantity = new XPQuery<StockTransfer>(Session)
-                .Where(x => x.Product.CanBeSold == true)
-                .Where(x => x.Product == FGInventoryReport.Product)
-                .Where(x => x.Date.Date == FGInventoryReport.Date.Date)
-                .Where(x => x.DestinationLocation.DisplayName == "Taytay/Stock")
-                .Where(x => x.Lot == Lot)
-                .Select(x => x.Quantity).Sum();
+                 
+                    
+
+                    var PreviousQuantityReceived = new XPQuery<StockTransfer>(Session)
+                    .Where(x => x.Product.CanBeSold == true)
+                    .Where(x => x.Product == FGInventoryReport.Product)
+                    .Where(x => x.Date.Date < FGInventoryReport.Date.Date)
+                    .Where(x => x.DestinationLocation.DisplayName == "Taytay/Stock")
+                    .Where(x => x.Lot == Lot)
+                    .Select(x => x.Quantity).Sum();
+
+                    var PreviousWithdrawnQuantity = new XPQuery<StockTransfer>(Session)
+                    .Where(x => x.Product.CanBeSold == true)
+                    .Where(x => x.Product == FGInventoryReport.Product)
+                    .Where(x => x.Date.Date < FGInventoryReport.Date.Date)
+                    .Where(x => x.DestinationLocation.DisplayName == "Taytay/Stock")
+                    .Where(x => x.Lot == Lot)
+                    .Select(x => x.Quantity).Sum();
+
+                    BeginningQuantity = PreviousQuantityReceived - PreviousWithdrawnQuantity;
+
+                    ReceivedQuantity = new XPQuery<StockTransfer>(Session)
+                    .Where(x => x.Product.CanBeSold == true)
+                    .Where(x => x.Product == FGInventoryReport.Product)
+                    .Where(x => x.Date.Date == FGInventoryReport.Date.Date)
+                    .Where(x => x.DestinationLocation.DisplayName == "Taytay/Stock")
+                    .Where(x => x.Lot == Lot)
+                    .Select(x => x.Quantity).Sum();
+
+                    WithdrawQuantity = new XPQuery<StockTransfer>(Session)
+                   .Where(x => x.Product.CanBeSold == true)
+                   .Where(x => x.Product == FGInventoryReport.Product)
+                   .Where(x => x.Date.Date == FGInventoryReport.Date.Date)
+                   .Where(x => x.SourceLocation.DisplayName == "Taytay/Stock")
+                   .Where(x => x.Lot == Lot)
+                   .Select(x => x.Quantity).Sum();
                 }
-
-                ReceivedQuantity = BeginningQuantity;
-
-                WithdrawQuantity = new XPQuery<StockTransfer>(Session)
-                .Where(x => x.Product.CanBeSold == true)
-                .Where(x => x.Product == FGInventoryReport.Product)
-                .Where(x => x.Date.Date == FGInventoryReport.Date.Date)
-                .Where(x => x.SourceLocation.DisplayName == "Taytay/Stock")
-                .Where(x => x.Lot == Lot)
-                .Select(x => x.Quantity).Sum();
             }
         }
 
@@ -147,7 +166,7 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get
             {
-                stockOnHand = ReceivedQuantity - WithdrawQuantity;
+                stockOnHand = BeginningQuantity +  ReceivedQuantity - WithdrawQuantity;
                 return stockOnHand;
             }
         }

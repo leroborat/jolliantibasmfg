@@ -28,6 +28,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        double kilos;
         double pieces;
         double basins;
         double batches;
@@ -109,7 +110,7 @@ namespace JolliantProd.Module.BusinessObjects
 
                                 item.QuantityConsumed = myBom.Quantity * Batches;
                             }
-                            
+
                         }
                         catch (Exception)
                         {
@@ -124,7 +125,9 @@ namespace JolliantProd.Module.BusinessObjects
         public double Basins
         {
             get => basins;
-            set { SetPropertyValue(nameof(Basins), ref basins, value);
+            set
+            {
+                SetPropertyValue(nameof(Basins), ref basins, value);
                 if (!IsLoading & !IsSaving & !IsDeleted)
                 {
                     foreach (var item in BatchConsumptions)
@@ -149,11 +152,13 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         public double Pieces
         {
             get => pieces;
-            set { SetPropertyValue(nameof(Pieces), ref pieces, value);
+            set
+            {
+                SetPropertyValue(nameof(Pieces), ref pieces, value);
                 if (!IsLoading & !IsSaving & !IsDeleted)
                 {
                     foreach (var item in BatchConsumptions)
@@ -166,6 +171,37 @@ namespace JolliantProd.Module.BusinessObjects
                                 .BomComponents.Where(x => x.Component == item.ItemConsumed).First();
 
                                 item.QuantityConsumed = myBom.Quantity * Pieces;
+                            }
+
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+
+            }
+        }
+
+
+        public double Kilos
+        {
+            get => kilos;
+            set {SetPropertyValue(nameof(Kilos), ref kilos, value);
+
+                if (!IsLoading & !IsSaving & !IsDeleted)
+                {
+                    foreach (var item in BatchConsumptions)
+                    {
+                        try
+                        {
+                            if (Kilos != 0)
+                            {
+                                var myBom = Component.BillOfMaterials.First()
+                                .BomComponents.Where(x => x.Component == item.ItemConsumed).First();
+
+                                item.QuantityConsumed = myBom.Quantity * Kilos;
                             }
 
                         }

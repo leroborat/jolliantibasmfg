@@ -35,6 +35,10 @@ namespace JolliantProd.Module.Controllers
 
         private void ObjectSpace_Committing(object sender, CancelEventArgs e)
         {
+            if (((Receiving)View.CurrentObject).FirstModifiedOn == DateTime.MinValue)
+            {
+                ((Receiving)View.CurrentObject).FirstModifiedOn = DateTime.Now;
+            }
             ((Receiving)View.CurrentObject).LastModifiedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
             ((Receiving)View.CurrentObject).LastModifiedOn = DateTime.Now;
         }

@@ -34,6 +34,7 @@
             this.LoadFgAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.UpdateLotCountDB = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.LoadPurchaseableProduct = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.GinilingAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // LoadVariantAction
             // 
@@ -90,6 +91,17 @@
             this.LoadPurchaseableProduct.TypeOfView = typeof(DevExpress.ExpressApp.ListView);
             this.LoadPurchaseableProduct.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.LoadPurchaseableProduct_Execute);
             // 
+            // GinilingAction
+            // 
+            this.GinilingAction.Caption = "Import Giniling";
+            this.GinilingAction.ConfirmationMessage = null;
+            this.GinilingAction.Id = "ImportGinilingAction";
+            this.GinilingAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.ProductionBatch);
+            this.GinilingAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.GinilingAction.ToolTip = null;
+            this.GinilingAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.GinilingAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.GinilingAction_Execute);
+            // 
             // LoadVariantController
             // 
             this.Actions.Add(this.LoadVariantAction);
@@ -97,6 +109,7 @@
             this.Actions.Add(this.LoadFgAction);
             this.Actions.Add(this.UpdateLotCountDB);
             this.Actions.Add(this.LoadPurchaseableProduct);
+            this.Actions.Add(this.GinilingAction);
 
         }
 
@@ -107,5 +120,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction LoadFgAction;
         private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotCountDB;
         private DevExpress.ExpressApp.Actions.SimpleAction LoadPurchaseableProduct;
+        private DevExpress.ExpressApp.Actions.SimpleAction GinilingAction;
     }
 }

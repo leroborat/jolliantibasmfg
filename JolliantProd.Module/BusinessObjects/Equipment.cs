@@ -24,10 +24,12 @@ namespace JolliantProd.Module.BusinessObjects
         public override void AfterConstruction()
         {
             base.AfterConstruction();
+            Series = "EQUIP-" + (new XPQuery<Equipment>(Session).Count() + 1).ToString();
             // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
         }
 
 
+        string series;
         string serialCode;
         string position;
         decimal cost;
@@ -50,6 +52,14 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string Series
+        {
+            get => series;
+            set => SetPropertyValue(nameof(Series), ref series, value);
+        }
+
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string SerialCode
         {

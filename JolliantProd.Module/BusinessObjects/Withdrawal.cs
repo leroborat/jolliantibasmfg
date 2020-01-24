@@ -118,24 +118,44 @@ namespace JolliantProd.Module.BusinessObjects
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     Location = KitchenPlan.StockLocation;
-                    //GET ALL Allocations wherein kitchen plan = this
-                    var allocations = new XPQuery<ComponentAllotment>(Session).Where(
-                        x => x.KitchenPlanLine.KitchenPlan == KitchenPlan);
-                    var materialList = allocations.Select(x => x.Material).Distinct();
-                    //GET Distinct Materials
-                    foreach (var item in materialList)
+
+                    foreach (var item in KitchenPlan.KitchenPlanLines)
                     {
-                        //Get Quantity for each material
-                        double allocCount = allocations.Where(x => x.Material == item).Select(x => x.Quantity).Sum();
-                        WithdrawalLine withdrawalLine = new WithdrawalLine(Session);
-                        withdrawalLine.Product = item;
-                        if (item.UOM != item.ProductionUOM)
+                        foreach (var item2 in item.ComponentAllotments)
                         {
-                            allocCount = allocCount / item.UOMRatioProduction;
+                            WithdrawalLine withdrawalLine = new WithdrawalLine(Session);
+                            withdrawalLine.Product = item2.Material;
+                            var qty = item2.Quantity;
+                            if (item2.Material.UOM != item2.Material.ProductionUOM)
+                            {
+                                qty = qty / item2.Material.UOMRatioProduction;
+                            }
+                            withdrawalLine.ItemName = item2.KitchenPlanLine.ItemName;
+                            withdrawalLine.DemandQuantity = qty;
+                            WithdrawalLines.Add(withdrawalLine);
                         }
-                        withdrawalLine.DemandQuantity = 0;
-                        WithdrawalLines.Add(withdrawalLine);
                     }
+
+
+                    ////GET ALL Allocations wherein kitchen plan = this
+                    //var allocations = new XPQuery<ComponentAllotment>(Session).Where(
+                    //    x => x.KitchenPlanLine.KitchenPlan == KitchenPlan);
+
+                    //var materialList = allocations.Select(x => x.Material).Distinct();
+                    ////GET Distinct Materials
+                    //foreach (var item in materialList)
+                    //{
+                    //    //Get Quantity for each material
+                    //    double allocCount = allocations.Where(x => x.Material == item).Select(x => x.Quantity).Sum();
+                    //    WithdrawalLine withdrawalLine = new WithdrawalLine(Session);
+                    //    withdrawalLine.Product = item;
+                    //    if (item.UOM != item.ProductionUOM)
+                    //    {
+                    //        allocCount = allocCount / item.UOMRatioProduction;
+                    //    }
+                    //    withdrawalLine.DemandQuantity = 0;
+                    //    WithdrawalLines.Add(withdrawalLine);
+                    //}
                     //Get Quantity for each material
                     //Convert to Storage UOM
                     //Generate entries
@@ -172,6 +192,7 @@ namespace JolliantProd.Module.BusinessObjects
         { }
 
 
+        Product itemName;
         double productionQuantity;
         [Persistent(nameof(ProductionPerUnitCost))]
         decimal productionPerUnitCost;
@@ -192,6 +213,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => withdrawal;
             set => SetPropertyValue(nameof(Withdrawal), ref withdrawal, value);
+        }
+
+        
+        public Product ItemName
+        {
+            get => itemName;
+            set => SetPropertyValue(nameof(ItemName), ref itemName, value);
         }
 
         [RuleRequiredField()]

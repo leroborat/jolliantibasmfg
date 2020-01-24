@@ -184,6 +184,7 @@ namespace JolliantProd.Module.Win.Controllers
                 var sessProduct = session.FindObject<Product>(new BinaryOperator("Oid", thisProduct.Oid));
                 var sessFrom = session.FindObject<WarehouseLocation>(new BinaryOperator("Oid", finishedGoodLoader.From.Oid));
                 var sessTo = session.FindObject<WarehouseLocation>(new BinaryOperator("Oid", finishedGoodLoader.To.Oid));
+                var thisKP = session.FindObject <KitchenPlan>(new BinaryOperator("Oid", finishedGoodLoader.KitchenPlan.Oid));
                 var lotList = new List<Lot>();
 
                 var thisReference = finishedGoodLoader.ReferenceName;
@@ -206,6 +207,7 @@ namespace JolliantProd.Module.Win.Controllers
                                 lot.LotCode = Convert.ToString(reader.GetValue(0));
                                 lot.Product = sessProduct;
                                 lot.InternalReference = thisReference;
+                                lot.KitchenPlan = thisKP;
 
                                 if (lot.Product.SalesCategory.CategoryName == "Hotta Rice")
                                 {
@@ -342,6 +344,122 @@ namespace JolliantProd.Module.Win.Controllers
                         } while (reader.NextResult());
                     }
                 }
+
+                View.ObjectSpace.Refresh();
+                ShowSuccess("Finished Loading.");
+            }
+        }
+
+        void GenerateCostRecords(string fileName, WorkCenter prep1, WorkCenter prep2, int value, ProductionBatch pb)
+        {
+            using (var stream = File.Open(fileName, FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    reader.Read();
+                    BatchTransmittal bt = ObjectSpace.CreateObject<BatchTransmittal>();
+                    bt.ProductionBatch = pb;
+                    bt.From = prep1;
+                    bt.To = prep2;
+                    do
+                    {
+                        while (reader.Read())
+                        {
+                            if (reader.GetValue(value) == null)
+                            {
+                                continue;
+                            }
+                            BatchTransmittalLine btl = ObjectSpace.CreateObject<BatchTransmittalLine>();
+                            btl.BatchTransmittal = bt;
+                            btl.ItemCode = reader.GetValue(0).ToString();
+                            btl.Remarks = "Loaded from Importer";
+                            btl.TotalUnits = reader.GetDouble(value);
+
+                            ObjectSpace.CommitChanges();
+
+
+                        }
+                    } while (reader.NextResult());
+                    ObjectSpace.CommitChanges();
+                }
+            }
+        }
+        private void GinilingAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var thisView = ((ProductionBatch)View.CurrentObject);
+            WorkCenter prep1 = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Prep 1"));
+            if (prep1 == null)
+            {
+                prep1 = ObjectSpace.CreateObject<WorkCenter>();
+                prep1.Name = "Prep 1";
+            }
+
+            WorkCenter prep2 = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Prep 2"));
+            if (prep2 == null)
+            {
+                prep2 = ObjectSpace.CreateObject<WorkCenter>();
+                prep2.Name = "Prep 2";
+            }
+
+            WorkCenter kitchen = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Kitchen"));
+            if (kitchen == null)
+            {
+                kitchen = ObjectSpace.CreateObject<WorkCenter>();
+                kitchen.Name = "Kitchen";
+            }
+
+            WorkCenter precooling = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Pre-Cooling"));
+            if (precooling == null)
+            {
+                precooling = ObjectSpace.CreateObject<WorkCenter>();
+                precooling.Name = "Pre-Cooling";
+            }
+
+            WorkCenter cooling = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Cooling"));
+            if (cooling == null)
+            {
+                cooling = ObjectSpace.CreateObject<WorkCenter>();
+                cooling.Name = "Cooling";
+            }
+
+            WorkCenter storage = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Storage"));
+            if (storage == null)
+            {
+                storage = ObjectSpace.CreateObject<WorkCenter>();
+                storage.Name = "Storage";
+            }
+
+            WorkCenter packingTS = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Packing-TopSeal"));
+            if (packingTS == null)
+            {
+                packingTS = ObjectSpace.CreateObject<WorkCenter>();
+                packingTS.Name = "Packing-TopSeal";
+            }
+
+            WorkCenter packingJumbo = ObjectSpace.FindObject<WorkCenter>(new BinaryOperator("Name", "Packing-Jumbo"));
+            if (packingJumbo == null)
+            {
+                packingJumbo = ObjectSpace.CreateObject<WorkCenter>();
+                packingJumbo.Name = "Packing-Jumbo";
+            }
+
+
+
+
+
+
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                
+                GenerateCostRecords(openFileDialog1.FileName, prep1, prep2, 1, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, prep2, kitchen, 2, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, kitchen, precooling, 3, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, precooling, cooling, 4, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, cooling, storage, 5, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, storage, packingTS, 6, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, storage, packingJumbo, 7, thisView);
+
 
                 View.ObjectSpace.Refresh();
                 ShowSuccess("Finished Loading.");

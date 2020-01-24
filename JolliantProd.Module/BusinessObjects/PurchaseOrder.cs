@@ -317,7 +317,14 @@ namespace JolliantProd.Module.BusinessObjects
         public PurchaseOrderLine(Session session) : base(session)
         { }
 
+        public override void AfterConstruction()
+        {
+            base.AfterConstruction();
+            
+        }
 
+
+        decimal lastApprovedPurchasePrice;
         [Persistent(nameof(PricePerUnit))]
         decimal pricePerUnit;
         double discount;
@@ -366,6 +373,13 @@ namespace JolliantProd.Module.BusinessObjects
                             }
                         }
                     }
+
+                    LastApprovedPurchasePrice = new XPQuery<PurchaseOrderLine>(Session)
+                        .Where(x => x.PurchaseOrder.Status == PurchaseOrder.StatusEnum.Approved)
+                        .Where(x => x.Product == Product)
+                        .OrderByDescending(x => x.PurchaseOrder.PurchaseOrderDate)
+                        .Select(x => x.Price).FirstOrDefault();
+
                     PurchaseUOM = Product.PurchaseUOM;
                     StockingUOM = Product.UOM;
                 }
@@ -398,6 +412,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => price;
             set => SetPropertyValue(nameof(Price), ref price, value);
+        }
+
+        
+        public decimal LastApprovedPurchasePrice
+        {
+            get => lastApprovedPurchasePrice;
+            set => SetPropertyValue(nameof(LastApprovedPurchasePrice), ref lastApprovedPurchasePrice, value);
         }
 
 
