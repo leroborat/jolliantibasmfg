@@ -7,6 +7,11 @@
     </Actions>
   </ActionDesign>
   <BOModel>
+    <Class Name="JolliantProd.Module.BusinessObjects.MaterialRequest">
+      <OwnMembers>
+        <Member Name="RequestDate" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder">
       <OwnMembers>
         <Member Name="Company" AllowEdit="False" />

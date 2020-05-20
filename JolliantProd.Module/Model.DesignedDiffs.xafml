@@ -24,6 +24,7 @@
       <Action Id="SetToDraftWithdrawal" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Validated#" ValidationContexts="Save" />
       <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
       <Action Id="SOSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Confirmed#" />
+      <Action Id="Trip.ActionMethod" ValidationContexts="Save" />
       <Action Id="TripSetToDraft" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
@@ -935,6 +936,12 @@
         <ColumnInfo Id="ProcessedBy" Width="84" Index="6" />
       </Columns>
     </ListView>
+    <ListView Id="KitchenPlan_LookupListView">
+      <Columns>
+        <ColumnInfo Id="Date" PropertyName="Date" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Shift" PropertyName="Shift" Index="2" IsNewNode="True" />
+      </Columns>
+    </ListView>
     <ListView Id="KitchenPlan_Lots_ListView">
       <Columns>
         <ColumnInfo Id="CostPerUnit" Width="98" Index="-1" />
@@ -1269,7 +1276,6 @@
                 <LayoutItem Id="NMISandCOA" Removed="True" />
               </LayoutGroup>
               <LayoutGroup Id="Receiving_col2" RelativeSize="50">
-                <LayoutItem Id="ProcessedBy" RelativeSize="14.173228346456693" Index="0" />
                 <LayoutItem Id="ReceivedBy" RelativeSize="10.236220472440945" Index="1" />
                 <LayoutItem Id="LastModifiedBy" RelativeSize="10.236220472440945" Index="2" />
                 <LayoutItem Id="LastModifiedOn" RelativeSize="10.236220472440945" Index="3" />

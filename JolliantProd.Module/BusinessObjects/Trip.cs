@@ -44,6 +44,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
+        WarehouseLocation sourceLocation;
         Invoice invoice;
         string truckPlateNumber;
         string truckDriver;
@@ -67,7 +68,7 @@ namespace JolliantProd.Module.BusinessObjects
             set
             {
                 SetPropertyValue(nameof(SalesOrder), ref salesOrder, value);
-              
+
             }
         }
 
@@ -93,8 +94,8 @@ namespace JolliantProd.Module.BusinessObjects
                     }
 
                 }
-                
-                
+
+
                 return displayName;
             }
         }
@@ -172,6 +173,13 @@ namespace JolliantProd.Module.BusinessObjects
             Validated
         }
 
+        
+        [RuleRequiredField()]
+        public WarehouseLocation SourceLocation
+        {
+            get => sourceLocation;
+            set => SetPropertyValue(nameof(SourceLocation), ref sourceLocation, value);
+        }
 
 
         [RuleRequiredField()]
@@ -203,6 +211,79 @@ namespace JolliantProd.Module.BusinessObjects
             get => invoice;
             set => SetPropertyValue(nameof(Invoice), ref invoice, value);
         }
+
+        [Action(Caption = "Generate Assigned Lots", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void ActionMethod()
+        {
+            //            For each product where Quantity < Quantity Delivered
+
+            if (SalesOrder != null)
+            {
+                var UnfulfilledOrders = SalesOrder.SalesOrderLines.Where(x => x.QuantityDelivered < x.Quantity);
+                foreach (var item in UnfulfilledOrders)
+                {
+
+                    TripLine tl = new TripLine(Session);
+                    tl.Trip = this;
+                    tl.Product = item.Product;
+                    tl.Location = this.SourceLocation;
+                    
+
+                    var query = new XPQuery<Lot>(Session).Where(x => x.StockOnHand >= 1 && x.Product == tl.Product)
+                        .OrderBy(x => x.ExpirationDate);
+
+                    double productcount = 0;
+
+                    foreach (var lot in query)
+                    {
+                        TripLineDetail tld = new TripLineDetail(Session);
+                        tld.TripLine = tl;
+                        tld.LotCode = lot;
+                        tld.From = tl.Location;
+                        if (tld.AvailableQuantity <= 0)
+                        {
+                            Session.Delete(tld);
+                            continue;
+                        }
+
+                        Session.Save(tld);
+                        Session.Save(tl);
+                        Session.Save(this);
+
+                        if (tl.PendingDemand < tld.AvailableQuantity)
+                        {
+                            tld.QuantityDone = tl.PendingDemand;
+                            
+                        } else
+                        {
+                            tld.QuantityDone = tld.AvailableQuantity;
+                        }
+                        
+                        productcount += tld.QuantityDone;
+
+                        if (productcount >= tl.PendingDemand)
+                        {
+                            break;
+                        }
+
+                      
+                    }
+
+                }
+            }
+                        //Create Trip Line
+                        //Set Product
+                        //Set Location
+
+                        //Select Lots Available Quantity > 0
+                        //Max of Quantity Ordered
+                        //Sort by Expiration Date
+
+                        //Create Trip Detail
+            // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
+            //this.PersistentProperty = "Paid";
+        }
+
     }
 
     public class TripLine : BaseObject

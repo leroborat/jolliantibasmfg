@@ -372,6 +372,7 @@ namespace JolliantProd.Module.Win.Controllers
                             BatchTransmittalLine btl = ObjectSpace.CreateObject<BatchTransmittalLine>();
                             btl.BatchTransmittal = bt;
                             btl.ItemCode = reader.GetValue(0).ToString();
+                            btl.Description = reader.GetValue(1).ToString();
                             btl.Remarks = "Loaded from Importer";
                             btl.TotalUnits = reader.GetDouble(value);
 
@@ -452,13 +453,13 @@ namespace JolliantProd.Module.Win.Controllers
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 
-                GenerateCostRecords(openFileDialog1.FileName, prep1, prep2, 1, thisView);
-                GenerateCostRecords(openFileDialog1.FileName, prep2, kitchen, 2, thisView);
-                GenerateCostRecords(openFileDialog1.FileName, kitchen, precooling, 3, thisView);
-                GenerateCostRecords(openFileDialog1.FileName, precooling, cooling, 4, thisView);
-                GenerateCostRecords(openFileDialog1.FileName, cooling, storage, 5, thisView);
-                GenerateCostRecords(openFileDialog1.FileName, storage, packingTS, 6, thisView);
-                GenerateCostRecords(openFileDialog1.FileName, storage, packingJumbo, 7, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, prep1, prep2, 2, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, prep2, kitchen, 3, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, kitchen, precooling, 4, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, precooling, cooling, 5, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, cooling, storage, 6, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, storage, packingTS, 7, thisView);
+                GenerateCostRecords(openFileDialog1.FileName, storage, packingJumbo, 8, thisView);
 
 
                 View.ObjectSpace.Refresh();
