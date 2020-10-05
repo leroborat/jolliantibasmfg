@@ -163,19 +163,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        private XPCollection<AuditDataItemPersistent> auditTrail;
-
-        public XPCollection<AuditDataItemPersistent> AuditTrail
-        {
-            get
-            {
-                if (auditTrail == null)
-                {
-                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
-                }
-                return auditTrail;
-            }
-        }
+        
 
         [Action(Caption = "Submit", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
         public void ActionMethod()

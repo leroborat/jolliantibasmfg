@@ -46,7 +46,6 @@
             this.validationModule = new DevExpress.ExpressApp.Validation.ValidationModule();
             this.validationWindowsFormsModule = new DevExpress.ExpressApp.Validation.Win.ValidationWindowsFormsModule();
             this.cloneObjectModule1 = new DevExpress.ExpressApp.CloneObject.CloneObjectModule();
-            this.auditTrailModule1 = new DevExpress.ExpressApp.AuditTrail.AuditTrailModule();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // securityStrategyComplex1
@@ -99,10 +98,6 @@
             // 
             this.cloneObjectModule1.ClonerType = null;
             // 
-            // auditTrailModule1
-            // 
-            this.auditTrailModule1.AuditDataItemPersistentType = typeof(DevExpress.Persistent.BaseImpl.AuditDataItemPersistent);
-            // 
             // JolliantProdWindowsFormsApplication
             // 
             this.ApplicationName = "JolliantProd";
@@ -118,7 +113,6 @@
             this.Modules.Add(this.reportsModuleV2);
             this.Modules.Add(this.validationModule);
             this.Modules.Add(this.cloneObjectModule1);
-            this.Modules.Add(this.auditTrailModule1);
             this.Modules.Add(this.module3);
             this.Modules.Add(this.dashboardsWindowsFormsModule);
             this.Modules.Add(this.fileAttachmentsWindowsFormsModule);
@@ -162,6 +156,5 @@
         private DevExpress.ExpressApp.Validation.ValidationModule validationModule;
         private DevExpress.ExpressApp.Validation.Win.ValidationWindowsFormsModule validationWindowsFormsModule;
         private DevExpress.ExpressApp.CloneObject.CloneObjectModule cloneObjectModule1;
-        private DevExpress.ExpressApp.AuditTrail.AuditTrailModule auditTrailModule1;
     }
 }

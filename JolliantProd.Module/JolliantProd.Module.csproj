@@ -175,7 +175,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BusinessObjects\AssessmentReport.cs" />
-    <Compile Include="BusinessObjects\AuditUsageReport.cs" />
     <Compile Include="BusinessObjects\BillOfMaterial.cs" />
     <Compile Include="BusinessObjects\Company.cs" />
     <Compile Include="BusinessObjects\Customer.cs" />
@@ -435,6 +434,14 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="UnusableNodes6.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes7.xml">
+      <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="UnusableNodes8.xml">
       <DependentUpon>Model.DesignedDiffs.xafml</DependentUpon>
       <SubType>Designer</SubType>
     </None>

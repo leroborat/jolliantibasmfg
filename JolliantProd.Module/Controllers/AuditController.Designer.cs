@@ -28,23 +28,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
-            this.GenerateAuditEntriesSimpleAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
-            // 
-            // GenerateAuditEntriesSimpleAction
-            // 
-            this.GenerateAuditEntriesSimpleAction.Caption = "Generate Entries";
-            this.GenerateAuditEntriesSimpleAction.ConfirmationMessage = null;
-            this.GenerateAuditEntriesSimpleAction.Id = "GenerateAuditEntriesSimpleAction";
-            this.GenerateAuditEntriesSimpleAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.AuditUsageReport);
-            this.GenerateAuditEntriesSimpleAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
-            this.GenerateAuditEntriesSimpleAction.ToolTip = null;
-            this.GenerateAuditEntriesSimpleAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
-            this.GenerateAuditEntriesSimpleAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.GenerateAuditEntriesSimpleAction_Execute);
-            // 
-            // AuditController
-            // 
-            this.Actions.Add(this.GenerateAuditEntriesSimpleAction);
+            //this.components = new System.ComponentModel.Container();
+            //this.GenerateAuditEntriesSimpleAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            //// 
+            //// GenerateAuditEntriesSimpleAction
+            //// 
+            //this.GenerateAuditEntriesSimpleAction.Caption = "Generate Entries";
+            //this.GenerateAuditEntriesSimpleAction.ConfirmationMessage = null;
+            //this.GenerateAuditEntriesSimpleAction.Id = "GenerateAuditEntriesSimpleAction";
+            //this.GenerateAuditEntriesSimpleAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.AuditUsageReport);
+            //this.GenerateAuditEntriesSimpleAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            //this.GenerateAuditEntriesSimpleAction.ToolTip = null;
+            //this.GenerateAuditEntriesSimpleAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            //this.GenerateAuditEntriesSimpleAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.GenerateAuditEntriesSimpleAction_Execute);
+            //// 
+            //// AuditController
+            //// 
+            //this.Actions.Add(this.GenerateAuditEntriesSimpleAction);
 
         }
 

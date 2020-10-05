@@ -56,7 +56,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(RequestedBy), ref requestedBy, value);
         }
 
-        [RuleRequiredField()]
+        
         public Vendor Vendor
         {
             get => vendor;

@@ -64,7 +64,7 @@ namespace JolliantProd.Module.Controllers
                 obj.PurchaseOrderLines.Add(pol);
             }
 
-            obj.Vendor = thisMR.Vendor;
+            //obj.Vendor = thisMR.Vendor;
             obj.DeliveryDate = thisMR.DeliveryDate;
 
             DetailView dv = Application.CreateDetailView(os, obj);//Specify the IsRoot parameter if necessary.
@@ -209,7 +209,7 @@ namespace JolliantProd.Module.Controllers
                 }
 
                 var lots = ObjectSpace.GetObjects<Lot>().Where(x => x.Product == item.Product &&
-                x.StockOnHand > 0
+                x.TaytayStockOnHand > 0
                 ).OrderBy(x => x.ExpirationDate);
 
                 foreach (var thisLot in lots)

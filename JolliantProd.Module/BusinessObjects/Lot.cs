@@ -27,6 +27,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Persistent(nameof(TaytayStockOnHand))]
+        double taytayStockOnHand;
         [Persistent(nameof(CostPerUnit))]
         decimal costPerUnit;
         KitchenPlan kitchenPlan;
@@ -92,6 +94,28 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
         
+        [PersistentAlias(nameof(taytayStockOnHand)), VisibleInListView(false)]
+        public double TaytayStockOnHand
+        {
+            get {
+                var StockIn = new XPQuery<StockTransfer>(Session)
+              .Where(x => x.DestinationLocation.DisplayName == "Taytay/Stock" &&
+                       x.Product == Product && x.Lot == this).Select(x => x.Quantity).Sum();
+
+                var StockOut = new XPQuery<StockTransfer>(Session)
+               .Where(x => x.SourceLocation.DisplayName == "Taytay/Stock" &&
+                        x.Product == Product && x.Lot == this).Select(x => x.Quantity).Sum();
+                //Get Out
+
+
+
+                //Get Actual
+                taytayStockOnHand = StockIn - StockOut;
+                return taytayStockOnHand; }
+        }
+        
+
+
         [PersistentAlias(nameof(costPerUnit))]
         public decimal CostPerUnit
         {

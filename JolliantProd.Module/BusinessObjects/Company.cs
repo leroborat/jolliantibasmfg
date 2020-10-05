@@ -29,6 +29,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
+        string pOPrefix;
         int nextMONumber;
         int nextPONumber;
         string emailAddress;
@@ -73,13 +74,20 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(NextPONumber), ref nextPONumber, value);
         }
 
-        
+
         public int NextMONumber
         {
             get => nextMONumber;
             set => SetPropertyValue(nameof(NextMONumber), ref nextMONumber, value);
         }
 
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
+        public string POPrefix
+        {
+            get => pOPrefix;
+            set => SetPropertyValue(nameof(POPrefix), ref pOPrefix, value);
+        }
 
     }
 }

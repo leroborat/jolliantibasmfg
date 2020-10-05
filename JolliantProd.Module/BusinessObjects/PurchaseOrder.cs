@@ -39,7 +39,7 @@ namespace JolliantProd.Module.BusinessObjects
             set { SetPropertyValue(nameof(Company), ref company, value);
                 if (!IsSaving && !IsLoading)
                 {
-                    PurchaseOrderNumber = "PO-" + DateTime.Now.Year.ToString() + "-"+ Company.NextPONumber;
+                    PurchaseOrderNumber = Company.POPrefix + "-PO-" + DateTime.Now.Year.ToString() + "-"+ Company.NextPONumber;
                     Company.NextPONumber += 1;
                 }
             }
@@ -295,19 +295,7 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<ReceivingReturn>(nameof(ReceivingReturns));
             }
         }
-        private XPCollection<AuditDataItemPersistent> auditTrail;
-
-        public XPCollection<AuditDataItemPersistent> AuditTrail
-        {
-            get
-            {
-                if (auditTrail == null)
-                {
-                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
-                }
-                return auditTrail;
-            }
-        }
+       
 
 
     }

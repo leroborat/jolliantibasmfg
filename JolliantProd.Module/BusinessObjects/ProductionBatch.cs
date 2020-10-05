@@ -293,19 +293,7 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        private XPCollection<AuditDataItemPersistent> auditTrail;
-
-        public XPCollection<AuditDataItemPersistent> AuditTrail
-        {
-            get
-            {
-                if (auditTrail == null)
-                {
-                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
-                }
-                return auditTrail;
-            }
-        }
+     
 
         public enum StatusEnum
         {
@@ -407,13 +395,24 @@ namespace JolliantProd.Module.BusinessObjects
                     .Where(x => x.Product == ItemConsumed)
                     .FirstOrDefault();
 
-                    if (QuantityConsumed >= ActualConsumed)
+                    if (cpu != null)
                     {
-                        cost = cpu.ProductionPerUnitCost * Convert.ToDecimal(QuantityConsumed);
+                        if (QuantityConsumed >= ActualConsumed)
+                        {
+
+                            cost = cpu.ProductionPerUnitCost * Convert.ToDecimal(QuantityConsumed);
+
+                        }
+                        else
+                        {
+                            cost = cpu.ProductionPerUnitCost * Convert.ToDecimal(ActualConsumed);
+                        }
                     } else
                     {
-                        cost = cpu.ProductionPerUnitCost * Convert.ToDecimal(ActualConsumed);
+                        cost = 0;
                     }
+
+                    
                     
                 }
                 catch (Exception)

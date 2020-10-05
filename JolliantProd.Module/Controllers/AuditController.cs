@@ -45,29 +45,29 @@ namespace JolliantProd.Module.Controllers
 
         private void GenerateAuditEntriesSimpleAction_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
-            var thisView = (AuditUsageReport)View.CurrentObject;
-            ObjectSpace.Delete(thisView.AuditUsageLines);
-            ObjectSpace.CommitChanges();
-            thisView.Save();
+            //var thisView = (AuditUsageReport)View.CurrentObject;
+            //ObjectSpace.Delete(thisView.AuditUsageLines);
+            //ObjectSpace.CommitChanges();
+            //thisView.Save();
 
-            var myList = ObjectSpace.GetObjects<AuditDataItemPersistent>()
-                .Where(x => x.ModifiedOn >= thisView.FromDate && x.ModifiedOn < thisView.ToDate.AddDays(1))
-                .Where(x => x.OperationType == "ObjectCreated" || x.OperationType == "ObjectChanged");
+            //var myList = ObjectSpace.GetObjects<AuditDataItemPersistent>()
+            //    .Where(x => x.ModifiedOn >= thisView.FromDate && x.ModifiedOn < thisView.ToDate.AddDays(1))
+            //    .Where(x => x.OperationType == "ObjectCreated" || x.OperationType == "ObjectChanged");
 
-            Debug.Print(myList.Count().ToString());
+            //Debug.Print(myList.Count().ToString());
 
-            foreach (var item in myList)
-            {
-                var x = ObjectSpace.CreateObject<AuditUsageLine>();
-                x.AuditUsageReport = thisView;
-                x.ADIP = item;
-                thisView.AuditUsageLines.Add(x);
-            }
+            //foreach (var item in myList)
+            //{
+            //    var x = ObjectSpace.CreateObject<AuditUsageLine>();
+            //    x.AuditUsageReport = thisView;
+            //    x.ADIP = item;
+            //    thisView.AuditUsageLines.Add(x);
+            //}
 
-            ObjectSpace.CommitChanges();
-            thisView.Save();
-            thisView.Reload();
-            ObjectSpace.Refresh();
+            //ObjectSpace.CommitChanges();
+            //thisView.Save();
+            //thisView.Reload();
+            //ObjectSpace.Refresh();
 
         }
     }

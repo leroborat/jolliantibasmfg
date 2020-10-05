@@ -28,6 +28,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        [Persistent(nameof(StockOnHandTaytay))]
+        double stockOnHandTaytay;
         ProductStatusEnum status;
         double uOMRatioProduction;
         UnitOfMeasure productionUOM;
@@ -163,8 +165,6 @@ namespace JolliantProd.Module.BusinessObjects
             get
             {
 
-
-
                 var StockIn = new XPQuery<StockTransfer>(Session)
                 .Where(
                 x => x.DestinationLocation.LocationType == WarehouseLocation.LocationTypeEnum.Internal &&
@@ -180,6 +180,29 @@ namespace JolliantProd.Module.BusinessObjects
                 return stockOnHand;
             }
         }
+
+        
+        [PersistentAlias(nameof(stockOnHandTaytay))]
+        public double StockOnHandTaytay
+        {
+            get {
+                var StockIn = new XPQuery<StockTransfer>(Session)
+              .Where(
+              x => x.DestinationLocation.DisplayName == "Taytay/Stock" &&
+              x.Product == this
+              ).Select(x => x.Quantity).Sum();
+
+                var StockOut = new XPQuery<StockTransfer>(Session).Where(
+                    x => x.SourceLocation.DisplayName == "Taytay/Stock" &&
+                    x.Product == this
+                    ).Select(x => x.Quantity).Sum();
+
+                stockOnHandTaytay = StockIn - StockOut;
+               
+                return stockOnHandTaytay; 
+            }
+        }
+        
 
 
 
