@@ -125,6 +125,7 @@ namespace JolliantProd.Module.BusinessObjects
                 xTransfer.Date = DateTime.Now;
                 xTransfer.DestinationLocation = ProdLocation;
                 xTransfer.Product = item.Item;
+                xTransfer.Lot = item.Lot;
                 xTransfer.Quantity = item.Quantity;
                 xTransfer.Reference = "Other Withdrawal: " + Series;
                 xTransfer.SourceLocation = Location;
@@ -145,6 +146,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
+        Lot lot;
         UnitOfMeasure uOM;
         [Persistent(nameof(AvailableQuantity))]
         double availableQuantity;
@@ -163,7 +165,9 @@ namespace JolliantProd.Module.BusinessObjects
         public Product Item
         {
             get => item;
-            set { SetPropertyValue(nameof(Item), ref item, value);
+            set
+            {
+                SetPropertyValue(nameof(Item), ref item, value);
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     if (Item != null)
@@ -171,9 +175,16 @@ namespace JolliantProd.Module.BusinessObjects
                         Quantity = 1;
                         UOM = Item.UOM;
                     }
-                    
+
                 }
             }
+        }
+
+        
+        public Lot Lot
+        {
+            get => lot;
+            set => SetPropertyValue(nameof(Lot), ref lot, value);
         }
 
 

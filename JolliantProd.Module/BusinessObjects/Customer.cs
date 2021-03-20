@@ -28,6 +28,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        int odooDatabaseID;
+        string odooID;
         string businessStyle;
         string tinNumber;
         string contactNumber;
@@ -40,6 +42,21 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => customerName;
             set => SetPropertyValue(nameof(CustomerName), ref customerName, value);
+        }
+
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string OdooID
+        //{
+        //    get => odooID;
+        //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
+        //}
+
+        
+        public int OdooDatabaseID
+        {
+            get => odooDatabaseID;
+            set => SetPropertyValue(nameof(OdooDatabaseID), ref odooDatabaseID, value);
         }
 
 

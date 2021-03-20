@@ -15,7 +15,6 @@ namespace JolliantProd.Win {
         /// </summary>
         [STAThread]
         static void Main() {
-            DevExpress.ExpressApp.FrameworkSettings.DefaultSettingsCompatibilityMode = DevExpress.ExpressApp.FrameworkSettingsCompatibilityMode.v20_1;
 #if EASYTEST
             DevExpress.ExpressApp.Win.EasyTest.EasyTestRemotingRegistration.Register();
 #endif
@@ -38,11 +37,11 @@ namespace JolliantProd.Win {
                 winApplication.ConnectionString = ConfigurationManager.ConnectionStrings["EasyTestConnectionString"].ConnectionString;
             }
 #endif
-
-            if(winApplication.CheckCompatibilityType == CheckCompatibilityType.DatabaseSchema) {
+#if DEBUG
+            if(System.Diagnostics.Debugger.IsAttached && winApplication.CheckCompatibilityType == CheckCompatibilityType.DatabaseSchema) {
                 winApplication.DatabaseUpdateMode = DatabaseUpdateMode.UpdateDatabaseAlways;
             }
-
+#endif
             try {
                 winApplication.Setup();
                 winApplication.Start();

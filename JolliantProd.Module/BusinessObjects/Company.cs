@@ -29,6 +29,7 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
+        int odooDatabaseID;
         string pOPrefix;
         int nextMONumber;
         int nextPONumber;
@@ -81,12 +82,27 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(NextMONumber), ref nextMONumber, value);
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize), RuleRequiredField()]
         public string POPrefix
         {
             get => pOPrefix;
             set => SetPropertyValue(nameof(POPrefix), ref pOPrefix, value);
+        }
+
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string OdooID
+        //{
+        //    get => odooID;
+        //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
+        //}
+
+        
+        public int OdooDatabaseID
+        {
+            get => odooDatabaseID;
+            set => SetPropertyValue(nameof(OdooDatabaseID), ref odooDatabaseID, value);
         }
 
     }

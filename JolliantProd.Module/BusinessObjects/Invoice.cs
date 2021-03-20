@@ -29,6 +29,8 @@ namespace JolliantProd.Module.BusinessObjects
             Status = StatusEnum.Draft;
         }
 
+        int odooDatabaseID;
+        string odooID;
         SupplierCode suppCode;
         string trip;
         [Persistent(nameof(OpenAmount))]
@@ -114,7 +116,6 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Trip), ref trip, value);
         }
 
-        
         public SupplierCode SuppCode
         {
             get => suppCode;
@@ -159,16 +160,33 @@ namespace JolliantProd.Module.BusinessObjects
 
         public StatusEnum Status
         {
-            get {
-                return status; }
+            get
+            {
+                return status;
+            }
             set
             {
                 SetPropertyValue(nameof(Status), ref status, value);
-               
+
             }
         }
 
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string OdooID
+        //{
+        //    get => odooID;
+        //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
+        //}
+
         
+        public int OdooDatabaseID
+        {
+            get => odooDatabaseID;
+            set => SetPropertyValue(nameof(OdooDatabaseID), ref odooDatabaseID, value);
+        }
+
+
         [PersistentAlias(nameof(openAmount))]
         public decimal OpenAmount
         {
@@ -192,6 +210,8 @@ namespace JolliantProd.Module.BusinessObjects
                 {
                     Customer = SalesOrder.Customer;
                     Company = SalesOrder.Company;
+                    
+
                     if (InvoiceLines.Count <= 0)
                     {
                         foreach (SalesOrderLine item in SalesOrder.SalesOrderLines)
@@ -327,6 +347,8 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Invoice), ref invoice, value);
         }
 
+        int odooDatabaseID;
+        string odooID;
         Invoice invoice;
         [Persistent(nameof(SubTotal))]
         decimal subTotal;
@@ -338,7 +360,8 @@ namespace JolliantProd.Module.BusinessObjects
         public Product Product
         {
             get => product;
-            set {
+            set
+            {
                 SetPropertyValue(nameof(Product), ref product, value);
                 if (!IsLoading && !IsSaving)
                 {
@@ -370,15 +393,32 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        
+
         [PersistentAlias(nameof(subTotal))]
         public decimal SubTotal
         {
-            get {
+            get
+            {
                 subTotal = UnitPrice * Convert.ToDecimal(Quantity);
-                return subTotal; }
+                return subTotal;
+            }
         }
-        
+
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string OdooID
+        //{
+        //    get => odooID;
+        //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
+        //}
+
+        [VisibleInListView(false)]
+        public int OdooDatabaseID
+        {
+            get => odooDatabaseID;
+            set => SetPropertyValue(nameof(OdooDatabaseID), ref odooDatabaseID, value);
+        }
+
 
     }
 

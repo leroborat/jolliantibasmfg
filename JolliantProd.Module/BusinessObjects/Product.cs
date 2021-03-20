@@ -28,6 +28,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        int odooDatabaseID;
+        string odooID;
         [Persistent(nameof(StockOnHandTaytay))]
         double stockOnHandTaytay;
         ProductStatusEnum status;
@@ -53,6 +55,21 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => productName;
             set => SetPropertyValue(nameof(ProductName), ref productName, value);
+        }
+
+
+        //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        //public string OdooID
+        //{
+        //    get => odooID;
+        //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
+        //}
+
+        
+        public int OdooDatabaseID
+        {
+            get => odooDatabaseID;
+            set => SetPropertyValue(nameof(OdooDatabaseID), ref odooDatabaseID, value);
         }
 
 

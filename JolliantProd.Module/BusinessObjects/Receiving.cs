@@ -347,6 +347,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Receiving), ref receiving, value);
         }
 
+        DateTime receiveDate;
         string vendorLotCode;
         DateTime lotExpiry;
         double stockingQuantityReceived;
@@ -368,7 +369,7 @@ namespace JolliantProd.Module.BusinessObjects
                 {
                     PurchaseUOM = Product.PurchaseUOM;
                     StorageUOM = Product.UOM;
-                    
+
                 }
             }
         }
@@ -397,7 +398,9 @@ namespace JolliantProd.Module.BusinessObjects
         public DateTime LotExpiry
         {
             get => lotExpiry;
-            set { SetPropertyValue(nameof(LotExpiry), ref lotExpiry, value);
+            set
+            {
+                SetPropertyValue(nameof(LotExpiry), ref lotExpiry, value);
 
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
@@ -405,16 +408,23 @@ namespace JolliantProd.Module.BusinessObjects
                     {
                         Lot lot = new Lot(Session);
                         lot.InternalReference = Receiving?.Series;
-                        lot.LotCode = LotExpiry.ToString("MMddyyyy");
+                        lot.LotCode = Receiving.Vendor.VendorPrefix + LotExpiry.ToString("MMddyyyy");
                         lot.Product = Product;
                         Lot = lot;
                     }
                 }
-               
+
             }
         }
 
         
+        public DateTime ReceiveDate
+        {
+            get => receiveDate;
+            set => SetPropertyValue(nameof(ReceiveDate), ref receiveDate, value);
+        }
+
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
         public string VendorLotCode
         {

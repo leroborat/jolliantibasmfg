@@ -30,6 +30,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string vendorPrefix;
         bool isActive;
         StatusEnum status;
         PaymentTerm defaultPaymentTerm;
@@ -51,6 +52,14 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => vendorName;
             set => SetPropertyValue(nameof(VendorName), ref vendorName, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), VisibleInListView(false), RuleRequiredField()]
+        public string VendorPrefix
+        {
+            get => vendorPrefix;
+            set => SetPropertyValue(nameof(VendorPrefix), ref vendorPrefix, value);
         }
 
 

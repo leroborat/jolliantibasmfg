@@ -138,6 +138,11 @@
         <Member Name="TheoreticalQuantity" AllowEdit="False" />
       </OwnMembers>
     </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryFlowReport">
+      <OwnMembers>
+        <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.InventoryReturn" ImageName="BO_Price_Item">
       <AppearanceRules>
         <AppearanceRule Id="@129daac3-9ec2-4712-b910-8972e7917ba2" BackColor="224, 224, 224" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryReturn+StatusEnum,Done#" TargetItems="InventoryReturnLines, ReturnLocation, ReturnReferenceName, SalesOrder" IsNewNode="True" />
@@ -172,6 +177,7 @@
         <AppearanceRule Id="@95640978-7e1e-4b3f-ad6f-9e882233cd88" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" TargetItems="BusinessStyle,Customer,CustomerBillingAddress,DistributionAllowancePercentage,DueDate,InvoiceDate,InvoiceNumber,PaymentTerm,SalesOrder,InvoiceLines,Trips, Company,TIN" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
+        <Member Name="OdooDatabaseID" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
         <Member Name="Trips" DataSourceCriteria="[SalesOrder] = '@This.SalesOrder' And [TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
       </OwnMembers>
@@ -450,6 +456,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalOtherLine">
       <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.Item'" />
         <Member Name="UOM" AllowEdit="False" />
       </OwnMembers>
     </Class>
@@ -489,6 +496,7 @@
       <Item Id="Inventory" Index="2" IsNewNode="True">
         <Items IsNewNode="True">
           <Item Id="@66b140e0-7a0a-4892-b0c3-d4d21ed070fb" Caption="Stock Aging" ViewId="StockTransfer_Aeging" IsNewNode="True" />
+          <Item Id="@97c9730a-d5f7-40fd-9e2f-4557dd26a570" ViewId="InventoryFlowReport_ListView" IsNewNode="True" />
           <Item Id="@b671b0d4-2ae8-4830-8096-5bf77559d63b" ViewId="Product_ListView_Fast_Load" Caption="Products - Fast Load" IsNewNode="True" />
           <Item Id="@d7b77570-437f-4fbe-afcb-c12ea60d4b76" ViewId="WithdrawalOther_ListView" Caption="Other Withdrawals" IsNewNode="True" />
           <Item Id="InternalTransfer_ListView" ViewId="InternalTransfer_ListView" ObjectKey="" IsNewNode="True" />
@@ -588,6 +596,7 @@
       </Item>
       <Item Id="Utilities" IsNewNode="True">
         <Items IsNewNode="True">
+          <Item Id="Odoo_ListView" Index="99999999" ViewId="Odoo_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="AuditUsageReport_ListView" ViewId="AuditUsageReport_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Company_ListView" ViewId="Company_ListView" ObjectKey="" IsNewNode="True" />
           <Item Id="Employee_ListView" ViewId="Employee_ListView" ObjectKey="" IsNewNode="True" />
@@ -603,8 +612,8 @@
     <LayoutManagerOptions RequiredFieldMark="*" />
   </Options>
   <SchemaModules>
-    <SchemaModule Name="CloneObjectModule" Version="19.2.5.0" IsNewNode="True" />
-    <SchemaModule Name="SystemModule" Version="19.2.5.0" IsNewNode="True" />
+    <SchemaModule Name="CloneObjectModule" Version="20.2.5.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="20.2.5.0" IsNewNode="True" />
   </SchemaModules>
   <Validation>
     <Rules>
@@ -978,7 +987,6 @@
                 <LayoutItem Id="InternalReference" RelativeSize="87.029288702928866" />
               </LayoutGroup>
               <LayoutGroup Id="Lot_col2" RelativeSize="50.090090090090094">
-                <LayoutItem Id="StockOnHand" RelativeSize="92.46861924686192" />
                 <LayoutItem Id="TripLine" Removed="True" />
               </LayoutGroup>
             </LayoutGroup>

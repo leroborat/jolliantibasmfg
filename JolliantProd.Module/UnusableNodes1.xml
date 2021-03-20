@@ -1,16 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Application>
+  <NavigationItems Id="NavigationItems">
+    <Items Id="Items">
+      <Item Id="Utilities">
+        <Items Id="Items">
+          <Item Id="AuditUsageReport_ListView" ViewId="AuditUsageReport_ListView" />
+        </Items>
+      </Item>
+      <Item Id="Default">
+        <Items Id="Items">
+          <Item Id="Odoo_ListView" Index="99999999" Removed="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
   <Views Id="Views">
-    <DetailView Id="Lot_DetailView">
+    <DetailView Id="ProductionBatch_DetailView">
       <Layout Id="Layout">
         <LayoutGroup Id="Main">
-          <LayoutGroup Id="SimpleEditors">
-            <LayoutGroup Id="Lot">
-              <LayoutGroup Id="Lot_col2">
-                <LayoutItem Id="ExpirationDate" RelativeSize="7.531380753138075" />
-              </LayoutGroup>
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="AuditTrail">
+              <LayoutItem Id="AuditTrail" ViewItem="AuditTrail" />
             </LayoutGroup>
-          </LayoutGroup>
+          </TabbedGroup>
         </LayoutGroup>
       </Layout>
     </DetailView>
