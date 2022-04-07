@@ -46,6 +46,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        int odooID;
+        string remarks;
         RequestTypeEnum pOType;
         DateTime lastModifiedOn;
         string lastModifiedBy;
@@ -126,7 +128,7 @@ namespace JolliantProd.Module.BusinessObjects
             NonTrade
         }
 
-        
+
         public RequestTypeEnum POType
         {
             get => pOType;
@@ -216,7 +218,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(LastModifiedBy), ref lastModifiedBy, value);
         }
 
-        
+
         public DateTime LastModifiedOn
         {
             get => lastModifiedOn;
@@ -245,17 +247,18 @@ namespace JolliantProd.Module.BusinessObjects
                 if (VATApplies == false)
                 {
                     subTotal = 0;
-                } else
+                }
+                else
                 {
                     subTotal = Total / Convert.ToDecimal(1.12);
                     subTotal = Math.Round(subTotal, 2, MidpointRounding.AwayFromZero);
                 }
-                
+
                 return subTotal;
             }
         }
 
-        
+
         public bool VATApplies
         {
             get => vATApplies;
@@ -266,16 +269,27 @@ namespace JolliantProd.Module.BusinessObjects
         [PersistentAlias(nameof(vAT))]
         public decimal VAT
         {
-            get {
+            get
+            {
                 if (VATApplies)
                 {
                     vAT = Total - SubTotal;
-                } else
+                }
+                else
                 {
                     vAT = 0;
                 }
-                
-                return vAT; }
+
+                return vAT;
+            }
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string Remarks
+        {
+            get => remarks;
+            set => SetPropertyValue(nameof(Remarks), ref remarks, value);
         }
 
         [Association("PurchaseOrder-Receivings")]
@@ -295,7 +309,28 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<ReceivingReturn>(nameof(ReceivingReturns));
             }
         }
-       
+
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
+        [VisibleInDetailView(false), VisibleInListView(false)]
+        public int OdooID
+        {
+            get => odooID;
+            set => SetPropertyValue(nameof(OdooID), ref odooID, value);
+        }
+
 
 
     }
@@ -485,6 +520,20 @@ namespace JolliantProd.Module.BusinessObjects
                 }
                 return pricePerUnit; }
         }
-        
+
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
     }
 }

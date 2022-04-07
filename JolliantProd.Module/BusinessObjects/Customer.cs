@@ -116,6 +116,20 @@ namespace JolliantProd.Module.BusinessObjects
                 return GetCollection<Invoice>(nameof(Invoices));
             }
         }
+
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
     }
 
     [XafDefaultProperty("DeliveryAddress")]

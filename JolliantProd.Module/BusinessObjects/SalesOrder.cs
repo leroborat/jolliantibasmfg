@@ -31,6 +31,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string remarks;
         [Persistent(nameof(TotalInvoicedAmount))]
         decimal totalInvoicedAmount;
         [Persistent(nameof(TotalSalesNetOfUnserved))]
@@ -280,26 +281,43 @@ namespace JolliantProd.Module.BusinessObjects
                 totalQuantitiesInvoiced = 0;
                 foreach (Invoice item in Invoices)
                 {
-
-                    foreach (InvoiceLine invoiceLine in item.InvoiceLines)
+                    if (item.Status == Invoice.StatusEnum.Open)
                     {
-                        totalQuantitiesInvoiced += invoiceLine.Quantity;
+                        foreach (InvoiceLine invoiceLine in item.InvoiceLines)
+                        {
+                            totalQuantitiesInvoiced += invoiceLine.Quantity;
+                        }
                     }
+
+                    
 
                 }
                 return totalQuantitiesInvoiced;
             }
         }
 
-        
+
         [PersistentAlias(nameof(totalInvoicedAmount))]
         public decimal TotalInvoicedAmount
         {
-            get {
-                totalInvoicedAmount = Invoices.Select(x => x.TotalSales).Sum();
-                return totalInvoicedAmount; }
+            get
+            {
+                totalInvoicedAmount = (from c in Invoices
+                                         where c.Status == Invoice.StatusEnum.Open
+                                         select c.TotalSales
+                                         ).Sum();
+                return totalInvoicedAmount;
+            }
         }
+
+
         
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string Remarks
+        {
+            get => remarks;
+            set => SetPropertyValue(nameof(Remarks), ref remarks, value);
+        }
 
 
 
@@ -343,7 +361,21 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-       
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
+
 
 
 
@@ -449,6 +481,7 @@ namespace JolliantProd.Module.BusinessObjects
             get
             {
                 quantityInvoiced = (from c in SalesOrder.Invoices
+                                    where c.Status == Invoice.StatusEnum.Open
                                     from x in c.InvoiceLines
                                     where x.Product == Product
                                     select x.Quantity).Sum();
@@ -509,7 +542,21 @@ namespace JolliantProd.Module.BusinessObjects
                 outboundAmount = Amount - UnservedAmount;
                 return outboundAmount; }
         }
-        
+
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
 
 
     }

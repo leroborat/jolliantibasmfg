@@ -385,7 +385,17 @@ namespace JolliantProd.Module.Controllers
 
         private void SetToDraftSO_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
+            
+            if (((SalesOrder)View.CurrentObject).Remarks == "")
+            {
+                throw new UserFriendlyException("Please Fill out Remarks");
+            }
             ((SalesOrder)View.CurrentObject).Status = SalesOrder.StatusEnum.Draft;
+        }
+
+        private void SetToDraftInvoiceAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ((Invoice)View.CurrentObject).Status = Invoice.StatusEnum.Cancelled;
         }
     }
 }

@@ -30,6 +30,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        int odooID;
         string vendorPrefix;
         bool isActive;
         StatusEnum status;
@@ -54,7 +55,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(VendorName), ref vendorName, value);
         }
 
-        
+
         [Size(SizeAttribute.DefaultStringMappingFieldSize), VisibleInListView(false), RuleRequiredField()]
         public string VendorPrefix
         {
@@ -69,7 +70,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(VATVendor), ref vATVendor, value);
         }
 
-        
+
         public bool IsActive
         {
             get => isActive;
@@ -90,7 +91,7 @@ namespace JolliantProd.Module.BusinessObjects
             Disapproved
         }
 
-        
+
         public StatusEnum Status
         {
             get => status;
@@ -168,14 +169,14 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(InternalNotes), ref internalNotes, value);
         }
 
-        
+
         public int NextIn
         {
             get => nextIn;
             set => SetPropertyValue(nameof(NextIn), ref nextIn, value);
         }
 
-        
+
 
         [Association("Vendor-VendorPriceLists"), Aggregated()]
         public XPCollection<VendorPriceList> VendorPriceList
@@ -198,6 +199,27 @@ namespace JolliantProd.Module.BusinessObjects
         {
             // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
             this.Status = StatusEnum.Disapproved;
+        }
+
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
+        [VisibleInDetailView(false), VisibleInListView(false)]
+        public int OdooID
+        {
+            get => odooID;
+            set => SetPropertyValue(nameof(OdooID), ref odooID, value);
         }
 
     }

@@ -329,6 +329,20 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(Remarks), ref remarks, value);
         }
 
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
+
 
 
 
@@ -467,7 +481,19 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(StorageUOM), ref storageUOM, value);
         }
 
-
+        private XPCollection<AuditDataItemPersistent> auditTrail;
+        [CollectionOperationSet(AllowAdd = false, AllowRemove = false)]
+        public XPCollection<AuditDataItemPersistent> AuditTrail
+        {
+            get
+            {
+                if (auditTrail == null)
+                {
+                    auditTrail = AuditedObjectWeakReference.GetAuditTrail(Session, this);
+                }
+                return auditTrail;
+            }
+        }
 
 
 

@@ -338,6 +338,10 @@ namespace JolliantProd.Module.Controllers
 
         private void POSetToDraft_Execute(object sender, SimpleActionExecuteEventArgs e)
         {
+            if (((PurchaseOrder)View.CurrentObject).Remarks == "")
+            {
+                throw new UserFriendlyException("Please Fill out Remarks");
+            }
             var thisView = ((PurchaseOrder)View.CurrentObject);
             ((PurchaseOrder)View.CurrentObject).Status = PurchaseOrder.StatusEnum.New;
             foreach (Receiving item in thisView.Receivings)

@@ -24,10 +24,15 @@
     </Class>
   </BOModel>
   <SchemaModules>
-    <SchemaModule Name="CloneObjectModule" Version="19.2.5.0" IsNewNode="True" />
-    <SchemaModule Name="SystemModule" Version="19.2.5.0" IsNewNode="True" />
-    <SchemaModule Name="SystemWindowsFormsModule" Version="19.2.5.0" IsNewNode="True" />
+    <SchemaModule Name="CloneObjectModule" Version="21.2.4.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="21.2.4.0" IsNewNode="True" />
+    <SchemaModule Name="SystemWindowsFormsModule" Version="21.2.4.0" IsNewNode="True" />
   </SchemaModules>
+  <ViewItems>
+    <PropertyEditor Name="PropertyEditors">
+      <RegisteredPropertyEditor PropertyType="System.Decimal" DefaultDisplayFormat="{0:#,###,##0.####}" DefaultEditMask="#,###,##0.####" />
+    </PropertyEditor>
+  </ViewItems>
   <Views>
     <ListView Id="Lot_LookupListView" Criteria="" Filter="[StockOnHand] &gt; 0.0" />
     <ListView Id="Lot_LookupListView_No_Filter" ClassName="JolliantProd.Module.BusinessObjects.Lot" Criteria="" IsNewNode="True">

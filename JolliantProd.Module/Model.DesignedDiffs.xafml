@@ -2,6 +2,7 @@
 <Application Title="IBAS Manufacturing" AboutInfoString="IBAS Manufacturing Suite&lt;br&gt;{0:Version}&lt;br&gt;{0:Copyright}" Company="Jolliant" Copyright="Copyright IBAS Software Development Services" Description="IBAS Manufacturing" Logo="">
   <ActionDesign>
     <Actions>
+      <Action Id="5b04dc92-be01-4187-8945-c0897517ac6a" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Paid#" />
       <Action Id="ApprovePOAction" TargetObjectsCriteria="[Company] Is Not Null And [Vendor] Is Not Null And [DeliveryLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New# And IsCurrentUserInRole('Purchase Manager')" />
       <Action Id="AssignLotsAction" TargetObjectsCriteria="[WithdrawalLines][[WithdrawalLineLots][].Count() = 0]" />
       <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
@@ -15,7 +16,7 @@
       <Action Id="MarkProductionCompleted" TargetObjectsCriteria="[ConsumedMaterials][[Consumed] &lt;&gt; 0.0] And [FinishedGoods][Not IsNullOrEmpty([LotCode]) And [ExpirationDate] Is Not Null] And [WorkOrders][[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WorkOrder+StatusEnum,Ready#] And [WithdrawalRequests][[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalRequest+StatusEnum,Completed#] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,InProgress#" />
       <Action Id="MarkWorkOrderDone" TargetObjectsCriteria="[ActualStartDate] Is Not Null And [ActualEndDate] Is Not Null And [ActualStartDate] &lt; [ActualEndDate]" />
       <Action Id="PlanMO" TargetObjectsCriteria="[BillOfMaterial] Is Not Null And [Product] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft# And [Company] Is Not Null And [Routing] Is Not Null And [Company] Is Not Null And [QuantityToProduce] &gt; 0.0" />
-      <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Declined#" />
+      <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
       <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
       <Action Id="Product.ApproveProduct" ValidationContexts="Save" ImageName="BO_Task" TargetObjectsCriteria="IsCurrentUserInRole('RND') And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Draft# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,DisApproved#" />
       <Action Id="Product.DisapproveProductAction" ValidationContexts="Save" TargetObjectsCriteria="IsCurrentUserInRole('RND')" />
@@ -27,7 +28,7 @@
       <Action Id="TripSetToDraft" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
       <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
       <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
-      <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] In (##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#, ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Cancelled#)" />
       <Action Id="ValidateProductionTransfer" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" />
       <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0] And Not IsNullOrEmpty([Series])" />
       <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
@@ -292,9 +293,10 @@
       <AppearanceRules>
         <AppearanceRule Id="@133c811d-a9d7-4a30-9516-669f82ffa7ad" TargetItems="Receivings" Priority="5" Enabled="True" Context="DetailView" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" Visibility="Show" IsNewNode="True" />
         <AppearanceRule Id="@1835d991-95c3-4337-96d2-f2348e374b86" TargetItems="*" Context="ListView" Criteria="[PurchaseOrderLines][].Sum([ReceivedQuantity]) &gt; 0.0" BackColor="255, 255, 192" IsNewNode="True" />
-        <AppearanceRule Id="@29956797-0df5-4b32-a9f1-769291d76488" TargetItems="*" Context="DetailView" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="1" IsNewNode="True" />
+        <AppearanceRule Id="@29956797-0df5-4b32-a9f1-769291d76488" TargetItems="ApprovedBy, Company, CreatedBy, DeliveryAddress, DeliveryLocation, POType, PaymentTerm, PurchaseOrderDate, PurchaseOrderLines, PurchaseOrderNumber, Status, Vendor" Context="DetailView" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="1" IsNewNode="True" />
         <AppearanceRule Id="@2abc3600-5e42-4408-a03b-c7c444d6a0d2" TargetItems="*" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# And [PurchaseOrderLines][].Sum([ReceivedQuantity]) &gt;= [PurchaseOrderLines][].Sum([Quantity])" Context="ListView" BackColor="128, 255, 128" Priority="2" IsNewNode="True" />
         <AppearanceRule Id="@5849c999-ce55-474d-97a2-95cd6fabd0f4" Visibility="Hide" TargetItems="Receivings" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="999" IsNewNode="True" />
+        <AppearanceRule Id="@d9c9e089-0800-43ef-8b25-68a8964ef2e9" TargetItems="Remarks" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
         <Member Name="ApprovedBy" AllowEdit="False" Caption="Approved or Cancelled By" />
@@ -365,6 +367,7 @@
     </Class>
     <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder" ImageName="BO_Task">
       <AppearanceRules>
+        <AppearanceRule Id="@55317a80-d8cb-4ca5-a1c3-02c3b6fb2caf" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" TargetItems="Remarks" IsNewNode="True" />
         <AppearanceRule Id="@5ba2415a-1613-4dfc-a175-0f71e95ab259" TargetItems="SOConfirmAction" AppearanceItemType="Action" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" Visibility="Hide" IsNewNode="True" />
         <AppearanceRule Id="HighlightIfNotEqual" TargetItems="TotalSalesNetOfUnserved, TotalInvoicedAmount" BackColor="255, 255, 128" Criteria="[TotalSalesNetOfUnserved] &lt;&gt; [TotalInvoicedAmount]" Context="DetailView" IsNewNode="True" />
         <AppearanceRule Id="SOConfirmedApperance" Enabled="False" TargetItems="Company,Customer,DeliveryAddress,PurchaseOrderDate,PurchaseOrderNumber,SalesOrderLines,ScheduledDeliveryDate,SupplierCode,Type" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
@@ -612,8 +615,8 @@
     <LayoutManagerOptions RequiredFieldMark="*" />
   </Options>
   <SchemaModules>
-    <SchemaModule Name="CloneObjectModule" Version="20.2.5.0" IsNewNode="True" />
-    <SchemaModule Name="SystemModule" Version="20.2.5.0" IsNewNode="True" />
+    <SchemaModule Name="CloneObjectModule" Version="21.2.4.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="21.2.4.0" IsNewNode="True" />
   </SchemaModules>
   <Validation>
     <Rules>
@@ -829,8 +832,8 @@
     </DetailView>
     <ListView Id="Invoice_InvoiceLines_ListView" AllowEdit="True">
       <Columns>
-        <ColumnInfo Id="Product" Width="63" />
         <ColumnInfo Id="Description" Index="1" />
+        <ColumnInfo Id="Product" Width="63" />
         <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
         <ColumnInfo Id="Quantity" Width="67" Index="3" />
         <ColumnInfo Id="SubTotal" Width="0" Index="4" />
@@ -1331,9 +1334,6 @@
           </LayoutGroup>
           <LayoutGroup Id="SizeableEditors" RelativeSize="0">
             <LayoutItem Id="Remarks" SizeConstraintsType="Default" MinSize="0, 0" />
-          </LayoutGroup>
-          <LayoutGroup Id="ReceivedLines_Group" Direction="Vertical" RelativeSize="100">
-            <LayoutItem Id="ReceivedLines" RelativeSize="100" MinSize="0, 100" SizeConstraintsType="Custom" />
           </LayoutGroup>
         </LayoutGroup>
       </Layout>

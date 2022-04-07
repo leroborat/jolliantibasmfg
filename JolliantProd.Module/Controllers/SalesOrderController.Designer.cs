@@ -43,6 +43,7 @@
             this.UpdateLotExpiry = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.TripSetToDraft = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             this.SetToDraftSO = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
+            this.SetToDraftInvoiceAction = new DevExpress.ExpressApp.Actions.SimpleAction(this.components);
             // 
             // simpleAction1
             // 
@@ -197,6 +198,17 @@
             this.SetToDraftSO.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
             this.SetToDraftSO.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.SetToDraftSO_Execute);
             // 
+            // SetToDraftInvoiceAction
+            // 
+            this.SetToDraftInvoiceAction.Caption = "Cancel Invoice";
+            this.SetToDraftInvoiceAction.ConfirmationMessage = null;
+            this.SetToDraftInvoiceAction.Id = "5b04dc92-be01-4187-8945-c0897517ac6a";
+            this.SetToDraftInvoiceAction.TargetObjectType = typeof(JolliantProd.Module.BusinessObjects.Invoice);
+            this.SetToDraftInvoiceAction.TargetViewType = DevExpress.ExpressApp.ViewType.DetailView;
+            this.SetToDraftInvoiceAction.ToolTip = null;
+            this.SetToDraftInvoiceAction.TypeOfView = typeof(DevExpress.ExpressApp.DetailView);
+            this.SetToDraftInvoiceAction.Execute += new DevExpress.ExpressApp.Actions.SimpleActionExecuteEventHandler(this.SetToDraftInvoiceAction_Execute);
+            // 
             // SalesOrderController
             // 
             this.Actions.Add(this.simpleAction1);
@@ -213,6 +225,7 @@
             this.Actions.Add(this.UpdateLotExpiry);
             this.Actions.Add(this.TripSetToDraft);
             this.Actions.Add(this.SetToDraftSO);
+            this.Actions.Add(this.SetToDraftInvoiceAction);
             this.Activated += new System.EventHandler(this.SalesOrderController_Activated);
 
         }
@@ -233,5 +246,6 @@
         private DevExpress.ExpressApp.Actions.SimpleAction UpdateLotExpiry;
         private DevExpress.ExpressApp.Actions.SimpleAction TripSetToDraft;
         private DevExpress.ExpressApp.Actions.SimpleAction SetToDraftSO;
+        private DevExpress.ExpressApp.Actions.SimpleAction SetToDraftInvoiceAction;
     }
 }

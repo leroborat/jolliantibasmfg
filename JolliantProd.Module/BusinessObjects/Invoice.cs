@@ -154,7 +154,8 @@ namespace JolliantProd.Module.BusinessObjects
         {
             Draft,
             Open,
-            Paid
+            Paid,
+            Cancelled
         }
 
 
