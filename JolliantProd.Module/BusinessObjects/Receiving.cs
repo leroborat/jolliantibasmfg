@@ -111,7 +111,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
-        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), NonCloneable]
         public string Series
         {
             get => series;
