@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <NavigationItems Id="NavigationItems">
+    <Items Id="Items">
+      <Item Id="Utilities">
+        <Items Id="Items">
+          <Item Id="AuditUsageReport_ListView" ViewId="AuditUsageReport_ListView" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Views Id="Views">
+    <DetailView Id="ProductionBatch_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <TabbedGroup Id="Tabs">
+            <LayoutGroup Id="AuditTrail">
+              <LayoutItem Id="AuditTrail" ViewItem="AuditTrail" />
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <DetailView Id="Receiving_DetailView">
+      <Layout Id="Layout">
+        <LayoutGroup Id="Main">
+          <LayoutGroup Id="ReceivedLines_Group" Direction="Vertical" RelativeSize="100">
+            <LayoutItem Id="ReceivedLines" RelativeSize="100" MinSize="0, 100" SizeConstraintsType="Custom" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+  </Views>
+</Application>

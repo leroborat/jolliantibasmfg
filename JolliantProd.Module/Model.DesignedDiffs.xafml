@@ -1,0 +1,1668 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application Title="IBAS Manufacturing" AboutInfoString="IBAS Manufacturing Suite&lt;br&gt;{0:Version}&lt;br&gt;{0:Copyright}" Company="Jolliant" Copyright="Copyright IBAS Software Development Services" Description="IBAS Manufacturing" Logo="">
+  <ActionDesign>
+    <Actions>
+      <Action Id="5b04dc92-be01-4187-8945-c0897517ac6a" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Paid#" />
+      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Company] Is Not Null And [Vendor] Is Not Null And [DeliveryLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New# And IsCurrentUserInRole('Purchase Manager')" />
+      <Action Id="AssignLotsAction" TargetObjectsCriteria="[WithdrawalLines][[WithdrawalLineLots][].Count() = 0]" />
+      <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
+      <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
+      <Action Id="FGInventoryReport.ActionMethod" ValidationContexts="Save" />
+      <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
+      <Action Id="GenerateReceivingSummary" ValidationContexts="Save" />
+      <Action Id="GenerateTripLinesAction" TargetObjectsCriteria="[Location] Is Not Null And [Lots][] And [Trip.TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft#" />
+      <Action Id="KitchenPlan.DoneMethod" TargetObjectsCriteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Done# And [ProductionFinishedGoods][]" />
+      <Action Id="KitchenPlan.PlanMethod" ImageName="Shopping_ShoppingBasket" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Draft# And IsCurrentUserInRole('Production Supervisor')" />
+      <Action Id="MarkProductionCompleted" TargetObjectsCriteria="[ConsumedMaterials][[Consumed] &lt;&gt; 0.0] And [FinishedGoods][Not IsNullOrEmpty([LotCode]) And [ExpirationDate] Is Not Null] And [WorkOrders][[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WorkOrder+StatusEnum,Ready#] And [WithdrawalRequests][[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalRequest+StatusEnum,Completed#] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,InProgress#" />
+      <Action Id="MarkWorkOrderDone" TargetObjectsCriteria="[ActualStartDate] Is Not Null And [ActualEndDate] Is Not Null And [ActualStartDate] &lt; [ActualEndDate]" />
+      <Action Id="PlanMO" TargetObjectsCriteria="[BillOfMaterial] Is Not Null And [Product] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft# And [Company] Is Not Null And [Routing] Is Not Null And [Company] Is Not Null And [QuantityToProduce] &gt; 0.0" />
+      <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
+      <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
+      <Action Id="Product.ApproveProduct" ValidationContexts="Save" ImageName="BO_Task" TargetObjectsCriteria="IsCurrentUserInRole('RND') And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Draft# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,DisApproved#" />
+      <Action Id="Product.DisapproveProductAction" ValidationContexts="Save" TargetObjectsCriteria="IsCurrentUserInRole('RND')" />
+      <Action Id="ProductionBatch.ValidateStatus" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft# And [KitchenPlan] Is Not Null And Not IsNullOrEmpty([KitchenCode]) And [CookedWeight] &lt;&gt; 0.0 And [Time] Is Not Null" />
+      <Action Id="SetToDraftWithdrawal" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Validated#" ValidationContexts="Save" />
+      <Action Id="SetToNewReceivedAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,Validated#" />
+      <Action Id="SOSetToDraft" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Confirmed#" />
+      <Action Id="Trip.ActionMethod" ValidationContexts="Save" />
+      <Action Id="TripSetToDraft" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
+      <Action Id="UpdateLotExpiry" TargetObjectsCriteria="IsCurrentUserInRole('Administrators')" />
+      <Action Id="ValidateCustomerPaymentAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.CustomerPayment+StatusEnum,Draft# And [Company] Is Not Null And [TotalAllocated] &lt;= [PaymentAmount]" />
+      <Action Id="ValidateInvoiceAction" TargetObjectsCriteria="[Customer] Is Not Null And Not IsNullOrEmpty([InvoiceNumber]) And [InvoiceDate] Is Not Null And [InvoiceLines][] And [Status] In (##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#, ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Cancelled#)" />
+      <Action Id="ValidateProductionTransfer" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" />
+      <Action Id="ValidateReceiptAction" TargetObjectsCriteria="[StorageLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New# And [ActualDeliveryDate] Is Not Null And [ReceivedLines][[PurchaseQuantityReceived] &gt; 0.0] And Not IsNullOrEmpty([Series])" />
+      <Action Id="ValidateTripAction" TargetObjectsCriteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Draft# And [SalesOrder] Is Not Null And [DestinationLocation] Is Not Null And [TripLines][]" />
+      <Action Id="ValidateWithdrawal" TargetObjectsCriteria="[Location] Is Not Null And [WithdrawalLines][[ProductionUOM] Is Not Null] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Submitted#" />
+      <Action Id="Vendor.ApprovedVendor" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,ForApproval# And IsCurrentUserInRole('Purchase Manager')" ImageName="BO_Security_Permission_Member" />
+      <Action Id="Vendor.DisApprovedVendor" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,ForApproval# And IsCurrentUserInRole('Purchase Manager')" ImageName="DeleteDataSource" />
+      <Action Id="Withdrawal.ActionMethod" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,New#" />
+      <Action Id="WithdrawalOther.SubmitActionMethod" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalOther+StatusEnum,Draft#" />
+      <Action Id="WithdrawalOther.ValidateActionMethod" ValidationContexts="Save" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalOther+StatusEnum,Submitted#" />
+    </Actions>
+  </ActionDesign>
+  <BOModel>
+    <Class Name="DevExpress.Persistent.BaseImpl.ReportDataV2" IsCloneable="True" />
+    <Class Name="JolliantProd.Module.BusinessObjects.BatchConsumption">
+      <OwnMembers>
+        <Member Name="BatchConsumptionLines" AllowEdit="False" />
+        <Member Name="QuantityConsumed" AllowEdit="False" Caption="Quantity To Consume" />
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.BatchConsumptionLine">
+      <OwnMembers>
+        <Member Name="LotCode" DataSourceCriteria="[Product] = '@This.BatchConsumption.ItemConsumed' And [KitchenPlan] = '@This.BatchConsumption.ProductionBatch.KitchenPlan'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.BatchRoute">
+      <OwnMembers>
+        <Member Name="EndTime" DisplayFormat="{0:f}" EditMask="f" />
+        <Member Name="StartTime" DisplayFormat="{0:f}" EditMask="f" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.BillOfMaterial">
+      <OwnMembers>
+        <Member Name="Product" DataSourceCriteria="[CanBeManufactured] = True" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.BomComponent" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="Component" DataSourceCriteria="[CanBePurchased] = True" />
+        <Member Name="ConsumedInRouteOperation" DataSourceCriteria="[ProductionRoute] = '@This.BillOfMaterial.ProductionRoute'" />
+        <Member Name="ProductionUOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Company" ImageName="BO_Organization" />
+    <Class Name="JolliantProd.Module.BusinessObjects.ComponentAllotment">
+      <OwnMembers>
+        <Member Name="Material" DataSourceCriteria="[CanBePurchased] = True" />
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ConsumedMaterial">
+      <OwnMembers>
+        <Member Name="ToConsume" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Customer" ImageName="BO_Customer" />
+    <Class Name="JolliantProd.Module.BusinessObjects.CustomerDeliveryAddress" ImageName="BO_Address" />
+    <Class Name="JolliantProd.Module.BusinessObjects.CustomerPayment" ImageName="Currency" />
+    <Class Name="JolliantProd.Module.BusinessObjects.Employee" ImageName="NewEmployee" />
+    <Class Name="JolliantProd.Module.BusinessObjects.FGInventoryReport">
+      <OwnMembers>
+        <Member Name="Product" DataSourceCriteria="[CanBeSold] = True" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.FinishedGood">
+      <OwnMembers>
+        <Member Name="Product" AllowEdit="False" />
+        <Member Name="UnitOfMeasure" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.FinishedGoodLoader" ImageName="Properties">
+      <AppearanceRules>
+        <AppearanceRule Id="HideifHottaRule" TargetItems="LotExpirationDate" Visibility="Hide" Criteria="[Product.SalesCategory.CategoryName] = 'Hotta Rice'" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="From" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Production#" />
+        <Member Name="To" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InternalTransfer" ImageName="BO_Order">
+      <AppearanceRules>
+        <AppearanceRule Id="@f6f40ea0-b868-4474-806a-32c25304e504" AppearanceItemType="Action" Visibility="Hide" TargetItems="ValidateInternalTransferAction" Criteria="IsNullOrEmpty([ReferenceName]) Or [DestinationLocation] Is Null Or [SourceLocation] Is Null Or [Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.InternalTransfer+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InternalTransferLine">
+      <OwnMembers>
+        <Member Name="LotNumber" DataSourceCriteria="[Product] = '@This.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryAdjustment" ImageName="BO_Product_Group">
+      <AppearanceRules>
+        <AppearanceRule Id="@8683e60d-904f-44ed-ab82-585f7a8f419a" Enabled="False" BackColor="224, 224, 224" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryAdjustment+StatusEnum,Validated#" TargetItems="AdjustmentType, InventoriedLocation, InventoryAdjustmentLines,InventoryDate,InventoryReferenceName" IsNewNode="True" />
+        <AppearanceRule Id="ConfirmAdjustmentRule" TargetItems="ValidateInventoryAdjustmentAction" AppearanceItemType="Action" Visibility="Hide" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.InventoryAdjustment+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="CreatedBy" AllowEdit="False" />
+        <Member Name="CreatedDate" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="InventoriedLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryAdjustmentLine">
+      <OwnMembers>
+        <Member Name="LotNumber" DataSourceCriteria="[Product] = '@This.Product'" />
+        <Member Name="TheoreticalQuantity" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryFlowReport">
+      <OwnMembers>
+        <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryReturn" ImageName="BO_Price_Item">
+      <AppearanceRules>
+        <AppearanceRule Id="@129daac3-9ec2-4712-b910-8972e7917ba2" BackColor="224, 224, 224" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryReturn+StatusEnum,Done#" TargetItems="InventoryReturnLines, ReturnLocation, ReturnReferenceName, SalesOrder" IsNewNode="True" />
+        <AppearanceRule Id="@31bbcce3-bce2-4745-8d69-9b39c2e1cbb5" TargetItems="ValidateInventoryReturnAction" AppearanceItemType="Action" Visibility="Hide" Criteria="[ReturnLocation] Is Null Or IsNullOrEmpty([ReturnReferenceName]) Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.InventoryReturn+StatusEnum,Done# Or [InventoryReturnLines][].Count() &lt; 1" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ReturnLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryReturnLine">
+      <OwnMembers>
+        <Member Name="LotName" DataSourceCriteria="[Product] = '@This.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryScrap" ImageName="BO_Rules">
+      <AppearanceRules>
+        <AppearanceRule Id="@8476fc66-6aae-49d1-89d3-8b2cf064b6b4" TargetItems="ValidateScrapAction" AppearanceItemType="Action" Visibility="Hide" Criteria="IsNullOrEmpty([ReferenceName]) Or [Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.InventoryScrap+StatusEnum,Draft# Or [InventoryLocation] Is Null" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="InventoryLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.InventoryScrapLine">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Invoice" ImageName="BO_Invoice">
+      <AppearanceRules>
+        <AppearanceRule Id="@95640978-7e1e-4b3f-ad6f-9e882233cd88" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" TargetItems="BusinessStyle,Customer,CustomerBillingAddress,DistributionAllowancePercentage,DueDate,InvoiceDate,InvoiceNumber,PaymentTerm,SalesOrder,InvoiceLines,Trips, Company,TIN" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="OdooDatabaseID" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="Trips" DataSourceCriteria="[SalesOrder] = '@This.SalesOrder' And [TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.KitchenPlan">
+      <AppearanceRules>
+        <AppearanceRule Id="@ae49497e-e4ff-40d5-b96a-42c41845bc67" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.KitchenPlan+StatusEnum,Draft#" TargetItems="Shift,Warehouse, Date,Withdrawals,KitchenPlanLines" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="CreatedBy" AllowEdit="False" />
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="SeriesName" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="StockLocation" DataSourceCriteria="[Warehouse] = '@This.Warehouse'" />
+        <Member Name="Warehouse" Caption="Commissary" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.KitchenPlanLine">
+      <OwnMembers>
+        <Member Name="ItemName" DataSourceCriteria="[CanBeManufactured] = True" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Lot" DefaultLookupEditorMode="AllItemsWithSearch" ImageName="BO_Note" />
+    <Class Name="JolliantProd.Module.BusinessObjects.ManufacturingOrder">
+      <AppearanceRules>
+        <AppearanceRule Id="@33b4a384-f9fa-4fd1-a560-65390e19ce06" Visibility="Hide" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft#" TargetItems="FinishedGoods,WithdrawalRequests,WorkOrders" IsNewNode="True" />
+        <AppearanceRule Id="@b66585c7-2b9a-424d-8e7a-f5690f2c3e8c" Enabled="False" TargetItems="*" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Done#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="BillOfMaterial" DataSourceCriteria="[Product] = '@This.Product'" />
+        <Member Name="ConsumedMaterials" AllowEdit="True" />
+        <Member Name="FinishedDate" AllowEdit="False" />
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="Product" DataSourceCriteria="[CanBeManufactured] = True" />
+        <Member Name="ProductionStartDateTime" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="Routing" AllowEdit="False" />
+        <Member Name="SeriesName" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="StockLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.MaterialRequest">
+      <AppearanceRules>
+        <AppearanceRule Id="@1aad1963-c975-4398-b0eb-cb2f458adadd" TargetItems="*" Enabled="False" Context="DetailView" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="PurchaseOrder" AllowEdit="False" />
+        <Member Name="RequestDate" AllowEdit="False" />
+        <Member Name="RequestedBy" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="Vendor" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,Approved#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.MaterialRequestLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Approved#" />
+        <Member Name="PurchaseUOM" AllowEdit="False" />
+        <Member Name="StockingQuantity" AllowEdit="False" />
+        <Member Name="StockingUOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.PaymentAllocationLine">
+      <OwnMembers>
+        <Member Name="Invoice" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# And [Company] = '@This.CustomerPayment.Company'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.PFGLine">
+      <OwnMembers>
+        <Member Name="KitchenCode" DataSourceCriteria="[KitchenPlan] = '@This.PFG.KitchenPlan' And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Validated#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item">
+      <AppearanceRules>
+        <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="Product_ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionBatch" IsCloneable="True">
+      <AppearanceRules>
+        <AppearanceRule Id="@a4bb850e-2d4f-42b7-9644-60a88c65caf0" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Component" DataSourceCriteria="[CanBeManufactured] = True" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="Time" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionFinishedGood">
+      <OwnMembers>
+        <Member Name="FinishedGood" DataSourceCriteria="[CanBeSold] = True" />
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionTransfer">
+      <AppearanceRules>
+        <AppearanceRule Id="@f4b87fc2-d6a5-451c-b269-eefcd888b09c" Enabled="False" TargetItems="*" Context="DetailView" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ProductionTransfer+StatusEnum,Draft#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="ProcessedDate" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ProductionTransferLineLot">
+      <OwnMembers>
+        <Member Name="Lot" LookupEditorMode="Search" DataSourceCriteria="[Product] = '@This.ProductionTransferLine.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.PurchaseOrder">
+      <AppearanceRules>
+        <AppearanceRule Id="@133c811d-a9d7-4a30-9516-669f82ffa7ad" TargetItems="Receivings" Priority="5" Enabled="True" Context="DetailView" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" Visibility="Show" IsNewNode="True" />
+        <AppearanceRule Id="@1835d991-95c3-4337-96d2-f2348e374b86" TargetItems="*" Context="ListView" Criteria="[PurchaseOrderLines][].Sum([ReceivedQuantity]) &gt; 0.0" BackColor="255, 255, 192" IsNewNode="True" />
+        <AppearanceRule Id="@29956797-0df5-4b32-a9f1-769291d76488" TargetItems="ApprovedBy, Company, CreatedBy, DeliveryAddress, DeliveryLocation, POType, PaymentTerm, PurchaseOrderDate, PurchaseOrderLines, PurchaseOrderNumber, Status, Vendor" Context="DetailView" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="1" IsNewNode="True" />
+        <AppearanceRule Id="@2abc3600-5e42-4408-a03b-c7c444d6a0d2" TargetItems="*" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved# And [PurchaseOrderLines][].Sum([ReceivedQuantity]) &gt;= [PurchaseOrderLines][].Sum([Quantity])" Context="ListView" BackColor="128, 255, 128" Priority="2" IsNewNode="True" />
+        <AppearanceRule Id="@5849c999-ce55-474d-97a2-95cd6fabd0f4" Visibility="Hide" TargetItems="Receivings" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" Priority="999" IsNewNode="True" />
+        <AppearanceRule Id="@d9c9e089-0800-43ef-8b25-68a8964ef2e9" TargetItems="Remarks" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ApprovedBy" AllowEdit="False" Caption="Approved or Cancelled By" />
+        <Member Name="CreatedBy" AllowEdit="False" />
+        <Member Name="DeliveryLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="LastModifiedBy" AllowEdit="False" />
+        <Member Name="LastModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="PurchaseOrderNumber" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="Vendor" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,Approved#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.PurchaseOrderLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="LastApprovedPurchasePrice" AllowEdit="False" />
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Approved#" />
+        <Member Name="PurchaseUOM" AllowEdit="False" />
+        <Member Name="StockingQuantity" AllowEdit="False" />
+        <Member Name="StockingUOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ReceivedLine" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="Demand" AllowEdit="False" />
+        <Member Name="Lot" LookupEditorMode="Search" DataSourceCriteria="[Product] = '@This.Product'" AllowEdit="False" />
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
+        <Member Name="PurchaseUOM" AllowEdit="False" />
+        <Member Name="StorageUOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Receiving">
+      <AppearanceRules>
+        <AppearanceRule Id="@28145d09-fd0f-4efa-95b4-d1a17a546212" TargetItems="Vendor" Enabled="False" Criteria="[PurchaseOrder] Is Not Null" IsNewNode="True" />
+        <AppearanceRule Id="@38c88b02-f8d7-4ed9-a044-03c2a75e4c07" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" IsNewNode="True" />
+        <AppearanceRule Id="@efa238cc-f801-4f10-8866-bbae1ee1506d" BackColor="192, 255, 192" Context="ListView" Criteria="[ReceivedLines][[PurchaseQuantityReceived] &lt;&gt; 0.0] And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Receiving+StatusEnum,New#" TargetItems="*" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="FirstModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="LastModifiedBy" AllowEdit="False" />
+        <Member Name="LastModifiedOn" AllowEdit="False" EditMaskType="DateTime" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="NMISandCOA" Caption="NMIS/COA" />
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
+        <Member Name="ReceivedBy" AllowEdit="True" />
+        <Member Name="Series" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="StorageLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ReceivingReturn">
+      <AppearanceRules>
+        <AppearanceRule Id="@efd8ef52-6f7b-4b17-9868-2df1866bb6d8" TargetItems="*" Enabled="False" Context="DetailView" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ReceivingReturn+StatusEnum,New#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="FromLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="PurchaseOrder" DataSourceCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.ReceivingReturnLine" DefaultListViewAllowEdit="True">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.Product'" LookupEditorMode="Search" />
+        <Member Name="PurchaseUOM" AllowEdit="False" />
+        <Member Name="StockingQuantity" AllowEdit="False" />
+        <Member Name="StorageUOM" ImmediatePostData="False" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.SalesOrder" ImageName="BO_Task">
+      <AppearanceRules>
+        <AppearanceRule Id="@55317a80-d8cb-4ca5-a1c3-02c3b6fb2caf" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" TargetItems="Remarks" IsNewNode="True" />
+        <AppearanceRule Id="@5ba2415a-1613-4dfc-a175-0f71e95ab259" TargetItems="SOConfirmAction" AppearanceItemType="Action" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" Visibility="Hide" IsNewNode="True" />
+        <AppearanceRule Id="HighlightIfNotEqual" TargetItems="TotalSalesNetOfUnserved, TotalInvoicedAmount" BackColor="255, 255, 128" Criteria="[TotalSalesNetOfUnserved] &lt;&gt; [TotalInvoicedAmount]" Context="DetailView" IsNewNode="True" />
+        <AppearanceRule Id="SOConfirmedApperance" Enabled="False" TargetItems="Company,Customer,DeliveryAddress,PurchaseOrderDate,PurchaseOrderNumber,SalesOrderLines,ScheduledDeliveryDate,SupplierCode,Type" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
+        <AppearanceRule Id="TripDisabled" TargetItems="Trips,Invoices,InventoryReturns" Visibility="Hide" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.SalesOrder+StatusEnum,Draft#" IsNewNode="True" />
+        <AppearanceRule Id="unfulfilledOrder" TargetItems="*" BackColor="192, 255, 192" Criteria="[TotalInvoicedAmount] &lt;&gt; [TotalSalesNetOfUnserved]" Context="ListView" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="CurrentUser" AllowEdit="False" />
+        <Member Name="DeliveryAddress" DataSourceCriteria="[Customer] = '@This.Customer'" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="TotalQuantitiesDelivered" Caption="Total Quantities Delivered (Net of Returns)" />
+        <Member Name="TotalSales" Caption="Total Order Amount" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.SalesOrderLine" IsVisibleInReports="True" />
+    <Class Name="JolliantProd.Module.BusinessObjects.Trip" ImageName="BO_Vendor">
+      <AppearanceRules>
+        <AppearanceRule Id="@5e74c678-8935-4267-b976-9c2fbd7d6b16" TargetItems="DestinationLocation, SalesOrder, TripNumber, TripDateTime,TripLines,TruckDriver, TruckPlateNumber" Criteria="[TripStatus] = ##Enum#JolliantProd.Module.BusinessObjects.Trip+TripStatusEnum,Validated#" Enabled="False" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="DestinationLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,CustomerLocation#" />
+        <Member Name="Invoice" AllowEdit="False" />
+        <Member Name="TripStatus" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLine">
+      <OwnMembers>
+        <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.TripLineDetail">
+      <OwnMembers>
+        <Member Name="From" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="LotCode" DataSourceCriteria="[Product] = '@This.TripLine.Product'" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Vendor">
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.VendorPriceList" IsCloneable="True" />
+    <Class Name="JolliantProd.Module.BusinessObjects.VendorPricelistLine" IsVisibleInReports="True">
+      <OwnMembers>
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WarehouseLocation">
+      <OwnMembers>
+        <Member Name="NextIn" AllowEdit="False" />
+        <Member Name="NextWithdrawal" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.Withdrawal">
+      <AppearanceRules>
+        <AppearanceRule Id="@4169ad54-be41-4c22-954a-d8eec9d9b625" TargetItems="*" Enabled="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Validated#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Location" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+        <Member Name="RequestedBy" AllowEdit="False" />
+        <Member Name="SeriesName" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="TransferredBy" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLine" DefaultListViewAllowEdit="False" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="ItemName" AllowEdit="False" />
+        <Member Name="Product" DataSourceCriteria="[CanBePurchased] = True" />
+        <Member Name="ProductionUOM" AllowEdit="False" />
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalLineLot" DefaultListViewAllowEdit="True" DefaultListViewNewItemRowPosition="Bottom">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.WithdrawalLine.Product'" LookupEditorMode="Search" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalOther">
+      <AppearanceRules>
+        <AppearanceRule Id="@8a57eb6d-8f44-4004-9971-4d30175188ee" TargetItems="*" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalOther+StatusEnum,Draft#" Enabled="False" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ProcessedBy" AllowEdit="False" />
+        <Member Name="RequestedBy" AllowEdit="False" />
+        <Member Name="Series" AllowEdit="False" />
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalOtherLine">
+      <OwnMembers>
+        <Member Name="Lot" DataSourceCriteria="[Product] = '@This.Item'" />
+        <Member Name="UOM" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WithdrawalRequest">
+      <AppearanceRules>
+        <AppearanceRule Id="@19f1b276-39f8-4cd7-a853-1999961c9d16" TargetItems="*" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WithdrawalRequest+StatusEnum,InProgress#" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="Status" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+    <Class Name="JolliantProd.Module.BusinessObjects.WorkOrder">
+      <AppearanceRules>
+        <AppearanceRule Id="@46553cf1-1519-4153-8f48-22de25656008" Enabled="False" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.WorkOrder+StatusEnum,Ready#" TargetItems="*" IsNewNode="True" />
+      </AppearanceRules>
+      <OwnMembers>
+        <Member Name="ActualEndDate" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="ActualStartDate" DisplayFormat="{0:f}" EditMask="f" />
+        <Member Name="PlannedDate" EditMask="f" DisplayFormat="{0:f}" />
+        <Member Name="PlannedDateTo" DisplayFormat="{0:f}" EditMask="f" />
+        <Member Name="Status" AllowEdit="False" />
+        <Member Name="WorkCenter" AllowEdit="False" />
+      </OwnMembers>
+    </Class>
+  </BOModel>
+  <NavigationItems>
+    <Items>
+      <Item Id="SalesNavigation" Caption="Sales" Index="1" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="Customer_ListView" ViewId="Customer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryReturn_ListView" ViewId="InventoryReturn_ListView" ObjectKey="" Caption="Sales Returns" IsNewNode="True" />
+          <Item Id="SalesCategory_ListView" ViewId="SalesCategory_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SalesOrder_ListView" ViewId="SalesOrder_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SalesOrderLine_ListView_Sales_Report_Menu" ObjectKey="" Caption="Sales Reports" ViewId="SalesOrderLine_ListView_Sales_Report" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Inventory" Index="2" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="@66b140e0-7a0a-4892-b0c3-d4d21ed070fb" Caption="Stock Aging" ViewId="StockTransfer_Aeging" IsNewNode="True" />
+          <Item Id="@97c9730a-d5f7-40fd-9e2f-4557dd26a570" ViewId="InventoryFlowReport_ListView" IsNewNode="True" />
+          <Item Id="@b671b0d4-2ae8-4830-8096-5bf77559d63b" ViewId="Product_ListView_Fast_Load" Caption="Products - Fast Load" IsNewNode="True" />
+          <Item Id="@d7b77570-437f-4fbe-afcb-c12ea60d4b76" ViewId="WithdrawalOther_ListView" Caption="Other Withdrawals" IsNewNode="True" />
+          <Item Id="InternalTransfer_ListView" ViewId="InternalTransfer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryAdjustment_ListView" ViewId="InventoryAdjustment_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="InventoryScrap_ListView" ViewId="InventoryScrap_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Lot_ListView" ViewId="Lot_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Product_ListView" ViewId="Product_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="StockTransfer_ListView" ViewId="StockTransfer_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Trip_ListView" ViewId="Trip_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Warehouse_ListView" ViewId="Warehouse_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WarehouseLocation_ListView" ViewId="WarehouseLocation_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="AccountingNavigation" Caption="Accounting" Index="10" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="CustomerPayment_ListView" ViewId="CustomerPayment_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Invoice_ListView" ViewId="Invoice_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="PaymentTerm_ListView" ViewId="PaymentTerm_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Default" Visible="False">
+        <Items>
+          <Item Id="BillOfMaterial_ListView" ViewId="BillOfMaterial_ListView" ObjectKey="" IsNewNode="True" Removed="True" />
+          <Item Id="Company_ListView" Removed="True" />
+          <Item Id="Customer_ListView" Removed="True" />
+          <Item Id="CustomerPayment_ListView" Removed="True" />
+          <Item Id="Employee_ListView" Removed="True" />
+          <Item Id="FinishedGoodLoader_ListView" Removed="True" />
+          <Item Id="InternalTransfer_ListView" Removed="True" />
+          <Item Id="InventoryAdjustment_ListView" Removed="True" />
+          <Item Id="InventoryReturn_ListView" Removed="True" />
+          <Item Id="InventoryScrap_ListView" Removed="True" />
+          <Item Id="Invoice_ListView" Removed="True" />
+          <Item Id="Lot_ListView" Removed="True" />
+          <Item Id="MaintenanceRequest_ListView" Removed="True" />
+          <Item Id="ManufacturingOrder_ListView" Removed="True" />
+          <Item Id="MaterialRequest_ListView" Removed="True" />
+          <Item Id="PaymentTerm_ListView" Removed="True" />
+          <Item Id="Product_ListView" Removed="True" />
+          <Item Id="ProductionRoute_ListView" Removed="True" />
+          <Item Id="PurchaseOrder_ListView" Removed="True" />
+          <Item Id="Receiving_ListView" Removed="True" />
+          <Item Id="ReceivingReportSummary_ListView" Removed="True" />
+          <Item Id="ReceivingReturn_ListView" Removed="True" />
+          <Item Id="SalesCategory_ListView" Removed="True" />
+          <Item Id="SalesOrder_ListView" Removed="True" />
+          <Item Id="StockTransfer_ListView" Removed="True" />
+          <Item Id="SupplierCode_ListView" Removed="True" />
+          <Item Id="Trip_ListView" Removed="True" />
+          <Item Id="UnitOfMeasure_ListView" Removed="True" />
+          <Item Id="Variant_ListView" Removed="True" />
+          <Item Id="Vendor_ListView" Removed="True" />
+          <Item Id="Warehouse_ListView" Removed="True" />
+          <Item Id="WarehouseLocation_ListView" Removed="True" />
+          <Item Id="WastagesDisposal_ListView" Removed="True" />
+          <Item Id="Withdrawal_ListView" Removed="True" />
+          <Item Id="WithdrawalRequest_ListView" Removed="True" />
+          <Item Id="WorkCenter_ListView" Removed="True" />
+          <Item Id="WorkOrder_ListView" Removed="True" />
+        </Items>
+      </Item>
+      <Item Id="Production" Caption="Production" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="@85761e1d-2073-48ef-b690-d65e4427e59f" ViewId="KitchenPlan_ListView" Index="1" IsNewNode="True" />
+          <Item Id="@5f613aa3-039a-44bf-a15d-6427c8296d51" ViewId="Withdrawal_ListView_Production" Caption="Pending Withdrawals" Index="2" IsNewNode="True" />
+          <Item Id="@31b2379b-b119-48b9-b23f-0857749b88ea" Index="3" Caption="Configuration" IsNewNode="True">
+            <Items IsNewNode="True">
+              <Item Id="@1632b7cc-9ace-4126-8d57-34df8926f849" ViewId="Product_ListView_Production" Caption="Production Products" IsNewNode="True" />
+              <Item Id="@b813d63c-6d2f-4935-a499-5bb94b262044" ViewId="ProductionRoute_ListView" IsNewNode="True" />
+              <Item Id="@d92db58c-15f8-4bbc-892f-9c45794d136c" ViewId="WorkCenter_ListView" Caption="Work Centers" IsNewNode="True" />
+            </Items>
+          </Item>
+          <Item Id="@85792da3-e644-4281-b5d3-39b320102ac4" Caption="Equipments" Index="99" IsNewNode="True">
+            <Items IsNewNode="True">
+              <Item Id="@b2d1d753-dd01-4022-aebf-64167bcac6e7" ViewId="Equipment_ListView" Index="1" IsNewNode="True" />
+              <Item Id="@d1a14c4f-fec9-4748-b19f-a0b180d794b1" ViewId="EquipmentCategory_ListView" Index="2" IsNewNode="True" />
+              <Item Id="MaintenanceRequest_ListView" ViewId="MaintenanceRequest_ListView" ObjectKey="" Index="3" IsNewNode="True" />
+            </Items>
+          </Item>
+          <Item Id="@7519cc54-320f-498d-921d-205e6c99058d" ViewId="FGInventoryReport_ListView" IsNewNode="True" />
+          <Item Id="ReceivingReportSummary_ListView" ViewId="ReceivingReportSummary_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="WastagesDisposal_ListView" ViewId="WastagesDisposal_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Purchases" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="@7b9756f7-7310-4c24-ab29-4fb980ecc233" Caption="PO Balance Report" ViewId="ReceivedLine_ListView_PO_Report" IsNewNode="True" />
+          <Item Id="MaterialRequest_ListView" ViewId="MaterialRequest_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="POPriceHistory" Caption="Price History" ViewId="PurchaseOrderLine_ListView_Price_History" IsNewNode="True" />
+          <Item Id="Products_Purchasing" ObjectKey="" Caption="Purchaesable Products" ViewId="Product_ListView_Copy" IsNewNode="True" />
+          <Item Id="PurchaseOrder_ListView" ViewId="PurchaseOrder_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Receiving_ListView" ViewId="Receiving_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="ReceivingReturn_ListView" ViewId="ReceivingReturn_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Vendor_ListView" ViewId="Vendor_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Withdrawal_ListView" ViewId="Withdrawal_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+      <Item Id="Utilities" IsNewNode="True">
+        <Items IsNewNode="True">
+          <Item Id="Odoo_ListView" Index="99999999" ViewId="Odoo_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="AuditUsageReport_ListView" ViewId="AuditUsageReport_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Company_ListView" ViewId="Company_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Employee_ListView" ViewId="Employee_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="FinishedGoodLoader_ListView" ViewId="FinishedGoodLoader_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="SupplierCode_ListView" ViewId="SupplierCode_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="UnitOfMeasure_ListView" ViewId="UnitOfMeasure_ListView" ObjectKey="" IsNewNode="True" />
+          <Item Id="Variant_ListView" ViewId="Variant_ListView" ObjectKey="" IsNewNode="True" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Options>
+    <LayoutManagerOptions RequiredFieldMark="*" />
+  </Options>
+  <SchemaModules>
+    <SchemaModule Name="CloneObjectModule" Version="21.2.14.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="21.2.14.0" IsNewNode="True" />
+  </SchemaModules>
+  <Validation>
+    <Rules>
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InternalTransferLine_LotNumber" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InventoryAdjustmentLine_LotNumber" ResultType="Error" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InventoryReturnLine_LotName" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.InventoryScrapLine_Lot" TargetCriteria="[Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleRequiredField Id="DevExpress.Persistent.Validation.RuleRequiredField_JolliantProd.Module.BusinessObjects.TripLineDetail_LotCode" TargetCriteria="[TripLine.Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackByLot# Or [TripLine.Product.Tracking] = ##Enum#JolliantProd.Module.BusinessObjects.Product+TrackingEnum,TrackBySerial#" />
+      <RuleValueComparison Id="DevExpress.Persistent.Validation.RuleValueComparison_JolliantProd.Module.BusinessObjects.InternalTransferLine_QuantityDone" TargetCriteria="[InternalTransfer.SourceLocation.LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
+    </Rules>
+  </Validation>
+  <Views>
+    <DetailView Id="BatchConsumption_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="100">
+            <LayoutGroup Id="BatchConsumption" RelativeSize="100" />
+          </LayoutGroup>
+          <LayoutGroup Id="BatchConsumptionLines_Group" Removed="True" />
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="BatchTransmittal_BatchTransmittalLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="BillOfMaterial_BomComponents_ListView">
+      <Columns>
+        <ColumnInfo Id="ConsumedInRouteOperation" Index="-1" />
+        <ColumnInfo Id="Component" Width="0" />
+        <ColumnInfo Id="Quantity" Width="62" />
+        <ColumnInfo Id="ProductionUOM" Width="97" />
+      </Columns>
+    </ListView>
+    <DetailView Id="BillOfMaterial_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="10.281923714759536">
+            <LayoutGroup Id="BillOfMaterial" RelativeSize="100">
+              <LayoutItem Id="ReferenceName" RelativeSize="51.612903225806448" />
+              <LayoutItem Id="ProductionRoute" Index="1" RelativeSize="48.387096774193552" />
+              <LayoutItem Id="Quantity" Removed="True" />
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="BomComponents_Group" Direction="Vertical" RelativeSize="89.718076285240471">
+            <LayoutItem Id="BomComponents" RelativeSize="100" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="Company_ListView">
+      <Columns>
+        <ColumnInfo Id="CompanyName" Width="121" />
+        <ColumnInfo Id="Address" Width="66" />
+        <ColumnInfo Id="ContactNumber" Width="112" />
+        <ColumnInfo Id="EmailAddress" Width="101" />
+      </Columns>
+    </ListView>
+    <ListView Id="Customer_Invoices_ListView">
+      <Columns>
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="-1" />
+        <ColumnInfo Id="Company" Width="73" Index="-1" />
+        <ColumnInfo Id="CustomerBillingAddress" Width="162" Index="-1" />
+        <ColumnInfo Id="DistributionAllowance" Width="146" Index="-1" />
+        <ColumnInfo Id="DistributionAllowancePercentage" Width="214" Index="-1" />
+        <ColumnInfo Id="DueLessVat" Width="94" Index="-1" />
+        <ColumnInfo Id="InvoiceDate" Width="90" Index="-1" />
+        <ColumnInfo Id="PaymentTerm" Width="104" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="158" Index="-1" />
+        <ColumnInfo Id="SalesOrder" Width="88" Index="-1" />
+        <ColumnInfo Id="TIN" Width="40" Index="-1" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="InvoiceNumber" Width="120" />
+        <ColumnInfo Id="DueDate" Width="73" Index="1" />
+        <ColumnInfo Id="Status" Width="56" Index="2" />
+        <ColumnInfo Id="OpenAmount" Width="98" Index="3" />
+        <ColumnInfo Id="TotalAmountDue" Width="123" Index="4" />
+      </Columns>
+    </ListView>
+    <ListView Id="Customer_ListView">
+      <Columns>
+        <ColumnInfo Id="EmailAddress" Width="101" Index="-1" />
+        <ColumnInfo Id="TinNumber" Width="87" Index="-1" />
+        <ColumnInfo Id="CustomerName" Width="123" />
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="1" />
+        <ColumnInfo Id="BillingAddress" Width="103" Index="2" />
+        <ColumnInfo Id="ContactNumber" Width="112" Index="3" />
+      </Columns>
+    </ListView>
+    <ListView Id="CustomerPayment_ListView">
+      <Columns>
+        <ColumnInfo Id="CheckBank" Width="86" Index="-1" />
+        <ColumnInfo Id="CheckDate" Width="84" Index="-1" />
+        <ColumnInfo Id="CheckNumber" Width="103" Index="-1" />
+        <ColumnInfo Id="ORNumber" Width="82" Index="-1" />
+        <ColumnInfo Id="ReferenceName" Width="126" />
+        <ColumnInfo Id="Company" Width="73" />
+        <ColumnInfo Id="PaymentAmount" Width="117" />
+        <ColumnInfo Id="PaymentDate" Width="99" Index="3" />
+        <ColumnInfo Id="TotalAllocated" Width="105" Index="4" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+      </Columns>
+    </ListView>
+    <ListView Id="Employee_ListView">
+      <Columns>
+        <ColumnInfo Id="UserName" Width="94" />
+        <ColumnInfo Id="EmployeeName" Width="112" />
+      </Columns>
+    </ListView>
+    <ListView Id="FGInventoryReport_FGInventoryReportLines_ListView" AllowNew="False" />
+    <ListView Id="FinishedGoodLoader_ListView" TopReturnedObjects="100">
+      <Columns>
+        <ColumnInfo Id="ReferenceName" Index="-1" />
+        <ColumnInfo Id="LotExpirationDate" Index="0" />
+        <ColumnInfo Id="Product" Index="1" />
+        <ColumnInfo Id="From" Index="2" />
+        <ColumnInfo Id="To" Index="3" />
+      </Columns>
+    </ListView>
+    <ListView Id="InternalTransfer_InternalTransferLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="AvailableQuantity" Width="122" />
+        <ColumnInfo Id="QuantityDone" Width="100" />
+      </Columns>
+    </ListView>
+    <ListView Id="InternalTransfer_ListView">
+      <Columns>
+        <ColumnInfo Id="ReferenceName" Width="126" />
+        <ColumnInfo Id="SourceLocation" Width="111" />
+        <ColumnInfo Id="DestinationLocation" Width="134" />
+        <ColumnInfo Id="TransferDate" Width="99" />
+        <ColumnInfo Id="Status" Width="56" />
+      </Columns>
+    </ListView>
+    <ListView Id="InternalTransferLine_ListView">
+      <Columns>
+        <ColumnInfo Id="InternalTransfer" Width="117" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="AvailableQuantity" Width="122" />
+        <ColumnInfo Id="QuantityDone" Width="100" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustment_InventoryAdjustmentLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="TheoreticalQuantity" Width="135" />
+        <ColumnInfo Id="RealQuantity" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustment_ListView">
+      <Columns>
+        <ColumnInfo Id="InventoryReferenceName" Width="183" />
+        <ColumnInfo Id="Status" Width="56" />
+        <ColumnInfo Id="AdjustmentType" Width="117" />
+        <ColumnInfo Id="InventoryDate" Width="103" />
+        <ColumnInfo Id="InventoriedLocation" Width="135" />
+      </Columns>
+    </ListView>
+    <DetailView Id="InventoryAdjustmentLine_DetailView">
+      <Items>
+        <PropertyEditor Id="LotNumber" LookupEditorMode="Search" />
+      </Items>
+    </DetailView>
+    <ListView Id="InventoryAdjustmentLine_ListView">
+      <Columns>
+        <ColumnInfo Id="InventoryAdjustment" Width="142" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="TheoreticalQuantity" Width="135" />
+        <ColumnInfo Id="RealQuantity" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryAdjustmentLine_LookupListView">
+      <Columns>
+        <ColumnInfo Id="InventoryAdjustment" Width="142" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="LotNumber" Width="86" />
+        <ColumnInfo Id="TheoreticalQuantity" Width="135" />
+        <ColumnInfo Id="RealQuantity" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryReturn_InventoryReturnLines_ListView">
+      <Columns>
+        <ColumnInfo Id="LotName" Width="85" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Quantity" Width="67" />
+      </Columns>
+    </ListView>
+    <ListView Id="InventoryReturn_ListView">
+      <Columns>
+        <ColumnInfo Id="ReturnReferenceName" Width="168" />
+        <ColumnInfo Id="Status" Width="56" />
+        <ColumnInfo Id="SalesOrder" Width="88" />
+        <ColumnInfo Id="ReturnLocation" Width="109" />
+      </Columns>
+    </ListView>
+    <DetailView Id="InventoryReturnLine_DetailView">
+      <Items>
+        <PropertyEditor Id="LotName" LookupEditorMode="Search" />
+      </Items>
+    </DetailView>
+    <ListView Id="InventoryScrap_InventoryScrapLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom">
+      <Columns>
+        <ColumnInfo Id="Lot" LookupEditorMode="Search" />
+      </Columns>
+    </ListView>
+    <DetailView Id="InventoryScrapLine_DetailView">
+      <Items>
+        <PropertyEditor Id="Lot" LookupEditorMode="Search" />
+      </Items>
+    </DetailView>
+    <ListView Id="Invoice_InvoiceLines_ListView" AllowEdit="True">
+      <Columns>
+        <ColumnInfo Id="Description" Index="1" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
+        <ColumnInfo Id="Quantity" Width="67" Index="3" />
+        <ColumnInfo Id="SubTotal" Width="0" Index="4" />
+      </Columns>
+    </ListView>
+    <ListView Id="Invoice_ListView">
+      <Columns>
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="-1" />
+        <ColumnInfo Id="CustomerBillingAddress" Width="162" Index="-1" />
+        <ColumnInfo Id="DistributionAllowance" Width="146" Index="-1" />
+        <ColumnInfo Id="DistributionAllowancePercentage" Width="214" Index="-1" />
+        <ColumnInfo Id="DueLessVat" Width="94" Index="-1" />
+        <ColumnInfo Id="PaymentTerm" Width="104" Index="-1" />
+        <ColumnInfo Id="SalesOrder" Width="88" Index="-1" />
+        <ColumnInfo Id="TIN" Width="40" Index="-1" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="InvoiceNumber" Width="120" />
+        <ColumnInfo Id="Customer" Width="0" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="158" Index="2" />
+        <ColumnInfo Id="InvoiceDate" Width="90" Index="3" />
+        <ColumnInfo Id="DueDate" Width="73" Index="4" />
+        <ColumnInfo Id="TotalAmountDue" Width="123" Index="5" />
+        <ColumnInfo Id="OpenAmount" Width="98" Index="6" />
+        <ColumnInfo Id="Status" Width="56" Index="7" />
+        <ColumnInfo Id="Company" Width="73" Index="8" />
+      </Columns>
+    </ListView>
+    <ListView Id="Invoice_Trips_ListView" AllowNew="False" AllowLink="True" AllowDelete="False" AllowUnlink="True">
+      <Columns>
+        <ColumnInfo Id="DisplayName" Width="108" />
+        <ColumnInfo Id="SalesOrder" Width="88" />
+        <ColumnInfo Id="PONumber" Width="81" />
+        <ColumnInfo Id="TripNumber" Width="92" />
+        <ColumnInfo Id="TripDateTime" Width="106" />
+        <ColumnInfo Id="TruckDriver" Width="90" />
+        <ColumnInfo Id="TruckPlateNumber" Width="133" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" />
+        <ColumnInfo Id="DestinationLocation" Width="134" />
+        <ColumnInfo Id="TripStatus" Width="83" />
+        <ColumnInfo Id="Encoder" Width="66" />
+      </Columns>
+    </ListView>
+    <ListView Id="InvoiceLine_ListView">
+      <Columns>
+        <ColumnInfo Id="Invoice" Width="60" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="UnitPrice" Width="74" />
+        <ColumnInfo Id="Quantity" Width="67" />
+        <ColumnInfo Id="SubTotal" Width="0" />
+      </Columns>
+    </ListView>
+    <DetailView Id="KitchenPlan_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="25.207296849087893">
+            <LayoutGroup Id="KitchenPlan" RelativeSize="100">
+              <LayoutGroup Id="KitchenPlan_col1" RelativeSize="50">
+                <LayoutItem Id="SeriesName" RelativeSize="28.571428571428573" />
+                <LayoutItem Id="Warehouse" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="StockLocation" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="Date" RelativeSize="28.571428571428573" />
+              </LayoutGroup>
+              <LayoutGroup Id="KitchenPlan_col2" RelativeSize="50">
+                <LayoutItem Id="Status" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="CreatedBy" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="ProcessedBy" RelativeSize="28.571428571428573" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <TabbedGroup Id="Tabs" RelativeSize="74.7927031509121">
+            <LayoutGroup Id="KitchenPlanLines" Index="0" RelativeSize="100">
+              <LayoutItem Id="KitchenPlanLines" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="Withdrawals" Index="1" RelativeSize="100">
+              <LayoutItem Id="Withdrawals" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="ProductionBatches" RelativeSize="100">
+              <LayoutItem Id="ProductionBatches" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="ProductionFinishedGoods" RelativeSize="100">
+              <LayoutItem Id="ProductionFinishedGoods" RelativeSize="100" />
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="KitchenPlan_KitchenPlanLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" MasterDetailMode="ListViewAndDetailView">
+      <Columns>
+        <ColumnInfo Id="Basins" Index="-1" />
+        <ColumnInfo Id="Batches" Width="58" Index="-1" />
+        <ColumnInfo Id="Pieces" Index="-1" />
+        <ColumnInfo Id="Remarks" Width="61" Index="-1" />
+        <ColumnInfo Id="ItemName" Width="83" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_ListView">
+      <Columns>
+        <ColumnInfo Id="StockLocation" Width="89" Index="-1" />
+        <ColumnInfo Id="TotalProductionCost" Width="123" Index="-1" />
+        <ColumnInfo Id="SeriesName" Width="90" />
+        <ColumnInfo Id="Warehouse" Width="77" />
+        <ColumnInfo Id="Date" Width="51" Index="2" />
+        <ColumnInfo Id="Shift" Width="42" Index="3" />
+        <ColumnInfo Id="Status" Width="51" Index="4" />
+        <ColumnInfo Id="CreatedBy" Width="74" Index="5" />
+        <ColumnInfo Id="ProcessedBy" Width="84" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_LookupListView">
+      <Columns>
+        <ColumnInfo Id="Date" PropertyName="Date" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Shift" PropertyName="Shift" Index="2" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_Lots_ListView">
+      <Columns>
+        <ColumnInfo Id="CostPerUnit" Width="98" Index="-1" />
+        <ColumnInfo Id="StockOnHand" Width="108" Index="-1" />
+        <ColumnInfo Id="TripLine" Width="74" Index="-1" />
+        <ColumnInfo Id="Product" Width="67" Index="0" />
+        <ColumnInfo Id="LotCode" Width="89" Index="1" />
+        <ColumnInfo Id="InternalReference" Width="130" />
+        <ColumnInfo Id="ExpirationDate" Width="110" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_ProductionBatches_ListView">
+      <Columns>
+        <ColumnInfo Id="BatchTotalCost" Width="99" Index="-1" />
+        <ColumnInfo Id="CostPerWeight" Width="98" Index="-1" />
+        <ColumnInfo Id="KitchenCode" Width="94" />
+        <ColumnInfo Id="Component" Width="0" />
+        <ColumnInfo Id="Time" Width="179" Index="3" />
+        <ColumnInfo Id="Status" Width="51" Index="4" />
+        <ColumnInfo Id="CookedWeight" Width="93" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlan_ProductionFinishedGoods_ListView">
+      <Columns>
+        <ColumnInfo Id="CostPerFG" Index="-1" />
+        <ColumnInfo Id="TotalFGCost" Index="-1" />
+      </Columns>
+    </ListView>
+    <ListView Id="KitchenPlanLine_ComponentAllotments_ListView" NewItemRowPosition="Bottom" AllowEdit="True" />
+    <ListView Id="KitchenPlanLine_ListView" AllowEdit="False" NewItemRowPosition="None" />
+    <DetailView Id="Lot_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="100">
+            <LayoutGroup Id="Lot" RelativeSize="100">
+              <LayoutGroup Id="Lot_col1" RelativeSize="49.909909909909906">
+                <LayoutItem Id="LotCode" RelativeSize="7.531380753138075" />
+                <LayoutItem Id="Product" RelativeSize="5.4393305439330542" />
+                <LayoutItem Id="InternalReference" RelativeSize="87.029288702928866" />
+              </LayoutGroup>
+              <LayoutGroup Id="Lot_col2" RelativeSize="50.090090090090094">
+                <LayoutItem Id="TripLine" Removed="True" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="Lot_ListView" DataAccessMode="Server" IsFooterVisible="True" TopReturnedObjects="0">
+      <Columns>
+        <ColumnInfo Id="TripLine" Index="-1" />
+        <ColumnInfo Id="LotCode" Width="81" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="InternalReference" Width="126" />
+        <ColumnInfo Id="ExpirationDate" Width="106" />
+        <ColumnInfo Id="StockOnHand" Width="104" />
+      </Columns>
+    </ListView>
+    <ListView Id="Lot_LookupListView" Criteria="[StockOnHand] &lt;&gt; 0.0" DataAccessMode="Client" TopReturnedObjects="150" Filter="" AllowNew="False">
+      <Columns>
+        <ColumnInfo Id="LotCode" Width="81" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Index="1" Width="94" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Index="2" Width="104" IsNewNode="True" />
+        <ColumnInfo Id="ExpirationDate" PropertyName="ExpirationDate" Index="3" Width="106" IsNewNode="True" />
+      </Columns>
+      <Sorting>
+        <SortProperty Id="@37b590b9-ef8b-464a-9783-b8ea940a0712" PropertyName="ExpirationDate" Index="1" IsNewNode="True" />
+        <SortProperty Id="@33c0b085-b2ee-4b79-8662-511a50b79597" PropertyName="LotCode" Index="2" IsNewNode="True" />
+      </Sorting>
+    </ListView>
+    <ListView Id="Lot_LookupListView_TripLine" ClassName="JolliantProd.Module.BusinessObjects.Lot" Criteria="" AllowNew="False" AllowLink="True" DataAccessMode="Client" ShowAutoFilterRow="False" Filter="[StockOnHand] &lt;&gt; 0.0" TopReturnedObjects="150" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Product.ProductName" PropertyName="Product.ProductName" Index="0" Width="141" IsNewNode="True" />
+        <ColumnInfo Id="LotCode" PropertyName="LotCode" Width="81" SortIndex="0" SortOrder="Ascending" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Index="2" Width="104" IsNewNode="True" />
+        <ColumnInfo Id="ExpirationDate" PropertyName="ExpirationDate" Index="3" Width="106" IsNewNode="True" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Index="4" Width="126" IsNewNode="True" />
+      </Columns>
+      <Sorting IsNewNode="True">
+        <SortProperty Id="@37b590b9-ef8b-464a-9783-b8ea940a0712" PropertyName="ExpirationDate" Index="1" IsNewNode="True" />
+        <SortProperty Id="@33c0b085-b2ee-4b79-8662-511a50b79597" PropertyName="LotCode" Index="2" IsNewNode="True" />
+      </Sorting>
+    </ListView>
+    <ListView Id="ManufacturingOrder_ConsumedMaterials_ListView" AllowEdit="True" AllowNew="True" AllowLink="False" />
+    <ListView Id="ManufacturingOrder_FinishedGoods_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="ManufacturingOrder_WorkOrders_ListView" AllowEdit="True" AllowNew="False" />
+    <DetailView Id="MaterialRequest_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="27.977315689981097">
+            <LayoutGroup Id="MaterialRequest" RelativeSize="100">
+              <LayoutGroup Id="MaterialRequest_col1" RelativeSize="49.929873772791026">
+                <LayoutItem Id="RequestDate" RelativeSize="28.571428571428573" />
+                <LayoutItem Id="RequestedBy" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="DeliveryDate" Index="2" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="Status" Index="3" RelativeSize="28.571428571428573" />
+                <LayoutItem Id="Vendor" Removed="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="MaterialRequest_col2" RelativeSize="50.070126227208974">
+                <LayoutItem Id="LastModifiedDate" RelativeSize="28.571428571428573" />
+                <LayoutItem Id="LastModifiedBy" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="RequestType" RelativeSize="21.428571428571427" />
+                <LayoutItem Id="PurchaseOrder" RelativeSize="28.571428571428573" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors" RelativeSize="35.916824196597354">
+            <LayoutItem Id="Note" RelativeSize="100" />
+          </LayoutGroup>
+          <LayoutGroup Id="MaterialRequestLines_Group" Direction="Vertical" RelativeSize="36.105860113421549">
+            <LayoutItem Id="MaterialRequestLines" RelativeSize="100" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="MaterialRequest_ListView">
+      <Columns>
+        <ColumnInfo Id="Vendor" Width="54" Index="-1" />
+        <ColumnInfo Id="RequestDate" Width="86" />
+        <ColumnInfo Id="RequestedBy" Width="87" />
+        <ColumnInfo Id="DeliveryDate" Width="85" Index="2" />
+        <ColumnInfo Id="Status" Width="51" Index="3" />
+        <ColumnInfo Id="LastModifiedDate" Width="109" Index="4" />
+        <ColumnInfo Id="LastModifiedBy" Width="98" Index="5" />
+        <ColumnInfo Id="RequestType" Width="87" Index="6" />
+        <ColumnInfo Id="PurchaseOrder" Width="95" Index="7" />
+      </Columns>
+      <Filters>
+        <Filter Id="@a9a6226f-9705-4526-b48a-b8e711779448" Caption="All" Index="1" IsNewNode="True" />
+        <Filter Id="@661bcbdc-05e4-4f23-b0a2-5ee6d982d0fd" Caption="Trade" Index="2" Criteria="[RequestType] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestTypeEnum,Trade#" IsNewNode="True" />
+        <Filter Id="@5f54e253-8239-4cad-b06f-8649d39ed0d8" Caption="Non Trade" Criteria="[RequestType] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestTypeEnum,NonTrade#" IsNewNode="True" />
+      </Filters>
+    </ListView>
+    <ListView Id="Product_ListView" DataAccessMode="Client">
+      <Columns>
+        <ColumnInfo Id="Barcode" Width="66" Index="-1" Removed="True" />
+        <ColumnInfo Id="CanBePurchased" Width="123" Index="-1" Removed="True" />
+        <ColumnInfo Id="CanBeSold" Width="89" Index="-1" Removed="True" />
+        <ColumnInfo Id="Cost" Width="45" Index="-1" Removed="True" />
+        <ColumnInfo Id="ProductType" Width="95" Index="-1" Removed="True" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="-1" Removed="True" />
+        <ColumnInfo Id="ReorderingLevel" Index="-1" Removed="True" />
+        <ColumnInfo Id="SalesPrice" Width="83" Index="-1" Removed="True" />
+        <ColumnInfo Id="Tracking" Width="69" Index="-1" Removed="True" />
+        <ColumnInfo Id="UOM" Width="47" Index="-1" Removed="True" />
+        <ColumnInfo Id="ProductName" Width="111" Index="0" />
+        <ColumnInfo Id="InternalReference" Width="126" Index="1" />
+        <ColumnInfo Id="SalesCategory" Width="106" Index="2" />
+        <ColumnInfo Id="StockOnHand" Width="104" Index="3" />
+        <ColumnInfo Id="CanBeManufactured" Width="142" Index="4" />
+        <ColumnInfo Id="ProductionUOM" Width="111" Index="5" />
+        <ColumnInfo Id="UOMRatioProduction" Width="140" Index="6" />
+        <ColumnInfo Id="Status" Width="56" Index="7" />
+        <ColumnInfo Id="Oid" Removed="True" />
+        <ColumnInfo Id="OverstockLevel" Removed="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="Product_ListView_Copy" ClassName="JolliantProd.Module.BusinessObjects.Product" Criteria="[CanBePurchased] = True" Caption="Purchaseable Products" DataAccessMode="Client" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Barcode" PropertyName="Barcode" Width="66" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBePurchased" PropertyName="CanBePurchased" Width="123" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBeSold" PropertyName="CanBeSold" Width="89" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Cost" PropertyName="Cost" Width="45" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Width="126" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductType" PropertyName="ProductType" Width="95" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="103" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesPrice" PropertyName="SalesPrice" Width="83" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Tracking" PropertyName="Tracking" Width="69" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="UOM" PropertyName="UOM" Width="47" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductName" PropertyName="ProductName" Width="111" SortIndex="0" SortOrder="Ascending" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="116" Index="3" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="Product_ListView_Fast_Load" ClassName="JolliantProd.Module.BusinessObjects.Product" DataAccessMode="DataView" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Barcode" PropertyName="Barcode" Width="66" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBeManufactured" PropertyName="CanBeManufactured" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBePurchased" PropertyName="CanBePurchased" Width="123" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBeSold" PropertyName="CanBeSold" Width="89" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Cost" PropertyName="Cost" Width="45" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Width="126" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="OverstockLevel" PropertyName="OverstockLevel" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductionUOM" PropertyName="ProductionUOM" Width="111" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductType" PropertyName="ProductType" Width="95" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="103" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesPrice" PropertyName="SalesPrice" Width="83" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Tracking" PropertyName="Tracking" Width="69" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="UOMRatioProduction" PropertyName="UOMRatioProduction" Width="140" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductName" PropertyName="ProductName" Width="111" SortIndex="0" SortOrder="Ascending" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="UOM" PropertyName="UOM" Width="47" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="Status" PropertyName="Status" Width="56" Index="3" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="Product_ListView_Production" ClassName="JolliantProd.Module.BusinessObjects.Product" Criteria="[CanBeManufactured] = True" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Barcode" PropertyName="Barcode" Width="66" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBePurchased" PropertyName="CanBePurchased" Width="123" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="CanBeSold" PropertyName="CanBeSold" Width="89" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Cost" PropertyName="Cost" Width="45" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="InternalReference" PropertyName="InternalReference" Width="126" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductType" PropertyName="ProductType" Width="95" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="103" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ReorderingLevel" PropertyName="ReorderingLevel" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesCategory" PropertyName="SalesCategory" Width="106" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesPrice" PropertyName="SalesPrice" Width="83" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="StockOnHand" PropertyName="StockOnHand" Width="104" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Tracking" PropertyName="Tracking" Width="69" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="UOM" PropertyName="UOM" Width="47" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="UOMRatioProduction" PropertyName="UOMRatioProduction" Width="50" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="ProductName" PropertyName="ProductName" Width="111" SortIndex="0" SortOrder="Ascending" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="CanBeManufactured" PropertyName="CanBeManufactured" Width="50" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="ProductionUOM" PropertyName="ProductionUOM" Width="70" Index="2" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="ProductionBatch_BatchConsumptions_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="ProductionBatch_BatchRoutes_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <DetailView Id="ProductionBatch_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="36.617100371747213">
+            <LayoutGroup Id="ProductionBatch" RelativeSize="100">
+              <LayoutGroup Id="ProductionBatch_col1" RelativeSize="50">
+                <LayoutItem Id="KitchenCode" RelativeSize="24" />
+                <LayoutItem Id="Component" RelativeSize="17.333333333333332" />
+                <LayoutItem Id="Batches" RelativeSize="17.333333333333332" />
+                <LayoutItem Id="Basins" RelativeSize="17.333333333333332" />
+                <LayoutItem Id="Pieces" RelativeSize="24" />
+              </LayoutGroup>
+              <LayoutGroup Id="ProductionBatch_col2" RelativeSize="50">
+                <LayoutItem Id="CookedWeight" RelativeSize="24" />
+                <LayoutItem Id="BatchTotalCost" RelativeSize="17.333333333333332" />
+                <LayoutItem Id="CostPerWeight" RelativeSize="17.333333333333332" />
+                <LayoutItem Id="Time" RelativeSize="17.333333333333332" />
+                <LayoutItem Id="Status" RelativeSize="24" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <TabbedGroup Id="Tabs" Index="1" RelativeSize="63.382899628252787" IsNewNode="True" Removed="True">
+            <LayoutGroup Id="BatchConsumptions" ShowCaption="True" Caption="Batch Consumptions" Index="0" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="BatchConsumptions" ViewItem="BatchConsumptions" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="BatchRoutes" ShowCaption="True" Caption="Batch Routes" Index="1" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="BatchRoutes" ViewItem="BatchRoutes" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="ProductionYieldMonitors" ShowCaption="True" Caption="Production Yield Monitors" Index="2" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="ProductionYieldMonitors" ViewItem="ProductionYieldMonitors" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="Item1" ShowCaption="True" CaptionLocation="Top" Direction="Vertical" Index="3" RelativeSize="100" Caption="Batch Transmittals" IsNewNode="True">
+              <LayoutItem Id="BatchTransmittals" ViewItem="BatchTransmittals" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="AuditTrail" ShowCaption="True" Caption="Audit Trail" Index="4" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="AuditTrail" ViewItem="AuditTrail" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="ProductionBatch_LookupListView" AllowNew="False" />
+    <ListView Id="ProductionFinishedGood_PFGLines_ListView" MasterDetailMode="ListViewOnly" AllowEdit="True" NewItemRowPosition="Bottom">
+      <Columns>
+        <ColumnInfo Id="PFG" Index="-1" />
+        <ColumnInfo Id="KitchenCode" Width="83" />
+        <ColumnInfo Id="Weight" Index="1" />
+      </Columns>
+    </ListView>
+    <ListView Id="ProductionTransfer_ProductionTransferLines_ListView" MasterDetailMode="ListViewAndDetailView">
+      <Columns>
+        <ColumnInfo Id="ProcessedStockingQuantity" Width="157" Index="-1" />
+        <ColumnInfo Id="ProductionQuantity" Width="116" Index="-1" />
+        <ColumnInfo Id="ProductionUOM" Width="97" Index="-1" />
+        <ColumnInfo Id="StockingUOM" Width="86" Index="-1" />
+        <ColumnInfo Id="Product" Width="57" />
+      </Columns>
+    </ListView>
+    <ListView Id="ProductionTransferLine_ProductionTransferLineLots_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="ProductionYieldMonitor_PYMLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="PurchaseOrder_ListView">
+      <Columns>
+        <ColumnInfo Id="ApprovedBy" Width="166" Index="-1" />
+        <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
+        <ColumnInfo Id="DeliveryLocation" Width="116" Index="-1" />
+        <ColumnInfo Id="SubTotal" Width="0" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="VATApplies" Width="85" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
+        <ColumnInfo Id="Company" Width="73" />
+        <ColumnInfo Id="Vendor" Width="61" Index="2" />
+        <ColumnInfo Id="PurchaseOrderDate" Width="139" Index="3" />
+        <ColumnInfo Id="DeliveryDate" Width="95" Index="4" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+        <ColumnInfo Id="CreatedBy" Width="82" Index="6" />
+        <ColumnInfo Id="Total" Width="49" Index="7" />
+      </Columns>
+    </ListView>
+    <ListView Id="PurchaseOrder_LookupListView">
+      <Columns>
+        <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
+        <ColumnInfo Id="Company" PropertyName="Company" Index="1" Width="94" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="PurchaseOrder_PurchaseOrderLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Quantity" Width="67" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="2" />
+        <ColumnInfo Id="Price" Width="48" Index="3" />
+        <ColumnInfo Id="Discount" Width="68" Index="4" />
+        <ColumnInfo Id="LineTotal" Width="76" Index="5" />
+        <ColumnInfo Id="ReceivedQuantity" Width="122" />
+        <ColumnInfo Id="StockingQuantity" Width="119" />
+        <ColumnInfo Id="StockingUOM" Width="99" />
+      </Columns>
+    </ListView>
+    <ListView Id="PurchaseOrderLine_ListView_Price_History" ClassName="JolliantProd.Module.BusinessObjects.PurchaseOrderLine" Criteria="[PurchaseOrder.Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Approved#" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseOrder" PropertyName="PurchaseOrder" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="Price" PropertyName="Price" Width="50" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Discount" PropertyName="Discount" Width="50" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="LineTotal" PropertyName="LineTotal" Width="50" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="70" Index="6" IsNewNode="True" />
+        <ColumnInfo Id="ReceivedQuantity" PropertyName="ReceivedQuantity" Width="50" Index="7" IsNewNode="True" />
+        <ColumnInfo Id="StockingQuantity" PropertyName="StockingQuantity" Width="50" Index="8" IsNewNode="True" />
+        <ColumnInfo Id="StockingUOM" PropertyName="StockingUOM" Width="70" Index="9" IsNewNode="True" />
+        <ColumnInfo Id="PricePerUnit" PropertyName="PricePerUnit" Width="50" Index="10" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="ReceivedLine_ListView_PO_Report" ClassName="JolliantProd.Module.BusinessObjects.ReceivedLine" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Receiving" PropertyName="Receiving" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Demand" PropertyName="Demand" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseUOM" PropertyName="PurchaseUOM" Width="70" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Lot" PropertyName="Lot" Width="70" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="LotExpiry" PropertyName="LotExpiry" Width="70" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="VendorLotCode" PropertyName="VendorLotCode" Width="70" Index="6" IsNewNode="True" />
+        <ColumnInfo Id="PurchaseQuantityReceived" PropertyName="PurchaseQuantityReceived" Width="50" Index="7" IsNewNode="True" />
+        <ColumnInfo Id="StockingQuantityReceived" PropertyName="StockingQuantityReceived" Width="50" Index="8" IsNewNode="True" />
+        <ColumnInfo Id="StorageUOM" PropertyName="StorageUOM" Width="70" Index="9" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <DetailView Id="Receiving_DetailView">
+      <Items>
+        <PropertyEditor Id="NMISorCOA" Caption="NMIS or COA" />
+      </Items>
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="100">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="62.318840579710148">
+            <LayoutGroup Id="Receiving" RelativeSize="100">
+              <LayoutGroup Id="Receiving_col1" RelativeSize="50">
+                <LayoutItem Id="Vendor" Index="0" RelativeSize="14.173228346456693" />
+                <LayoutItem Id="LegacyPurchaseOrderNumber" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="PurchaseOrder" Index="2" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="Series" Index="3" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="VendorBillNumber" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="ExpectedDeliveryDate" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="ActualDeliveryDate" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="StorageLocation" RelativeSize="10.236220472440944" />
+                <LayoutItem Id="NMISorCOA" Index="8" RelativeSize="14.173228346456693" ViewItem="NMISorCOA" IsNewNode="True" />
+                <LayoutItem Id="NMISandCOA" Removed="True" />
+              </LayoutGroup>
+              <LayoutGroup Id="Receiving_col2" RelativeSize="50">
+                <LayoutItem Id="ReceivedBy" RelativeSize="10.236220472440944" Index="1" />
+                <LayoutItem Id="LastModifiedBy" RelativeSize="10.236220472440944" Index="2" />
+                <LayoutItem Id="LastModifiedOn" RelativeSize="10.236220472440944" Index="3" />
+                <LayoutItem Id="Status" RelativeSize="10.236220472440944" Index="4" />
+                <LayoutItem Id="TotalDemand" RelativeSize="10.236220472440944" Index="5" />
+                <LayoutItem Id="TotalPurchaseQuantityReceived" RelativeSize="10.236220472440944" Index="6" />
+                <LayoutItem Id="TotalStockingQuantityReceived" RelativeSize="24.409448818897637" Index="7" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutGroup Id="SizeableEditors" RelativeSize="0">
+            <LayoutItem Id="Remarks" SizeConstraintsType="Default" MinSize="0, 0" />
+          </LayoutGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="Receiving_ListView">
+      <Columns>
+        <ColumnInfo Id="ActualDeliveryDate" Width="134" Index="-1" />
+        <ColumnInfo Id="NMISandCOA" Index="-1" />
+        <ColumnInfo Id="NMISorCOA" Index="-1" />
+        <ColumnInfo Id="StorageLocation" Width="116" Index="-1" />
+        <ColumnInfo Id="Series" Width="56" Index="0" />
+        <ColumnInfo Id="PurchaseOrder" Width="109" Index="1" />
+        <ColumnInfo Id="Vendor" Width="61" />
+        <ColumnInfo Id="ProcessedBy" Width="95" Index="4" />
+        <ColumnInfo Id="ExpectedDeliveryDate" Width="150" />
+        <ColumnInfo Id="Status" Width="56" Index="5" />
+        <ColumnInfo Id="ReceivedBy" Index="8" />
+        <ColumnInfo Id="LastModifiedBy" Index="9" />
+        <ColumnInfo Id="LastModifiedOn" Index="10" />
+        <ColumnInfo Id="TotalDemand" Index="11" />
+        <ColumnInfo Id="TotalPurchaseQuantityReceived" Index="12" />
+        <ColumnInfo Id="TotalStockingQuantityReceived" Index="13" />
+      </Columns>
+    </ListView>
+    <ListView Id="Receiving_ReceivedLines_ListView">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Demand" Width="67" />
+        <ColumnInfo Id="PurchaseQuantityReceived" Width="178" Index="2" />
+        <ColumnInfo Id="PurchaseUOM" Width="103" Index="3" />
+        <ColumnInfo Id="Lot" Width="37" Index="4" />
+        <ColumnInfo Id="StockingQuantityReceived" Width="174" />
+        <ColumnInfo Id="StorageUOM" Width="96" />
+      </Columns>
+    </ListView>
+    <ListView Id="ReceivingReturn_ListView">
+      <Columns>
+        <ColumnInfo Id="ReturnDate" Width="88" Index="0" />
+        <ColumnInfo Id="PurchaseOrder" Width="109" Index="1" />
+        <ColumnInfo Id="FromLocation" Width="101" />
+        <ColumnInfo Id="Status" Width="56" />
+        <ColumnInfo Id="ProcessedBy" Width="95" />
+      </Columns>
+    </ListView>
+    <DetailView Id="SalesOrder_DetailView">
+      <Layout>
+        <LayoutGroup Id="Main" RelativeSize="74.245115452930733">
+          <LayoutGroup Id="SimpleEditors" RelativeSize="65.78947368421052">
+            <LayoutGroup Id="SalesOrder" RelativeSize="100">
+              <LayoutGroup Id="SalesOrder_col1" RelativeSize="50">
+                <LayoutItem Id="Customer" RelativeSize="15.789473684210526" Index="1" />
+                <LayoutItem Id="PurchaseOrderNumber" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="SupplierCode" RelativeSize="11.403508771929825" Index="2" />
+                <LayoutItem Id="DeliveryAddress" RelativeSize="11.403508771929825" Index="3" />
+                <LayoutItem Id="PurchaseOrderDate" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="ScheduledDeliveryDate" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="Company" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="CurrentUser" RelativeSize="15.789473684210526" />
+              </LayoutGroup>
+              <LayoutGroup Id="SalesOrder_col2" RelativeSize="50">
+                <LayoutItem Id="TotalSales" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantity" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantitiesDelivered" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantitiesReturned" RelativeSize="11.403508771929825" />
+                <LayoutItem Id="TotalQuantitiesInvoiced" RelativeSize="27.192982456140349" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <TabbedGroup Id="Tabs" RelativeSize="34.210526315789473">
+            <LayoutGroup Id="SalesOrderLines" RelativeSize="100">
+              <LayoutItem Id="SalesOrderLines" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="Invoices" Index="1" RelativeSize="100">
+              <LayoutItem Id="Invoices" RelativeSize="100" />
+            </LayoutGroup>
+            <LayoutGroup Id="InventoryReturns" Removed="True" />
+            <LayoutGroup Id="Trips" Removed="True" />
+          </TabbedGroup>
+          <TabbedGroup Id="Trips" Index="1" RelativeSize="25.75488454706927" IsNewNode="True">
+            <LayoutGroup Id="Trips" Index="0" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="Trips" ViewItem="Trips" ShowCaption="False" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+            <LayoutGroup Id="InventoryReturns" Index="1" ShowCaption="True" RelativeSize="100" IsNewNode="True">
+              <LayoutItem Id="InventoryReturns" ViewItem="InventoryReturns" ShowCaption="False" Index="0" RelativeSize="100" IsNewNode="True" />
+            </LayoutGroup>
+          </TabbedGroup>
+        </LayoutGroup>
+      </Layout>
+    </DetailView>
+    <ListView Id="SalesOrder_InventoryReturns_ListView" AllowDelete="False" AllowUnlink="False" />
+    <ListView Id="SalesOrder_Invoices_ListView" AllowDelete="False" AllowNew="True">
+      <Columns>
+        <ColumnInfo Id="BusinessStyle" Width="101" Index="-1" />
+        <ColumnInfo Id="Company" Width="73" Index="-1" />
+        <ColumnInfo Id="Customer" Width="0" Index="-1" />
+        <ColumnInfo Id="CustomerBillingAddress" Width="162" Index="-1" />
+        <ColumnInfo Id="DistributionAllowance" Width="146" Index="-1" />
+        <ColumnInfo Id="DistributionAllowancePercentage" Width="214" Index="-1" />
+        <ColumnInfo Id="DueDate" Width="73" Index="-1" />
+        <ColumnInfo Id="DueLessVat" Width="94" Index="-1" />
+        <ColumnInfo Id="InvoiceDate" Width="90" Index="-1" />
+        <ColumnInfo Id="PaymentTerm" Width="104" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="158" Index="-1" />
+        <ColumnInfo Id="TIN" Width="40" Index="-1" />
+        <ColumnInfo Id="VAT" Width="44" Index="-1" />
+        <ColumnInfo Id="InvoiceNumber" Width="120" />
+        <ColumnInfo Id="Status" Width="56" Index="1" />
+        <ColumnInfo Id="OpenAmount" Width="98" Index="2" />
+        <ColumnInfo Id="TotalSales" Width="84" Index="3" />
+        <ColumnInfo Id="TotalAmountDue" Width="123" Index="4" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_ListView" TopReturnedObjects="0" DataAccessMode="Server">
+      <Columns>
+        <ColumnInfo Id="CurrentUser" Width="93" Index="-1" />
+        <ColumnInfo Id="Customer" Width="0" Index="-1" />
+        <ColumnInfo Id="DeliveryAddress" Width="115" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderDate" Width="139" Index="-1" />
+        <ColumnInfo Id="TotalInvoicedAmount" Width="148" Index="-1" />
+        <ColumnInfo Id="TotalQuantitiesDelivered" Width="263" Index="-1" />
+        <ColumnInfo Id="TotalQuantitiesInvoiced" Width="161" Index="-1" />
+        <ColumnInfo Id="TotalQuantitiesReturned" Width="166" Index="-1" />
+        <ColumnInfo Id="TotalUnservedAmount" Width="154" Index="-1" />
+        <ColumnInfo Id="TotalUnservedQuantity" Width="157" Index="-1" />
+        <ColumnInfo Id="PurchaseOrderNumber" Width="169" />
+        <ColumnInfo Id="ScheduledDeliveryDate" Width="158" Index="1" />
+        <ColumnInfo Id="SupplierCode" Width="100" Index="2" />
+        <ColumnInfo Id="Company" Width="73" Index="3" />
+        <ColumnInfo Id="Status" Width="56" Index="4" />
+        <ColumnInfo Id="Type" Width="48" Index="5" />
+        <ColumnInfo Id="TotalSales" Width="134" Index="6" />
+        <ColumnInfo Id="TotalQuantity" Width="100" Index="7" />
+        <ColumnInfo Id="TotalSalesNetOfUnserved" Width="181" Index="8" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_SalesOrderLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom">
+      <Columns>
+        <ColumnInfo Id="OutboundAmount" Width="123" Index="-1" />
+        <ColumnInfo Id="UnservedAmount" Width="121" Index="-1" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="Quantity" Width="67" />
+        <ColumnInfo Id="UnitPrice" Width="74" Index="2" />
+        <ColumnInfo Id="Amount" Width="64" Index="3" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" Index="4" />
+        <ColumnInfo Id="QuantityReturned" Width="123" Index="5" />
+        <ColumnInfo Id="QuantityUnserved" Width="124" />
+        <ColumnInfo Id="QuantityInvoiced" Width="118" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_Trips_ListView" AllowDelete="False" AllowUnlink="True">
+      <Columns>
+        <ColumnInfo Id="DestinationLocation" Width="134" Index="-1" />
+        <ColumnInfo Id="DisplayName" Width="108" Index="-1" />
+        <ColumnInfo Id="PONumber" Width="81" Index="-1" />
+        <ColumnInfo Id="TruckPlateNumber" Width="133" Index="-1" />
+        <ColumnInfo Id="TripNumber" Width="92" Index="0" />
+        <ColumnInfo Id="TripDateTime" Width="106" Index="1" />
+        <ColumnInfo Id="TruckDriver" Width="90" Index="2" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" Index="3" />
+        <ColumnInfo Id="TripStatus" Width="83" Index="4" />
+        <ColumnInfo Id="Encoder" Width="66" Index="5" />
+      </Columns>
+    </ListView>
+    <ListView Id="SalesOrder_UnservedLines_ListView" AllowEdit="True" AllowLink="False" AllowUnlink="False" NewItemRowPosition="Bottom" />
+    <ListView Id="SalesOrderLine_ListView" AllowNew="True" />
+    <ListView Id="SalesOrderLine_ListView_Sales_Report" ClassName="JolliantProd.Module.BusinessObjects.SalesOrderLine" Filter="" DataAccessMode="Client" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesOrder" PropertyName="SalesOrder" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="QuantityDelivered" PropertyName="QuantityDelivered" Width="50" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="UnitPrice" PropertyName="UnitPrice" Width="50" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="Amount" PropertyName="Amount" Width="50" Index="5" IsNewNode="True" />
+      </Columns>
+      <PivotSettings Settings="﻿&lt;XtraSerializer version=&quot;1.0&quot; application=&quot;PivotGrid&quot;&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutVersion&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutScaleFactor&quot;&gt;@1,Width=1@1,Height=1&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Fields&quot; iskey=&quot;true&quot; value=&quot;8&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Item1&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Product.Product Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;300&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item2&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_SalesOrder.ScheduledDeliveryDate&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;ColumnArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GroupInterval&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;SalesOrder.ScheduledDeliveryDate&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;UnboundFieldName&quot;&gt;Field_SalesOrder.ScheduledDeliveryDate&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Delivery Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item3&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_SalesOrder.SupplierCode.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;SalesOrder.SupplierCode.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Supplier Code&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FilterValues&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;ValuesCore&quot; iskey=&quot;true&quot; value=&quot;2&quot;&gt;&#xD;&#xA;          &lt;property name=&quot;Item1&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;            &lt;property name=&quot;Value&quot; type=&quot;System.String&quot;&gt;JRC - Batangas&lt;/property&gt;&#xD;&#xA;          &lt;/property&gt;&#xD;&#xA;          &lt;property name=&quot;Item2&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;            &lt;property name=&quot;Value&quot; type=&quot;System.String&quot;&gt;JRC - Pasig&lt;/property&gt;&#xD;&#xA;          &lt;/property&gt;&#xD;&#xA;        &lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;ShowBlanks&quot;&gt;false&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FilterType&quot;&gt;Included&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;200&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item4&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;DataArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item5&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Amount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;DataArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Amount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Amount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:C}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:C}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:C}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item6&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_QuantityUnserved&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;DataArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;QuantityUnserved&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Quantity Unserved&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item7&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_UnservedAmount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;DataArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;UnservedAmount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Unserved Amount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;6&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item8&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_OutboundAmount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;DataArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;OutboundAmount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Outbound Amount&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;7&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Prefilter&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Criteria&quot;&gt;~Xtra#Base64AAEAAAD/////AQAAAAAAAAAMAgAAAFlEZXZFeHByZXNzLkRhdGEudjE4LjIsIFZlcnNpb249MTguMi40LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YQUBAAAAJ0RldkV4cHJlc3MuRGF0YS5GaWx0ZXJpbmcuR3JvdXBPcGVyYXRvcgIAAAAIb3BlcmFuZHMMT3BlcmF0b3JUeXBlBAQ0RGV2RXhwcmVzcy5EYXRhLkZpbHRlcmluZy5Dcml0ZXJpYU9wZXJhdG9yQ29sbGVjdGlvbgIAAAArRGV2RXhwcmVzcy5EYXRhLkZpbHRlcmluZy5Hcm91cE9wZXJhdG9yVHlwZQIAAAACAAAACQMAAAAF/P///ytEZXZFeHByZXNzLkRhdGEuRmlsdGVyaW5nLkdyb3VwT3BlcmF0b3JUeXBlAQAAAAd2YWx1ZV9fAAgCAAAAAAAAAAUDAAAANERldkV4cHJlc3MuRGF0YS5GaWx0ZXJpbmcuQ3JpdGVyaWFPcGVyYXRvckNvbGxlY3Rpb24DAAAADUxpc3RgMStfaXRlbXMMTGlzdGAxK19zaXplD0xpc3RgMStfdmVyc2lvbgQAACxEZXZFeHByZXNzLkRhdGEuRmlsdGVyaW5nLkNyaXRlcmlhT3BlcmF0b3JbXQIAAAAICAIAAAAJBQAAAAIAAAABAAAABwUAAAAAAQAAAAQAAAAEKkRldkV4cHJlc3MuRGF0YS5GaWx0ZXJpbmcuQ3JpdGVyaWFPcGVyYXRvcgIAAAAJBgAAAAkHAAAADQIFBgAAAChEZXZFeHByZXNzLkRhdGEuRmlsdGVyaW5nLkJpbmFyeU9wZXJhdG9yAwAAAAxPcGVyYXRvclR5cGULTGVmdE9wZXJhbmQMUmlnaHRPcGVyYW5kBAQELERldkV4cHJlc3MuRGF0YS5GaWx0ZXJpbmcuQmluYXJ5T3BlcmF0b3JUeXBlAgAAAClEZXZFeHByZXNzLkRhdGEuRmlsdGVyaW5nLk9wZXJhbmRQcm9wZXJ0eQIAAAAmRGV2RXhwcmVzcy5EYXRhLkZpbHRlcmluZy5PcGVyYW5kVmFsdWUCAAAAAgAAAAX4////LERldkV4cHJlc3MuRGF0YS5GaWx0ZXJpbmcuQmluYXJ5T3BlcmF0b3JUeXBlAQAAAAd2YWx1ZV9fAAgCAAAABQAAAAkJAAAACQoAAAABBwAAAAYAAAAB9f////j///8DAAAACQwAAAAJDQAAAAUJAAAAKURldkV4cHJlc3MuRGF0YS5GaWx0ZXJpbmcuT3BlcmFuZFByb3BlcnR5AQAAAAxwcm9wZXJ0eU5hbWUBAgAAAAYOAAAAJkZpZWxkX1NhbGVzT3JkZXIuU2NoZWR1bGVkRGVsaXZlcnlEYXRlBQoAAAAmRGV2RXhwcmVzcy5EYXRhLkZpbHRlcmluZy5PcGVyYW5kVmFsdWUBAAAABXZhbHVlAw9TeXN0ZW0uRGF0ZVRpbWUCAAAACA0AQLUSfG/WCAEMAAAACQAAAAkOAAAAAQ0AAAAKAAAACA0AgIM12IfWCAs=&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;ShowOperandTypeIcon&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Enabled&quot;&gt;true&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;DefaultFilterEditorView&quot;&gt;Visual&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsCustomization&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;AllowPrefilter&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;CustomizationFormStyle&quot;&gt;Excel2007&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsChartDataSource&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;DataProvideMode&quot;&gt;UseCustomSettings&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Groups&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatRules&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatConditions&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;&lt;/XtraSerializer&gt;" IsNewNode="True" />
+    </ListView>
+    <ListView Id="SalesOrderLine_ListView_SalesReportv2" ClassName="JolliantProd.Module.BusinessObjects.SalesOrderLine" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SalesOrder" PropertyName="SalesOrder" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="50" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="QuantityDelivered" PropertyName="QuantityDelivered" Width="50" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="QuantityReturned" PropertyName="QuantityReturned" Width="50" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="QuantityInvoiced" PropertyName="QuantityInvoiced" Width="50" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="QuantityUnserved" PropertyName="QuantityUnserved" Width="50" Index="6" IsNewNode="True" />
+        <ColumnInfo Id="UnitPrice" PropertyName="UnitPrice" Width="50" Index="7" IsNewNode="True" />
+        <ColumnInfo Id="Amount" PropertyName="Amount" Width="50" Index="8" IsNewNode="True" />
+        <ColumnInfo Id="UnservedAmount" PropertyName="UnservedAmount" Width="50" Index="9" IsNewNode="True" />
+        <ColumnInfo Id="OutboundAmount" PropertyName="OutboundAmount" Width="50" Index="10" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="StockTransfer_Aeging" ClassName="JolliantProd.Module.BusinessObjects.StockTransfer" Criteria="" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Reference" PropertyName="Reference" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="SourceLocation" PropertyName="SourceLocation" Width="96" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="DestinationLocation" PropertyName="DestinationLocation" Width="117" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="57" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="62" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="UOM" PropertyName="UOM" Width="43" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="Date" PropertyName="Date" Width="164" Index="6" EditMask="f" DisplayFormat="{0:f}" IsNewNode="True" />
+        <ColumnInfo Id="Lot" PropertyName="Lot" Width="35" Index="7" IsNewNode="True" />
+      </Columns>
+      <Filters CurrentFilterId="" IsNewNode="True" />
+      <PivotSettings Settings="﻿&lt;XtraSerializer version=&quot;1.0&quot; application=&quot;PivotGrid&quot;&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutVersion&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutScaleFactor&quot;&gt;@1,Width=1@1,Height=1&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Fields&quot; iskey=&quot;true&quot; value=&quot;9&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Item1&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Visible&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item2&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Visible&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item3&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Source Location.Display Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item4&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Destination Location.Display Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item5&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Product.Product Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item6&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item7&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;6&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item8&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;ColumnArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GroupInterval&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;UnboundFieldName&quot;&gt;Field_Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;7&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item9&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Lot.LotCode&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Lot.LotCode&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Lot.Lot Code&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;8&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Prefilter&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Criteria&quot; isnull=&quot;true&quot; /&gt;&#xD;&#xA;    &lt;property name=&quot;ShowOperandTypeIcon&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Enabled&quot;&gt;false&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;DefaultFilterEditorView&quot;&gt;Visual&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;ShowCustomFunctions&quot;&gt;Default&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsCustomization&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;AllowPrefilter&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;CustomizationFormStyle&quot;&gt;Excel2007&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsChartDataSource&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;DataProvideMode&quot;&gt;UseCustomSettings&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Groups&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatRules&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatConditions&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;&lt;/XtraSerializer&gt;" IsNewNode="True" />
+    </ListView>
+    <DetailView Id="StockTransfer_DetailView" AllowEdit="True" AllowNew="True" />
+    <ListView Id="StockTransfer_ListView" AllowNew="True" DataAccessMode="DataView" TopReturnedObjects="0" Criteria="">
+      <Columns>
+        <ColumnInfo Id="Lot" Index="-1" />
+        <ColumnInfo Id="Date" EditMask="f" DisplayFormat="{0:f}" />
+      </Columns>
+    </ListView>
+    <ListView Id="StockTransfer_ListView_DailyInventory" ClassName="JolliantProd.Module.BusinessObjects.StockTransfer" Criteria="[Product.CanBeSold] = True" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="Reference" PropertyName="Reference" Width="70" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="SourceLocation" PropertyName="SourceLocation" Width="70" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="DestinationLocation" PropertyName="DestinationLocation" Width="70" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="Product" PropertyName="Product" Width="70" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Quantity" PropertyName="Quantity" Width="50" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="UOM" PropertyName="UOM" Width="70" Index="5" IsNewNode="True" />
+        <ColumnInfo Id="Date" PropertyName="Date" Width="70" Index="6" EditMask="f" DisplayFormat="{0:f}" IsNewNode="True" />
+        <ColumnInfo Id="Lot" PropertyName="Lot" Width="70" Index="7" IsNewNode="True" />
+      </Columns>
+      <PivotSettings Settings="﻿&lt;XtraSerializer version=&quot;1.0&quot; application=&quot;PivotGrid&quot;&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutVersion&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;#LayoutScaleFactor&quot;&gt;@1,Width=1@1,Height=1&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Fields&quot; iskey=&quot;true&quot; value=&quot;9&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Item1&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Oid&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;7&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Visible&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item2&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Reference&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;0&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item3&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowFilter&quot;&gt;False&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Source Location.Display Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;2&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item4&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowFilter&quot;&gt;False&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Destination Location.Display Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;3&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item5&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowFilter&quot;&gt;False&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Product.ProductName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Product.Product Name&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item6&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Quantity&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:#,###,##0.##############################}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;4&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item7&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowFilter&quot;&gt;False&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;UOM.UOMName&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;6&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;5&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item8&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GroupInterval&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;UnboundFieldName&quot;&gt;Field_Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Date&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;7&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;CellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;GrandTotalCellFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ValueFormat&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;FormatString&quot;&gt;{0:f}&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;FormatType&quot;&gt;Custom&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;6&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item9&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Options&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;AllowFilter&quot;&gt;False&lt;/property&gt;&#xD;&#xA;        &lt;property name=&quot;AllowRunTimeSummaryChange&quot;&gt;true&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ImageIndex&quot;&gt;-1&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;ToolTips&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;HeaderText&quot; /&gt;&#xD;&#xA;        &lt;property name=&quot;ValueText&quot; /&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldEditName&quot; /&gt;&#xD;&#xA;      &lt;property name=&quot;Name&quot;&gt;Field_Lot.LotCode&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Area&quot;&gt;RowArea&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;FieldName&quot;&gt;Lot.LotCode&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Caption&quot;&gt;Lot.Lot Code&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Index&quot;&gt;8&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;SummaryType&quot;&gt;Count&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;AreaIndex&quot;&gt;7&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;MinWidth&quot;&gt;20&lt;/property&gt;&#xD;&#xA;      &lt;property name=&quot;Width&quot;&gt;100&lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Prefilter&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Criteria&quot; isnull=&quot;true&quot; /&gt;&#xD;&#xA;    &lt;property name=&quot;ShowOperandTypeIcon&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Enabled&quot;&gt;false&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;DefaultFilterEditorView&quot;&gt;Visual&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;ShowCustomFunctions&quot;&gt;Default&lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsCustomization&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;AllowPrefilter&quot;&gt;false&lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;CustomizationFormStyle&quot;&gt;Excel2007&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;OptionsChartDataSource&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;DataProvideMode&quot;&gt;UseCustomSettings&lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;Groups&quot; iskey=&quot;true&quot; value=&quot;2&quot;&gt;&#xD;&#xA;    &lt;property name=&quot;Item1&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Fields&quot; iskey=&quot;true&quot; value=&quot;1&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;Item1&quot;&gt;Field_SourceLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;    &lt;property name=&quot;Item2&quot; isnull=&quot;true&quot; iskey=&quot;true&quot;&gt;&#xD;&#xA;      &lt;property name=&quot;Fields&quot; iskey=&quot;true&quot; value=&quot;1&quot;&gt;&#xD;&#xA;        &lt;property name=&quot;Item1&quot;&gt;Field_DestinationLocation.DisplayName&lt;/property&gt;&#xD;&#xA;      &lt;/property&gt;&#xD;&#xA;    &lt;/property&gt;&#xD;&#xA;  &lt;/property&gt;&#xD;&#xA;  &lt;property name=&quot;FormatRules&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;  &lt;property name=&quot;FormatConditions&quot; iskey=&quot;true&quot; value=&quot;0&quot; /&gt;&#xD;&#xA;&lt;/XtraSerializer&gt;" IsNewNode="True" />
+    </ListView>
+    <DetailView Id="Trip_DetailView">
+      <Items>
+        <PropertyEditor Id="TripDateTime" EditMaskType="DateTime" EditMask="g" DisplayFormat="{0:g}" />
+      </Items>
+    </DetailView>
+    <ListView Id="Trip_ListView" AllowNew="False" TopReturnedObjects="50">
+      <Columns>
+        <ColumnInfo Id="DestinationLocation" Width="134" Index="-1" />
+        <ColumnInfo Id="PONumber" Width="81" Index="-1" />
+        <ColumnInfo Id="SalesOrder" Width="88" Index="-1" />
+        <ColumnInfo Id="TruckPlateNumber" Width="133" Index="-1" />
+        <ColumnInfo Id="DisplayName" Width="108" />
+        <ColumnInfo Id="TripNumber" Width="92" Index="1" />
+        <ColumnInfo Id="TripDateTime" DisplayFormat="{0:g}" EditMask="g" Width="131" Index="2" />
+        <ColumnInfo Id="TruckDriver" Width="90" Index="3" />
+        <ColumnInfo Id="QuantityDelivered" Width="124" Index="4" />
+        <ColumnInfo Id="TripStatus" Width="83" Index="5" />
+        <ColumnInfo Id="Encoder" Width="66" Index="6" />
+      </Columns>
+    </ListView>
+    <ListView Id="Trip_TripLines_ListView" AllowEdit="False" AllowNew="True" NewItemRowPosition="None" IsGroupPanelVisible="True">
+      <Columns>
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="PendingDemand" Width="116" />
+        <ColumnInfo Id="QuantityDone" Width="100" />
+      </Columns>
+    </ListView>
+    <DetailView Id="TripLine_DetailView">
+      <Items>
+        <PropertyEditor Id="Lots" DataSourceCriteria="[Product] = '@This.Product'" View="TripLine_Lots_ListView" LinkView="Lot_LookupListView_TripLine" />
+      </Items>
+    </DetailView>
+    <ListView Id="TripLine_Lots_ListView" AllowDelete="False" AllowNew="False" AllowLink="True" AllowUnlink="True" />
+    <ListView Id="TripLine_TripLineDetails_ListView" AllowEdit="True" NewItemRowPosition="Bottom">
+      <Columns>
+        <ColumnInfo Id="LotCode" LookupEditorMode="Search" />
+      </Columns>
+    </ListView>
+    <DetailView Id="TripLineDetail_DetailView">
+      <Items>
+        <PropertyEditor Id="LotCode" LookupEditorMode="Search" />
+      </Items>
+    </DetailView>
+    <ListView Id="Vendor_ListView">
+      <Columns>
+        <ColumnInfo Id="Address" Width="66" Index="-1" />
+        <ColumnInfo Id="Email" Width="51" Index="-1" />
+        <ColumnInfo Id="NextIn" Width="60" Index="-1" />
+        <ColumnInfo Id="TINNumber" Width="85" Index="-1" />
+        <ColumnInfo Id="VATVendor" Width="85" Index="-1" />
+        <ColumnInfo Id="Website" Width="66" Index="-1" />
+        <ColumnInfo Id="VendorName" Width="109" />
+        <ColumnInfo Id="PhoneNumber" Width="104" Index="1" />
+        <ColumnInfo Id="ContactPerson" Width="106" Index="2" />
+        <ColumnInfo Id="MobileNumber" Width="106" Index="3" />
+      </Columns>
+      <Filters>
+        <Filter Id="@4529de2d-1e9c-4f79-b405-94e735f4b552" Caption="All" Index="1" IsNewNode="True" />
+        <Filter Id="@10c0aaf1-64a3-4764-b63a-d70203c11809" Caption="Approved Vendors" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,Approved#" Index="2" IsNewNode="True" />
+        <Filter Id="@792595f5-f70f-4e25-8923-a439f89349df" Criteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,Approved# And [Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,Disapproved#" Caption="For Approval" Index="3" IsNewNode="True" />
+        <Filter Id="@e3588762-474d-44b1-902d-254f48c9a6fd" Caption="Disapproved Vendors" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Vendor+StatusEnum,Disapproved#" Index="4" IsNewNode="True" />
+      </Filters>
+    </ListView>
+    <ListView Id="VendorPriceList_ListView">
+      <Columns>
+        <ColumnInfo Id="Vendor" Width="61" />
+        <ColumnInfo Id="FromDate" Width="80" />
+        <ColumnInfo Id="ToDate" Width="73" />
+      </Columns>
+    </ListView>
+    <ListView Id="VendorPriceList_VendorPricelistLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+    <ListView Id="Withdrawal_ListView" AllowNew="False" />
+    <ListView Id="Withdrawal_ListView_Production" ClassName="JolliantProd.Module.BusinessObjects.Withdrawal" AllowNew="False" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Withdrawal+StatusEnum,Submitted#" IsNewNode="True">
+      <Columns IsNewNode="True">
+        <ColumnInfo Id="Oid" PropertyName="Oid" Width="70" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="TransferredBy" PropertyName="TransferredBy" Width="92" Index="-1" IsNewNode="True" />
+        <ColumnInfo Id="SeriesName" PropertyName="SeriesName" Width="90" SortIndex="0" SortOrder="Ascending" Index="0" IsNewNode="True" />
+        <ColumnInfo Id="WithdrawalDate" PropertyName="WithdrawalDate" Width="100" Index="1" IsNewNode="True" />
+        <ColumnInfo Id="Location" PropertyName="Location" Width="60" Index="2" IsNewNode="True" />
+        <ColumnInfo Id="RequestedBy" PropertyName="RequestedBy" Width="87" Index="3" IsNewNode="True" />
+        <ColumnInfo Id="Status" PropertyName="Status" Width="51" Index="4" IsNewNode="True" />
+        <ColumnInfo Id="KitchenPlan" PropertyName="KitchenPlan" Width="78" Index="5" IsNewNode="True" />
+      </Columns>
+    </ListView>
+    <ListView Id="Withdrawal_WithdrawalLines_ListView" MasterDetailMode="ListViewAndDetailView" IsGroupPanelVisible="True" AutoExpandAllGroups="True">
+      <Columns>
+        <ColumnInfo Id="ProductionPerUnitCost" Width="158" Index="-1" />
+        <ColumnInfo Id="ProductionQuantity" Width="131" Index="-1" />
+        <ColumnInfo Id="ProductionUOM" Width="111" Index="-1" />
+        <ColumnInfo Id="RawCost" Width="74" Index="-1" />
+        <ColumnInfo Id="UOM" Width="47" Index="-1" />
+        <ColumnInfo Id="ItemName" Width="94" SortIndex="-1" GroupIndex="0" />
+        <ColumnInfo Id="Product" Width="63" />
+        <ColumnInfo Id="DemandQuantity" Width="118" Index="2" />
+        <ColumnInfo Id="ProcessedQuantity" Width="129" Index="3" />
+      </Columns>
+    </ListView>
+    <ListView Id="WithdrawalLine_ListView" AllowNew="True" />
+    <ListView Id="WithdrawalLineLot_LookupListView" AllowNew="True" />
+    <ListView Id="WithdrawalOther_ListView" DataAccessMode="DataView" />
+    <ListView Id="WithdrawalOther_WithdrwalOtherLines_ListView" AllowEdit="True" NewItemRowPosition="Bottom" />
+  </Views>
+</Application>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application>
+  <NavigationItems Id="NavigationItems">
+    <Items Id="Items">
+      <Item Id="Default">
+        <Items Id="Items">
+          <Item Id="POSummaryNavigationItem" ViewId="SalesOrderLine_ListView_PO_Summary" />
+        </Items>
+      </Item>
+    </Items>
+  </NavigationItems>
+  <Views Id="Views">
+    <ListView Id="StockTransfer_Aeging">
+      <Filters Id="Filters">
+        <Filter Id="@5be5fe2d-9df6-4c1e-8287-f058b4b43f94" Removed="True" />
+      </Filters>
+    </ListView>
+  </Views>
+</Application>
