@@ -50,7 +50,7 @@ namespace JolliantProd.Win {
             }
 
             try {
-                AuditTrailService.Instance.ObjectAuditingMode = ObjectAuditingMode.Lightweight;
+                AuditTrailService.Instance.ObjectAuditingMode = ObjectAuditingMode.Full;
                 winApplication.Setup();
                 winApplication.Start();
             }

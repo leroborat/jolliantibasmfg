@@ -25,7 +25,61 @@ namespace JolliantProd.Module.Controllers
         {
             InitializeComponent();
             // Target required Views (via the TargetXXX properties) and create their Actions.
+            SimpleAction assignSeriesAction = new SimpleAction(
+            this, "AssignSeriesAction", PredefinedCategory.Edit)
+            {
+                Caption = "Assign Series",
+                ConfirmationMessage = "Are you sure?",
+                ImageName = "Attention",                
+            };
+
+            // Attach the action's Execute event handler
+            assignSeriesAction.Execute += AssignSeriesAction_Execute;
         }
+
+        private void AssignSeriesAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            var currentObject = View.CurrentObject as Receiving;
+            if (currentObject != null)
+            {
+                if (currentObject.Series == null)
+                {
+                    // Generate the new Series
+                    int nextIn = currentObject.StorageLocation.NextIn;
+                    string newSeries;
+
+                    // Loop until we find a unique series
+                    do
+                    {
+                        // Generate the new Series based on the current NextIn value
+                        newSeries = currentObject.StorageLocation.Warehouse.WarehouseName + "-IN-" + nextIn;
+
+                        // Check if the series already exists in another Receiving object
+                        var existingReceiving = ObjectSpace.FindObject<Receiving>(CriteriaOperator.Parse("Series == ?", newSeries));
+
+                        if (existingReceiving == null)
+                        {
+                            // If no existing series is found, break the loop
+                            break;
+                        }
+
+                        // If the series is already taken, increment NextIn and try again
+                        nextIn += 1;
+
+                    } while (true);
+
+                    // Once a unique series is found, update the StorageLocation and the Series
+                    currentObject.StorageLocation.NextIn = nextIn + 1; // Increment NextIn after assigning the new series
+                    currentObject.Series = newSeries;
+
+                    // Save changes to the StorageLocation and the current object
+                    ObjectSpace.CommitChanges();
+
+                }
+            }
+
+        }
+
         protected override void OnActivated()
         {
             base.OnActivated();

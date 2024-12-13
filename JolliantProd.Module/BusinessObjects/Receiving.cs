@@ -96,6 +96,57 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(LegacyPurchaseOrderNumber), ref legacyPurchaseOrderNumber, value);
         }
 
+        
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize), NonCloneable]
+        [Persistent("Series"), Indexed(Unique = true)]
+        public string Series
+        {
+            get => series;
+            set
+            {
+                SetPropertyValue(nameof(Series), ref series, value);
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    foreach (var item in ReceivedLines)
+                    {
+                        if (item.Lot != null)
+                        {
+                            item.Lot.InternalReference = Series;
+                        }
+
+                    }
+                }
+            }
+        }
+
+        [Action(Caption = "Assign New Series", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        void AssignNewSeries()
+        {
+            if (Series == null)
+            {
+                // Generate the new Series
+                string newSeries = StorageLocation.Warehouse.WarehouseName + "-IN-" + StorageLocation.NextIn;
+
+                // Check if the series already exists in another Receiving object
+                var existingReceiving = Session.Query<Receiving>().FirstOrDefault(r => r.Series == newSeries);
+                if (existingReceiving != null)
+                {
+                    throw new UserFriendlyException($"The series '{newSeries}' is already assigned to another record.");
+                }
+
+                // If unique, update the series and increment the NextIn counter
+                StorageLocation.NextIn += 1;
+                Series = newSeries;
+
+                // Save changes to the StorageLocation and the current object
+                Session.Save(StorageLocation);
+                Session.Save(this);
+                Session.CommitTransaction();
+            }
+        }
+
+
         [Action(Caption = "Assign Series", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
         void AssignSeries()
         {
@@ -122,29 +173,6 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-
-
-        [Size(SizeAttribute.DefaultStringMappingFieldSize), NonCloneable]
-        [Persistent("Series"), Indexed(Unique = true)]
-        public string Series
-        {
-            get => series;
-            set
-            {
-                SetPropertyValue(nameof(Series), ref series, value);
-                if (!IsLoading && !IsSaving && !IsDeleted)
-                {
-                    foreach (var item in ReceivedLines)
-                    {
-                        if (item.Lot != null)
-                        {
-                            item.Lot.InternalReference = Series;
-                        }
-
-                    }
-                }
-            }
-        }
 
         [RuleRequiredField()]
         public Vendor Vendor
