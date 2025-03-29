@@ -28,8 +28,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
         public override void AfterConstruction()
         {
-            base.AfterConstruction();
-            Series = "WDRAWOT-" + (new XPQuery<WithdrawalOther>(Session).Count() + 1 ).ToString();
+            base.AfterConstruction();            
             Date = DateTime.Now;
             RequestedBy = Session.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
 
@@ -37,6 +36,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        Department department;
         StatusEnum status;
         string processedBy;
         string requestedBy;
@@ -45,7 +45,7 @@ namespace JolliantProd.Module.BusinessObjects
         string series;
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
-        [Persistent("Series"), Indexed(Unique = true)]
+        [Persistent("Series")]
         public string Series
         {
             get => series;
@@ -64,6 +64,13 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => date;
             set => SetPropertyValue(nameof(Date), ref date, value);
+        }
+
+        
+        public Department Department
+        {
+            get => department;
+            set => SetPropertyValue(nameof(Department), ref department, value);
         }
 
 
@@ -105,6 +112,21 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
+        [Action(Caption = "Assign Series", ConfirmationMessage = "Do you want to assign the series?", ImageName = "Attention", AutoCommit = true)]
+        public void AssignSeriesActionMethod()
+        {
+            //If series is already assigned then return error
+            if (!string.IsNullOrEmpty(Series))
+            {
+                throw new UserFriendlyException("Series is already assigned.");
+            }
+            // Assign a unique series value to the current object
+            this.Series = "WDRAWOT-" + (new XPQuery<WithdrawalOther>(Session).Count() + 1).ToString();
+            //Commit the changes to the database
+            Session.Save(this);
+        }
+
+
         [Action(Caption = "Submit", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
         public void SubmitActionMethod()
         {
@@ -115,6 +137,11 @@ namespace JolliantProd.Module.BusinessObjects
         [Action(Caption = "Validate", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
         public void ValidateActionMethod()
         {
+            //If Series is blank or null then return error
+            if (string.IsNullOrEmpty(Series))
+            {
+                throw new UserFriendlyException("Series is required.");
+            }
             Session.Save(this);
             // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
             this.Status = StatusEnum.Done;

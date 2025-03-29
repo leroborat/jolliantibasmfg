@@ -28,6 +28,8 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        DateTime dateApproved;
+        string approvedBy;
         int odooDatabaseID;
         string odooID;
         [Persistent(nameof(StockOnHandTaytay))]
@@ -65,7 +67,7 @@ namespace JolliantProd.Module.BusinessObjects
         //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
         //}
 
-        
+
         public int OdooDatabaseID
         {
             get => odooDatabaseID;
@@ -198,11 +200,12 @@ namespace JolliantProd.Module.BusinessObjects
             }
         }
 
-        
+
         [PersistentAlias(nameof(stockOnHandTaytay))]
         public double StockOnHandTaytay
         {
-            get {
+            get
+            {
                 var StockIn = new XPQuery<StockTransfer>(Session)
               .Where(
               x => x.DestinationLocation.DisplayName == "Taytay/Stock" &&
@@ -215,11 +218,11 @@ namespace JolliantProd.Module.BusinessObjects
                     ).Select(x => x.Quantity).Sum();
 
                 stockOnHandTaytay = StockIn - StockOut;
-               
-                return stockOnHandTaytay; 
+
+                return stockOnHandTaytay;
             }
         }
-        
+
 
 
 
@@ -271,11 +274,26 @@ namespace JolliantProd.Module.BusinessObjects
             DisApproved
         }
 
-        
+
         public ProductStatusEnum Status
         {
             get => status;
             set => SetPropertyValue(nameof(Status), ref status, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string ApprovedBy
+        {
+            get => approvedBy;
+            set => SetPropertyValue(nameof(ApprovedBy), ref approvedBy, value);
+        }
+
+        
+        public DateTime DateApproved
+        {
+            get => dateApproved;
+            set => SetPropertyValue(nameof(DateApproved), ref dateApproved, value);
         }
 
 
@@ -284,6 +302,8 @@ namespace JolliantProd.Module.BusinessObjects
         {
             // Trigger a custom business logic for the current record in the UI (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112619.aspx).
             this.Status = ProductStatusEnum.Approved;
+            this.ApprovedBy = SecuritySystem.CurrentUserName;
+            this.DateApproved = DateTime.Now;
         }
 
         [Action(Caption = "Disapprove Product", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]

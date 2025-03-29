@@ -31,6 +31,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        Company company;
         KitchenPlan kitchenPlan;
         DateTime withdrawalDate;
         StatusEnum status;
@@ -40,7 +41,7 @@ namespace JolliantProd.Module.BusinessObjects
         string seriesName;
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize)]
-        [Persistent("SeriesName"), Indexed(Unique = true)]
+        [Persistent("SeriesName")]
         public string SeriesName
         {
             get => seriesName;
@@ -55,17 +56,20 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        public Company Company
+        {
+            get => company;
+            set => SetPropertyValue(nameof(Company), ref company, value);
+        }
+
+
+
         public WarehouseLocation Location
         {
             get => location;
             set
             {
-                SetPropertyValue(nameof(Location), ref location, value);
-                if (!IsLoading && !IsSaving)
-                {
-                    SeriesName = Location.DisplayName + "/" + "WITHDRAW/" + Location.NextWithdrawal;
-                    Location.NextWithdrawal += 1;
-                }
+                SetPropertyValue(nameof(Location), ref location, value);                
             }
         }
 
@@ -119,6 +123,7 @@ namespace JolliantProd.Module.BusinessObjects
                 if (!IsLoading && !IsSaving && !IsDeleted)
                 {
                     Location = KitchenPlan.StockLocation;
+                    Company = KitchenPlan.Company;
 
                     foreach (var item in KitchenPlan.KitchenPlanLines)
                     {
@@ -173,6 +178,25 @@ namespace JolliantProd.Module.BusinessObjects
             this.Status = StatusEnum.Submitted;
             Session.Save(this);
         }
+
+
+        [Action(Caption = "AssignSeries", ConfirmationMessage = "Are you sure?", ImageName = "Attention", AutoCommit = true)]
+        public void SubmitAction()
+        {
+            // Ensure that there is a valid Company and the series has not been set already.
+            if (Company != null && SeriesName == null)
+            {
+                SeriesName = Company.WithdrawalPrefix + "/" + Company.NextWithdrawalNumber;
+                Company.NextWithdrawalNumber++;  // Increment for the next usage.
+                Session.Save(Company);
+                Session.CommitTransaction();
+            }
+
+            // Proceed with updating the status.
+            this.Status = StatusEnum.Submitted;
+            Session.Save(this);
+        }
+
     }
 
     public class WithdrawalLine : BaseObject

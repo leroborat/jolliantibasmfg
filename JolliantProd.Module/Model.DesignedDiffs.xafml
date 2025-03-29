@@ -3,9 +3,10 @@
   <ActionDesign>
     <Actions>
       <Action Id="5b04dc92-be01-4187-8945-c0897517ac6a" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Open# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Paid#" />
-      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Company] Is Not Null And [Vendor] Is Not Null And [DeliveryLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New# And IsCurrentUserInRole('Purchase Manager')" />
+      <Action Id="ApprovePOAction" TargetObjectsCriteria="[Company] Is Not Null And [Vendor] Is Not Null And [DeliveryLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,Checked# And IsCurrentUserInRole('Purchase Manager')" />
       <Action Id="AssignLotsAction" TargetObjectsCriteria="[WithdrawalLines][[WithdrawalLineLots][].Count() = 0]" />
       <Action Id="CancelPOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
+      <Action Id="CheckPOAction" TargetObjectsCriteria="[Company] Is Not Null And [Vendor] Is Not Null And [DeliveryLocation] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
       <Action Id="CreatePOAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.MaterialRequest+RequestStatusEnum,New# And IsCurrentUserInRole('Purchase User')" />
       <Action Id="FGInventoryReport.ActionMethod" ValidationContexts="Save" />
       <Action Id="GenerateInvoiceLinesAction" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Invoice+StatusEnum,Draft#" />
@@ -17,7 +18,7 @@
       <Action Id="MarkWorkOrderDone" TargetObjectsCriteria="[ActualStartDate] Is Not Null And [ActualEndDate] Is Not Null And [ActualStartDate] &lt; [ActualEndDate]" />
       <Action Id="PlanMO" TargetObjectsCriteria="[BillOfMaterial] Is Not Null And [Product] Is Not Null And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.ManufacturingOrder+StatusEnum,Draft# And [Company] Is Not Null And [Routing] Is Not Null And [Company] Is Not Null And [QuantityToProduce] &gt; 0.0" />
       <Action Id="POSetToDraft" TargetObjectsCriteria="[Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.PurchaseOrder+StatusEnum,New#" />
-      <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][]" />
+      <Action Id="ProcessReceivingReturnAction" TargetObjectsCriteria="[PurchaseOrder] Is Not Null And [FromLocation] Is Not Null And [ReceivingReturnLines][] And [Status] &lt;&gt; ##Enum#JolliantProd.Module.BusinessObjects.ReceivingReturn+StatusEnum,Validated#" />
       <Action Id="Product.ApproveProduct" ValidationContexts="Save" ImageName="BO_Task" TargetObjectsCriteria="IsCurrentUserInRole('RND') And [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Draft# Or [Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,DisApproved#" />
       <Action Id="Product.DisapproveProductAction" ValidationContexts="Save" TargetObjectsCriteria="IsCurrentUserInRole('RND')" />
       <Action Id="ProductionBatch.ValidateStatus" TargetObjectsCriteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.ProductionBatch+StatusEnum,Draft# And [KitchenPlan] Is Not Null And Not IsNullOrEmpty([KitchenCode]) And [CookedWeight] &lt;&gt; 0.0 And [Time] Is Not Null" />
@@ -253,8 +254,11 @@
     <Class Name="JolliantProd.Module.BusinessObjects.Product" ImageName="BO_Sale_Item">
       <AppearanceRules>
         <AppearanceRule Id="@27b30182-faed-4066-a19d-a543f7d2effd" TargetItems="*" BackColor="Red" FontColor="Yellow" Context="Product_ListView" Criteria="[CanBePurchased] = True And [ReorderingLevel] &gt;= [StockOnHand]" IsNewNode="True" />
+        <AppearanceRule Id="@93b70457-0aa8-4819-be2f-89dd94fd43e6" Enabled="False" TargetItems="*" Criteria="[Status] = ##Enum#JolliantProd.Module.BusinessObjects.Product+ProductStatusEnum,Approved#" IsNewNode="True" />
       </AppearanceRules>
       <OwnMembers>
+        <Member Name="ApprovedBy" AllowEdit="False" />
+        <Member Name="DateApproved" AllowEdit="False" />
         <Member Name="Status" AllowEdit="False" />
       </OwnMembers>
     </Class>
@@ -300,6 +304,7 @@
       </AppearanceRules>
       <OwnMembers>
         <Member Name="ApprovedBy" AllowEdit="False" Caption="Approved or Cancelled By" />
+        <Member Name="CheckedBy" AllowEdit="False" />
         <Member Name="CreatedBy" AllowEdit="False" />
         <Member Name="DeliveryLocation" DataSourceCriteria="[LocationType] = ##Enum#JolliantProd.Module.BusinessObjects.WarehouseLocation+LocationTypeEnum,Internal#" />
         <Member Name="LastModifiedBy" AllowEdit="False" />
@@ -615,8 +620,8 @@
     <LayoutManagerOptions RequiredFieldMark="*" />
   </Options>
   <SchemaModules>
-    <SchemaModule Name="CloneObjectModule" Version="21.2.14.0" IsNewNode="True" />
-    <SchemaModule Name="SystemModule" Version="21.2.14.0" IsNewNode="True" />
+    <SchemaModule Name="CloneObjectModule" Version="22.2.13.0" IsNewNode="True" />
+    <SchemaModule Name="SystemModule" Version="22.2.13.0" IsNewNode="True" />
   </SchemaModules>
   <Validation>
     <Rules>
@@ -935,8 +940,8 @@
         <ColumnInfo Id="StockLocation" Width="89" Index="-1" />
         <ColumnInfo Id="TotalProductionCost" Width="123" Index="-1" />
         <ColumnInfo Id="SeriesName" Width="90" />
-        <ColumnInfo Id="Warehouse" Width="77" />
         <ColumnInfo Id="Date" Width="51" Index="2" />
+        <ColumnInfo Id="Warehouse" Width="77" />
         <ColumnInfo Id="Shift" Width="42" Index="3" />
         <ColumnInfo Id="Status" Width="51" Index="4" />
         <ColumnInfo Id="CreatedBy" Width="74" Index="5" />

@@ -190,6 +190,7 @@
     <Compile Include="BusinessObjects\Company.cs" />
     <Compile Include="BusinessObjects\Customer.cs" />
     <Compile Include="BusinessObjects\CustomerPayment.cs" />
+    <Compile Include="BusinessObjects\Department.cs" />
     <Compile Include="BusinessObjects\Employee.cs" />
     <Compile Include="BusinessObjects\Equipment.cs" />
     <Compile Include="BusinessObjects\FGInventoryReport.cs" />

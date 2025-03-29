@@ -449,5 +449,13 @@ namespace JolliantProd.Module.Controllers
             thisView.Save();
             ObjectSpace.CommitChanges();
         }
+
+        private void CheckPOAction_Execute(object sender, SimpleActionExecuteEventArgs e)
+        {
+            ((PurchaseOrder)View.CurrentObject).Status = PurchaseOrder.StatusEnum.Checked;
+            ((PurchaseOrder)View.CurrentObject).CheckedBy = ObjectSpace.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            ((PurchaseOrder)View.CurrentObject).Save();
+            ObjectSpace.CommitChanges();            
+        }
     }
 }

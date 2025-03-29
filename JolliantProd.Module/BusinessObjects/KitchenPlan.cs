@@ -44,6 +44,7 @@ namespace JolliantProd.Module.BusinessObjects
             set => SetPropertyValue(nameof(SeriesName), ref seriesName, value);
         }
 
+        Company company;
         string createdBy;
         WarehouseLocation stockLocation;
         string processedBy;
@@ -52,19 +53,39 @@ namespace JolliantProd.Module.BusinessObjects
         DateTime date;
         string seriesName;
         Warehouse warehouse;
+
+
+        [RuleRequiredField()]
+        public Company Company
+        {
+            get => company;
+            set { 
+                
+                SetPropertyValue(nameof(Company), ref company, value);
+                if (!IsLoading && !IsSaving && !IsDeleted)
+                {
+                    //if Company.KitchenPlanPrefix is null, set it to the firstv 5 letters of the company name + KP
+                    if (Company.KitchenPlanPrefix == null)
+                    {
+                        Company.KitchenPlanPrefix = Company.CompanyName.Substring(0, 5).ToUpper() + "-KP";
+                    }
+                    Company.NextKitchenPlanNumber += 1;
+                    Session.Save(Company);
+                    SeriesName = Company.KitchenPlanPrefix + "-" + Company.NextKitchenPlanNumber;
+                    Session.Save(this);
+                }
+
+            }
+        }
+
+
         [RuleRequiredField()]
         public Warehouse Warehouse
         {
             get => warehouse;
             set
             {
-                SetPropertyValue(nameof(Warehouse), ref warehouse, value);
-                if (!IsLoading && !IsSaving && !IsDeleted)
-                {
-                    Warehouse.NextKitchenPlan += 1;
-                    Session.Save(Warehouse);
-                    SeriesName = Warehouse.WarehouseName + "-KITCHENPLAN-" + Warehouse.NextKitchenPlan;
-                }
+                SetPropertyValue(nameof(Warehouse), ref warehouse, value);               
             }
         }
 

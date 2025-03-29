@@ -29,6 +29,7 @@ namespace JolliantProd.Module.BusinessObjects
             PurchaseOrderDate = DateTime.Now;
             DeliveryDate = DateTime.Now.AddDays(3);
             CreatedBy = Session.GetObjectByKey<Employee>(SecuritySystem.CurrentUserId).EmployeeName;
+            Status = StatusEnum.New;
             // Place your initialization code here (https://documentation.devexpress.com/eXpressAppFramework/CustomDocument112834.aspx).
         }
 
@@ -46,6 +47,7 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        string checkedBy;
         int odooID;
         string remarks;
         RequestTypeEnum pOType;
@@ -182,9 +184,10 @@ namespace JolliantProd.Module.BusinessObjects
 
         public enum StatusEnum
         {
-            New,
+            New,            
             Approved,
-            Declined
+            Declined,
+            Checked
         }
 
 
@@ -200,6 +203,14 @@ namespace JolliantProd.Module.BusinessObjects
         {
             get => createdBy;
             set => SetPropertyValue(nameof(CreatedBy), ref createdBy, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string CheckedBy
+        {
+            get => checkedBy;
+            set => SetPropertyValue(nameof(CheckedBy), ref checkedBy, value);
         }
 
 

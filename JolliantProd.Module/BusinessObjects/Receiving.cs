@@ -99,7 +99,7 @@ namespace JolliantProd.Module.BusinessObjects
         
 
         [Size(SizeAttribute.DefaultStringMappingFieldSize), NonCloneable]
-        [Persistent("Series"), Indexed(Unique = true)]
+        [Persistent("Series")]
         public string Series
         {
             get => series;
@@ -384,6 +384,65 @@ namespace JolliantProd.Module.BusinessObjects
                 return auditTrail;
             }
         }
+
+        [Action(Caption = "Cancel", ConfirmationMessage = "Are you sure you want to cancel this record?", ImageName = "Cancel", AutoCommit = true)]
+        public void CancelActionMethod()
+        {
+            // Check if the Status is already Cancelled
+            if (this.Status == Receiving.StatusEnum.Cancelled)
+            {
+                throw new InvalidOperationException("The record is already cancelled.");
+            }
+
+            // Perform custom business logic
+            WarehouseLocation warehouseLocation = new XPQuery<WarehouseLocation>(Session)
+                .FirstOrDefault(w => w.LocationName == "Vendor");
+
+            if (warehouseLocation == null)
+            {
+                warehouseLocation = new WarehouseLocation(Session)
+                {
+                    LocationName = "Vendor",
+                    LocationType = WarehouseLocation.LocationTypeEnum.VendorLocation
+                };
+                warehouseLocation.Save();
+            }
+
+            foreach (ReceivedLine item in this.ReceivedLines)
+            {
+                if (item.PurchaseQuantityReceived <= 0)
+                {
+                    continue;
+                }
+
+                StockTransfer st = new StockTransfer(Session)
+                {
+                    SourceLocation = this.StorageLocation,
+                    DestinationLocation = warehouseLocation,
+                    Lot = item.Lot,
+                    Quantity = item.StockingQuantityReceived,
+                    UOM = item.StorageUOM,
+                    Product = item.Product,
+                    Reference = this.Series + " Reversal"
+                };
+
+                if (item?.LotExpiry != null)
+                {
+                    st.Lot.ExpirationDate = item.LotExpiry;
+                }
+
+                st.Save();
+                st.Lot.UpdateStockOnHand(true);
+            }
+
+            // Update the Status to Cancelled
+            this.Status = Receiving.StatusEnum.Cancelled;
+
+            // Save the changes
+            this.Save();
+            Session.CommitTransaction();
+        }
+
 
 
 

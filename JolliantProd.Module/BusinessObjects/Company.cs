@@ -29,6 +29,10 @@ namespace JolliantProd.Module.BusinessObjects
 
 
 
+        string withdrawalPrefix;
+        int nextWithdrawalNumber;
+        string kitchenPlanPrefix;
+        int nextKitchenPlanNumber;
         int odooDatabaseID;
         string pOPrefix;
         int nextMONumber;
@@ -91,6 +95,38 @@ namespace JolliantProd.Module.BusinessObjects
         }
 
 
+        public int NextKitchenPlanNumber
+        {
+            get => nextKitchenPlanNumber;
+            set => SetPropertyValue(nameof(NextKitchenPlanNumber), ref nextKitchenPlanNumber, value);
+        }
+
+
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string KitchenPlanPrefix
+        {
+            get => kitchenPlanPrefix;
+            set => SetPropertyValue(nameof(KitchenPlanPrefix), ref kitchenPlanPrefix, value);
+        }
+
+        //Next Withdrawal Number
+
+
+        public int NextWithdrawalNumber
+        {
+            get => nextWithdrawalNumber;
+            set => SetPropertyValue(nameof(NextWithdrawalNumber), ref nextWithdrawalNumber, value);
+        }
+
+        
+        [Size(SizeAttribute.DefaultStringMappingFieldSize)]
+        public string WithdrawalPrefix
+        {
+            get => withdrawalPrefix;
+            set => SetPropertyValue(nameof(WithdrawalPrefix), ref withdrawalPrefix, value);
+        }
+
+
         //[Size(SizeAttribute.DefaultStringMappingFieldSize)]
         //public string OdooID
         //{
@@ -98,7 +134,7 @@ namespace JolliantProd.Module.BusinessObjects
         //    set => SetPropertyValue(nameof(OdooID), ref odooID, value);
         //}
 
-        
+
         public int OdooDatabaseID
         {
             get => odooDatabaseID;
